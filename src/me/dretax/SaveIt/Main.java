@@ -31,7 +31,6 @@ public class Main extends JavaPlugin {
 		}
 		getCommand("saveit").setExecutor(this);
 		getConfig().addDefault("DelayInMinutes", Integer.valueOf(10));
-		getConfig().addDefault("EnableSaveMessages", Integer.valueOf(1));
 		getConfig().addDefault("Save", "Starting world save...");
 		getConfig().addDefault("Save2", "World save completed!");
 		getConfig().addDefault("World1", "world");
