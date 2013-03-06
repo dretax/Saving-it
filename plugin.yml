@@ -1,0 +1,9 @@
+name: SaveIt
+main: me.dretax.SaveIt.Main
+version: 1.6
+authors: [DreTaX]
+commands:
+  saveit:
+    description: Save all the worlds!
+    usage: |
+          /<command>
