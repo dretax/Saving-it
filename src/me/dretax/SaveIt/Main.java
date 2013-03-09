@@ -33,10 +33,9 @@ public class Main extends JavaPlugin
 	}
     getCommand("saveit").setExecutor(this);
     getConfig().addDefault("DelayInMinutes", Integer.valueOf(10));
-    getConfig().addDefault("World1", "YourWorldName");
-    getConfig().addDefault("World2", "world");
-    getConfig().addDefault("World3", "world_the_end");
-    getConfig().addDefault("World4", "world_nether");
+    getConfig().addDefault("World1", "world");
+    getConfig().addDefault("World2", "world_the_end");
+    getConfig().addDefault("World3", "world_nether");
     getConfig().addDefault("SaveMSG", "Starting world save...");
     getConfig().addDefault("SaveMSG2", "World save completed!");
     getConfig().options().copyDefaults(true);
@@ -58,21 +57,13 @@ public class Main extends JavaPlugin
     , 1200L * delay, 1200L * delay);
   }
 
-  public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-  {
-    if (!sender.hasPermission("saveit.save")) {
-      return false;
-    }
-    Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG"));
-    for (World world : Bukkit.getServer().getWorlds()) {
-      world.save();
-      for (Player player : world.getPlayers()) {
-        player.saveData();
-      }
-    }
-    Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG2"));
-    return true;
-  }
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	    if (!sender.hasPermission("saveit.save")) {
+	        return false;
+	      }
+	    WorldSave();
+		return true;
+	}
   
   public void WorldSave(){
 	    Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG"));
