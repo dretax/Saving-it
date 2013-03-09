@@ -44,14 +44,7 @@ public class Main extends JavaPlugin
     Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
     {
       public void run() {
-        Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG"));
-        for (World world : Bukkit.getServer().getWorlds()) {
-          world.save();
-          for (Player player : world.getPlayers()) {
-            player.saveData();
-          }
-        }
-        Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG2"));
+    	  WorldSave();
       }
     }
     , 1200L * delay, 1200L * delay);
@@ -72,14 +65,14 @@ public class Main extends JavaPlugin
 	    	int World=0;
 	    	while(saving){
 	    		World++;
-	    		if(this.getConfig().getString("World"+World).equals(world.getName())){
+	    		if(Main.this.getConfig().getString("World"+World).equals(world.getName())){
 	    	        world.save();
 	    	        for (Player player : world.getPlayers()) {
 	    	          player.saveData();
 	    	        }
 	    			saving=false;
 	    		}
-	    		if(this.getConfig().getString("World"+World).length()<1)saving=false;
+	    		if(Main.this.getConfig().getString("World"+World).length()<1)saving=false;
 	    	}
 	      }
 	    Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG2"));
