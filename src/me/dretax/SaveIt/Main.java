@@ -19,39 +19,41 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 public class Main extends JavaPlugin
 {
-  public void onDisable()
-  {
-    super.onDisable();
-  }
-  public static boolean EnableMsg;
+	public static boolean EnableMsg;
+	
+	public void onDisable()
+	{
+		super.onDisable();
+	}
+	
   
-  public void onEnable() {
-	try {
-	  Metrics metrics = new Metrics(this);
-	  metrics.start();
+	public void onEnable() {
+		try {
+			Metrics metrics = new Metrics(this);
+			metrics.start();
+		}
+		catch (IOException localIOException) {
+		}
+		getCommand("saveit").setExecutor(this);
+		getConfig().addDefault("DelayInMinutes", Integer.valueOf(10));
+		getConfig().addDefault("World1", "world");
+		getConfig().addDefault("World2", "world_the_end");
+		getConfig().addDefault("World3", "world_nether");
+		getConfig().addDefault("EnableSaveMSG", true);
+		getConfig().addDefault("SaveMSG", "Starting world save...");
+		getConfig().addDefault("SaveMSG2", "World save completed!");
+		getConfig().options().copyDefaults(true);
+		saveConfig();
+		EnableMsg = getConfig().getBoolean("EnableSaveMSG");
+		int delay = getConfig().getInt("DelayInMinutes");
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
+		{
+			public void run() {
+				WorldSave();
+			}
+		}
+		, 1200L * delay, 1200L * delay);
 	}
-	catch (IOException localIOException) {
-	}
-    getCommand("saveit").setExecutor(this);
-    getConfig().addDefault("DelayInMinutes", Integer.valueOf(10));
-    getConfig().addDefault("World1", "world");
-    getConfig().addDefault("World2", "world_the_end");
-    getConfig().addDefault("World3", "world_nether");
-    getConfig().addDefault("EnableSaveMSG", true);
-    getConfig().addDefault("SaveMSG", "Starting world save...");
-    getConfig().addDefault("SaveMSG2", "World save completed!");
-    getConfig().options().copyDefaults(true);
-    saveConfig();
-    EnableMsg = getConfig().getBoolean("EnableSaveMSG");
-    int delay = getConfig().getInt("DelayInMinutes");
-    Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
-    {
-      public void run() {
-    	  WorldSave();
-      }
-    }
-    , 1200L * delay, 1200L * delay);
-  }
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 	    if (!sender.hasPermission("saveit.save")) {
@@ -61,28 +63,27 @@ public class Main extends JavaPlugin
 		return true;
 	}
   
-  public void WorldSave(){
-	    if (EnableMsg) {
-	    Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG"));
-	    }
-	    boolean saving=true;
-	    for (World world : Bukkit.getServer().getWorlds()) {
-	    	int World=0;
-	    	while(saving){
-	    		World++;
+	public void WorldSave(){
+		if (EnableMsg) {
+			Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG"));
+		}
+		boolean saving=true;
+		for (World world : Bukkit.getServer().getWorlds()) {
+			int World=0;
+			while(saving){
+				World++;
 	    		if(Main.this.getConfig().getString("World"+World).equals(world.getName())){
 	    	        world.save();
 	    	        for (Player player : world.getPlayers()) {
-	    	          player.saveData();
+	    	        	player.saveData();
 	    	        }
-	    			saving=false;
+	    	        saving=false;
 	    		}
 	    		if(Main.this.getConfig().getString("World"+World).length()<1)saving=false;
-	    	}
-	      }
+			}
+		}
 	    if (EnableMsg) {
 	    	Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG2"));
 	    }
-  }
-  
+	}
 }
