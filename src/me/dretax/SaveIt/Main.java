@@ -23,7 +23,8 @@ public class Main extends JavaPlugin
   {
     super.onDisable();
   }
-
+  public static boolean EnableMsg;
+  
   public void onEnable() {
 	try {
 	  Metrics metrics = new Metrics(this);
@@ -36,10 +37,12 @@ public class Main extends JavaPlugin
     getConfig().addDefault("World1", "world");
     getConfig().addDefault("World2", "world_the_end");
     getConfig().addDefault("World3", "world_nether");
+    getConfig().addDefault("EnableSaveMSG", true);
     getConfig().addDefault("SaveMSG", "Starting world save...");
     getConfig().addDefault("SaveMSG2", "World save completed!");
     getConfig().options().copyDefaults(true);
     saveConfig();
+    EnableMsg = getConfig().getBoolean("EnableSaveMSG");
     int delay = getConfig().getInt("DelayInMinutes");
     Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
     {
@@ -59,7 +62,9 @@ public class Main extends JavaPlugin
 	}
   
   public void WorldSave(){
+	    if (EnableMsg) {
 	    Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG"));
+	    }
 	    boolean saving=true;
 	    for (World world : Bukkit.getServer().getWorlds()) {
 	    	int World=0;
@@ -75,6 +80,9 @@ public class Main extends JavaPlugin
 	    		if(Main.this.getConfig().getString("World"+World).length()<1)saving=false;
 	    	}
 	      }
-	    Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG2"));
+	    if (EnableMsg) {
+	    	Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG2"));
+	    }
   }
+  
 }
