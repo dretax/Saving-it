@@ -1,24 +1,23 @@
 package me.dretax.SaveIt;
 
 import java.io.IOException;
-
 import me.dretax.SaveIt.metrics.Metrics;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.FileConfigurationOptions;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 public class Main extends JavaPlugin
 {
+	public PluginManager _pm;
+	public static ConsoleCommandSender _cs;
+	public static final String _prefix = ChatColor.AQUA
+			+ "[SaveIt] ";
 	public static boolean EnableMsg;
 	
 	public void onDisable()
@@ -28,20 +27,22 @@ public class Main extends JavaPlugin
 	
   
 	public void onEnable() {
+		this._pm = getServer().getPluginManager();
+		_cs = getServer().getConsoleSender();
 		try {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
+			sendConsoleMessage(ChatColor.GREEN + "SaveIt Metrics Successfully Enabled!");
 		}
 		catch (IOException localIOException) {
 		}
 		getCommand("saveit").setExecutor(this);
 		getConfig().addDefault("DelayInMinutes", Integer.valueOf(10));
 		getConfig().addDefault("World1", "world");
-		getConfig().addDefault("World2", "world_the_end");
-		getConfig().addDefault("World3", "world_nether");
+		getConfig().addDefault("World2", "world_nether");
 		getConfig().addDefault("EnableSaveMSG", true);
-		getConfig().addDefault("SaveMSG", "Starting world save...");
-		getConfig().addDefault("SaveMSG2", "World save completed!");
+		getConfig().addDefault("SaveMSG", "&aStarting world save...");
+		getConfig().addDefault("SaveMSG2", "&aWorld save completed!");
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 		EnableMsg = getConfig().getBoolean("EnableSaveMSG");
@@ -53,6 +54,7 @@ public class Main extends JavaPlugin
 			}
 		}
 		, 1200L * delay, 1200L * delay);
+		sendConsoleMessage(ChatColor.GREEN + "SaveIt Successfully Enabled!");
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -65,7 +67,7 @@ public class Main extends JavaPlugin
   
 	public void WorldSave(){
 		if (EnableMsg) {
-			Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG"));
+			Bukkit.getServer().broadcastMessage(colorize(Main.this.getConfig().getString("SaveMSG")));
 		}
 		boolean saving=true;
 		for (World world : Bukkit.getServer().getWorlds()) {
@@ -83,7 +85,17 @@ public class Main extends JavaPlugin
 			}
 		}
 	    if (EnableMsg) {
-	    	Bukkit.getServer().broadcastMessage(ChatColor.GREEN + Main.this.getConfig().getString("SaveMSG2"));
+	    	Bukkit.getServer().broadcastMessage(colorize(Main.this.getConfig().getString("SaveMSG2")));
 	    }
 	}
+	
+	public static void sendConsoleMessage(String msg) {
+		_cs.sendMessage(_prefix + ChatColor.AQUA + msg);
+	}
+	
+	public static String colorize(String s){
+	    if(s == null) return null;
+	    return s.replaceAll("&([0-9a-f])", "\u00A7$1");
+	}
+	
 }
