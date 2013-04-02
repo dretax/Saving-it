@@ -1,6 +1,8 @@
 package me.dretax.SaveIt;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import me.dretax.SaveIt.metrics.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,17 +10,28 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin
 {
+	/*
+	 * 
+	 * @Author: DreTaX
+	 * 
+	 */
+	public int Delay;
+	public boolean Worldd;
+	public static boolean EnableMsg;
+	public String MSG;
+	public String MSG2;
 	public PluginManager _pm;
 	public static ConsoleCommandSender _cs;
-	public static final String _prefix = ChatColor.AQUA
-			+ "[SaveIt] ";
-	public static boolean EnableMsg;
+	public static final String _prefix = ChatColor.AQUA + "[SaveIt] ";
+	private List<String> ExWorlds = Arrays.asList(new String[] { "world", "world_nether"});
+	private FileConfiguration config;
 	
 	public void onDisable()
 	{
@@ -37,13 +50,13 @@ public class Main extends JavaPlugin
 		catch (IOException localIOException) {
 		}
 		getCommand("saveit").setExecutor(this);
-		getConfig().addDefault("DelayInMinutes", Integer.valueOf(10));
-		getConfig().addDefault("World1", "world");
-		getConfig().addDefault("World2", "world_nether");
-		getConfig().addDefault("EnableSaveMSG", true);
-		getConfig().addDefault("SaveMSG", "&aStarting world save...");
-		getConfig().addDefault("SaveMSG2", "&aWorld save completed!");
-		getConfig().options().copyDefaults(true);
+		config = this.getConfig();
+		config.addDefault("DelayInMinutes", Integer.valueOf(10));
+		config.addDefault("Worlds", ExWorlds);
+		config.addDefault("EnableSaveMSG", true);
+		config.addDefault("SaveMSG", "&aStarting world save...");
+		config.addDefault("SaveMSG2", "&aWorld save completed!");
+		config.options().copyDefaults(true);
 		saveConfig();
 		EnableMsg = getConfig().getBoolean("EnableSaveMSG");
 		int delay = getConfig().getInt("DelayInMinutes");
@@ -58,44 +71,76 @@ public class Main extends JavaPlugin
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-	    if (!sender.hasPermission("saveit.save")) {
-	        return false;
-	      }
-	    WorldSave();
-		return true;
+		if (args.length > 0) {
+			if (args[0].equalsIgnoreCase("save")) {
+				if (sender.hasPermission("saveit.save")) {
+					WorldSave();
+				}
+				else sender.sendMessage(_prefix + "You Don't Have Permission to do this!");
+			}
+			
+			if (args[0].equalsIgnoreCase("reload")) {
+				if (sender.hasPermission("saveit.reload")) {
+					ConfigReload();
+					sender.sendMessage(_prefix + "Config Reloaded!");
+				}
+				else sender.sendMessage(_prefix + "You Don't Have Permission to do this!");
+			}
+		}
+		else 
+		{
+			sender.sendMessage(_prefix + "===Commands:===");
+			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds");
+			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
+		}
+		return false;
+			
 	}
   
 	public void WorldSave(){
+		this.ExWorlds = config.getStringList("Worlds");
 		if (EnableMsg) {
-			Bukkit.getServer().broadcastMessage(colorize(Main.this.getConfig().getString("SaveMSG")));
+			Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG")));
 		}
-		boolean saving=true;
 		for (World world : Bukkit.getServer().getWorlds()) {
-			int World=0;
-			while(saving){
-				World++;
-	    		if(Main.this.getConfig().getString("World"+World).equals(world.getName())){
-	    	        world.save();
-	    	        for (Player player : world.getPlayers()) {
-	    	        	player.saveData();
-	    	        }
-	    	        saving=false;
+			if ((this.ExWorlds).contains(world.getName())) {
+	    	    world.save();
+	    	    for (Player player : world.getPlayers()) {
+	    	       	player.saveData();
+	    	    }
+	    	} else { 
+	    		sendConsoleMessage(ChatColor.RED + "[ERROR] Not Existing world in config!");
+	    		for(String worldname : ExWorlds) {
+	    			if (Bukkit.getWorld(worldname) == null) {
+	    				ExWorlds.remove(worldname);
+	    				sendConsoleMessage(ChatColor.RED + worldname + ChatColor.BLUE + " does not exist! Remove it from the config!");
+	    			}
 	    		}
-	    		if(Main.this.getConfig().getString("World"+World).length()<1)saving=false;
-			}
-		}
+	    	}
+	    }
+		
 	    if (EnableMsg) {
-	    	Bukkit.getServer().broadcastMessage(colorize(Main.this.getConfig().getString("SaveMSG2")));
+	    	Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG2")));
 	    }
 	}
-	
+
 	public static void sendConsoleMessage(String msg) {
 		_cs.sendMessage(_prefix + ChatColor.AQUA + msg);
 	}
-	
+
 	public static String colorize(String s){
 	    if(s == null) return null;
 	    return s.replaceAll("&([0-9a-f])", "\u00A7$1");
 	}
 	
+	public void ConfigReload() {
+		Delay = config.getInt("DelayInMinutes");
+		MSG = config.getString("SaveMSG");
+		MSG2 = config.getString("SaveMSG2");
+		EnableMsg = config.getBoolean("EnableSaveMSG");
+		ExWorlds = config.getStringList("Worlds");
+		Main.this.reloadConfig();
+		sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
+	}
+
 }
