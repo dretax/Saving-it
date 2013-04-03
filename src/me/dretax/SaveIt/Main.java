@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import java.util.logging.Logger;
 
 public class Main extends JavaPlugin
 {
@@ -32,6 +33,10 @@ public class Main extends JavaPlugin
 	public static final String _prefix = ChatColor.AQUA + "[SaveIt] ";
 	private List<String> ExWorlds = Arrays.asList(new String[] { "world", "world_nether"});
 	private FileConfiguration config;
+	public Boolean isLatest;
+	public String latestVersion;
+	public Main plugin;
+	Logger log = Logger.getLogger("Minecraft");
 	
 	public void onDisable()
 	{
@@ -67,7 +72,10 @@ public class Main extends JavaPlugin
 			}
 		}
 		, 1200L * delay, 1200L * delay);
-		sendConsoleMessage(ChatColor.GREEN + "SaveIt Successfully Enabled!");
+		SaveItUpdate updateChecker = new SaveItUpdate(this);
+		this.isLatest = updateChecker.isLatest();
+	    this.latestVersion = updateChecker.getUpdateVersion();
+	    sendConsoleMessage(ChatColor.GREEN + "SaveIt Successfully Enabled!");
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -76,15 +84,15 @@ public class Main extends JavaPlugin
 				if (sender.hasPermission("saveit.save")) {
 					WorldSave();
 				}
-				else sender.sendMessage(_prefix + "You Don't Have Permission to do this!");
+				else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 			}
 			
 			if (args[0].equalsIgnoreCase("reload")) {
 				if (sender.hasPermission("saveit.reload")) {
 					ConfigReload();
-					sender.sendMessage(_prefix + "Config Reloaded!");
+					sender.sendMessage(_prefix + ChatColor.GREEN + "Config Reloaded! Check Console for Errors if Config not Working");
 				}
-				else sender.sendMessage(_prefix + "You Don't Have Permission to do this!");
+				else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 			}
 		}
 		else 
@@ -104,17 +112,17 @@ public class Main extends JavaPlugin
 		}
 		for (World world : Bukkit.getServer().getWorlds()) {
 			if ((this.ExWorlds).contains(world.getName())) {
-	    	    world.save();
-	    	    for (Player player : world.getPlayers()) {
-	    	       	player.saveData();
-	    	    }
-	    	} else { 
-	    		sendConsoleMessage(ChatColor.RED + "[ERROR] Not Existing world in config!");
-	    		for(String worldname : ExWorlds) {
-	    			if (Bukkit.getWorld(worldname) == null) {
-	    				ExWorlds.remove(worldname);
-	    				sendConsoleMessage(ChatColor.RED + worldname + ChatColor.BLUE + " does not exist! Remove it from the config!");
-	    			}
+				world.save();
+				for (Player player : world.getPlayers()) {
+					player.saveData();
+				}
+			} else { 
+				sendConsoleMessage(ChatColor.RED + "[ERROR] Not Existing world in config!");
+				for(String worldname : ExWorlds) {
+					if (Bukkit.getWorld(worldname) == null) {
+						ExWorlds.remove(worldname);
+						sendConsoleMessage(ChatColor.RED + worldname + ChatColor.BLUE + " does not exist! Remove it from the config!");
+					}
 	    		}
 	    	}
 	    }
@@ -142,5 +150,4 @@ public class Main extends JavaPlugin
 		Main.this.reloadConfig();
 		sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 	}
-
 }
