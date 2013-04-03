@@ -31,7 +31,7 @@ public class Main extends JavaPlugin
 	public PluginManager _pm;
 	public static ConsoleCommandSender _cs;
 	public static final String _prefix = ChatColor.AQUA + "[SaveIt] ";
-	private List<String> ExWorlds = Arrays.asList(new String[] { "world", "world_nether"});
+	private List<String> ExWorlds = Arrays.asList(new String[] { "world", "world_nether", "world_the_end"});
 	private FileConfiguration config;
 	public Boolean isLatest;
 	public String latestVersion;
