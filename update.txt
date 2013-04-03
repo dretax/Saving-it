@@ -1,1 +1,1 @@
-updateVer 2.1: "Stable Version of SaveIt Released! http://dev.bukkit.org/server-mods/automatically-world-saving/"
+21: Stable Version of SaveIt Released! http://dev.bukkit.org/server-mods/automatically-world-saving/
