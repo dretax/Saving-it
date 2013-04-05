@@ -26,6 +26,7 @@ public class Main extends JavaPlugin
 	public int Delay;
 	public boolean Worldd;
 	public static boolean EnableMsg;
+	public static boolean CheckForUpdates;
 	public String MSG;
 	public String MSG2;
 	public PluginManager _pm;
@@ -61,9 +62,11 @@ public class Main extends JavaPlugin
 		config.addDefault("EnableSaveMSG", true);
 		config.addDefault("SaveMSG", "&aStarting world save...");
 		config.addDefault("SaveMSG2", "&aWorld save completed!");
+		config.addDefault("CheckForUpdates", true);
 		config.options().copyDefaults(true);
 		saveConfig();
 		EnableMsg = getConfig().getBoolean("EnableSaveMSG");
+		CheckForUpdates = getConfig().getBoolean("CheckForUpdates");
 		int delay = getConfig().getInt("DelayInMinutes");
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
@@ -73,8 +76,10 @@ public class Main extends JavaPlugin
 		}
 		, 1200L * delay, 1200L * delay);
 		SaveItUpdate updateChecker = new SaveItUpdate(this);
-		this.isLatest = updateChecker.isLatest();
-	    this.latestVersion = updateChecker.getUpdateVersion();
+		if (CheckForUpdates) {
+			this.isLatest = updateChecker.isLatest();
+			this.latestVersion = updateChecker.getUpdateVersion();
+		}
 	    sendConsoleMessage(ChatColor.GREEN + "SaveIt Successfully Enabled!");
 	}
 
@@ -147,6 +152,7 @@ public class Main extends JavaPlugin
 		MSG2 = config.getString("SaveMSG2");
 		EnableMsg = config.getBoolean("EnableSaveMSG");
 		ExWorlds = config.getStringList("Worlds");
+		CheckForUpdates = config.getBoolean("CheckForUpdates");
 		Main.this.reloadConfig();
 		sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 	}

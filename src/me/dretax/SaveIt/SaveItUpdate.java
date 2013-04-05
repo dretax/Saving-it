@@ -37,7 +37,7 @@ public class SaveItUpdate
 			if (updateVer > curVer) {
 				sendConsoleMessage(ChatColor.RED + "A new version of SaveIt is available:  " + ChatColor.GREEN + this.updateVersion);
 				sendConsoleMessage(ChatColor.RED + "Your current version is:  " + ChatColor.GREEN + version);
-				sendConsoleMessage(ChatColor.RED + "Get it From: http://goo.gl/yb1ii");
+				sendConsoleMessage(ChatColor.RED + "Get it From: http://dev.bukkit.org/server-mods/automatically-world-saving/");
 				return Boolean.valueOf(false);
 			}
 			sendConsoleMessage(ChatColor.GREEN + "No Updates Found...");
