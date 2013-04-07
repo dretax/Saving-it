@@ -65,9 +65,9 @@ public class Main extends JavaPlugin
 		config.addDefault("CheckForUpdates", true);
 		config.options().copyDefaults(true);
 		saveConfig();
-		EnableMsg = getConfig().getBoolean("EnableSaveMSG");
-		CheckForUpdates = getConfig().getBoolean("CheckForUpdates");
-		int delay = getConfig().getInt("DelayInMinutes");
+		EnableMsg = config.getBoolean("EnableSaveMSG");
+		CheckForUpdates = config.getBoolean("CheckForUpdates");
+		int delay = config.getInt("DelayInMinutes");
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {
@@ -122,11 +122,11 @@ public class Main extends JavaPlugin
 					player.saveData();
 				}
 			} else { 
-				sendConsoleMessage(ChatColor.RED + "[ERROR] Not Existing world in config!");
 				for(String worldname : ExWorlds) {
 					if (Bukkit.getWorld(worldname) == null) {
+						sendConsoleMessage(ChatColor.RED + "[ERROR] Not Existing world in config!");
 						ExWorlds.remove(worldname);
-						sendConsoleMessage(ChatColor.RED + worldname + ChatColor.BLUE + " does not exist! Remove it from the config!");
+						sendConsoleMessage(ChatColor.RED + "[ERROR] " + ChatColor.BLUE + worldname + ChatColor.RED + " does not exist! Remove it from the config!");
 					}
 	    		}
 	    	}
