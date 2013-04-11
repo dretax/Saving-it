@@ -163,8 +163,8 @@ public class Main extends JavaPlugin
 
 	public static String colorize(String s) {
 		// This little code supports coloring.
-	    if(s == null) return null;
-	    return s.replaceAll("&([0-9a-f])", "\u00A7$1");
+		if(s == null) return null;
+		return s.replaceAll("&([0-9a-f])", "\u00A7$1");
 	}
 	
 	public void ConfigReload() {
