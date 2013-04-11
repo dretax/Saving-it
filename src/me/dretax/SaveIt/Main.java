@@ -23,20 +23,21 @@ public class Main extends JavaPlugin
 	 * @Author: DreTaX
 	 * 
 	 */
-	public int Delay;
-	public boolean Worldd;
-	public static boolean EnableMsg;
-	public static boolean CheckForUpdates;
-	public String MSG;
-	public String MSG2;
-	public PluginManager _pm;
-	public static ConsoleCommandSender _cs;
-	public static final String _prefix = ChatColor.AQUA + "[SaveIt] ";
-	private List<String> ExWorlds = Arrays.asList(new String[] { "world", "world_nether", "world_the_end"});
-	private FileConfiguration config;
-	public Boolean isLatest;
-	public String latestVersion;
-	public Main plugin;
+	protected int Delay;
+	protected boolean Worldd;
+	protected static boolean EnableMsg;
+	protected static boolean CheckForUpdates;
+	protected static boolean DisableDefaultWorldSave;
+	protected String MSG;
+	protected String MSG2;
+	protected PluginManager _pm;
+	protected static ConsoleCommandSender _cs;
+	protected static final String _prefix = ChatColor.AQUA + "[SaveIt] ";
+	protected List<String> ExWorlds = Arrays.asList(new String[] { "world", "world_nether", "world_the_end"});
+	protected FileConfiguration config;
+	protected Boolean isLatest;
+	protected String latestVersion;
+	protected Main plugin;
 	Logger log = Logger.getLogger("Minecraft");
 	
 	public void onDisable()
@@ -48,11 +49,13 @@ public class Main extends JavaPlugin
 	public void onEnable() {
 		this._pm = getServer().getPluginManager();
 		_cs = getServer().getConsoleSender();
+		// Enabling Metrics.
 		try {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
 			sendConsoleMessage(ChatColor.GREEN + "SaveIt Metrics Successfully Enabled!");
 		}
+		// Couldn't Connect.
 		catch (IOException localIOException) {
 		}
 		getCommand("saveit").setExecutor(this);
@@ -63,10 +66,12 @@ public class Main extends JavaPlugin
 		config.addDefault("SaveMSG", "&aStarting world save...");
 		config.addDefault("SaveMSG2", "&aWorld save completed!");
 		config.addDefault("CheckForUpdates", true);
+		config.addDefault("DisableDefaultWorldSave", false);
 		config.options().copyDefaults(true);
 		saveConfig();
 		EnableMsg = config.getBoolean("EnableSaveMSG");
 		CheckForUpdates = config.getBoolean("CheckForUpdates");
+		DisableDefaultWorldSave = config.getBoolean("DisableDefaultWorldSave");
 		int delay = config.getInt("DelayInMinutes");
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
@@ -75,6 +80,11 @@ public class Main extends JavaPlugin
 			}
 		}
 		, 1200L * delay, 1200L * delay);
+		if (DisableDefaultWorldSave) {
+			for (World world : Bukkit.getWorlds()) {
+				world.setAutoSave(false);
+			}
+		}
 		SaveItUpdate updateChecker = new SaveItUpdate(this);
 		if (CheckForUpdates) {
 			this.isLatest = updateChecker.isLatest();
@@ -110,19 +120,28 @@ public class Main extends JavaPlugin
 			
 	}
   
-	public void WorldSave(){
+	public void WorldSave() {
+		// Getting World list.
 		this.ExWorlds = config.getStringList("Worlds");
+		// Checking on "EnableSaveMSG".
 		if (EnableMsg) {
 			Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG")));
 		}
-		for (World world : Bukkit.getServer().getWorlds()) {
+		// Getting Worlds, and Saving Them.
+		for (World world : Bukkit.getWorlds()) {
 			if ((this.ExWorlds).contains(world.getName())) {
 				world.save();
+				// Getting All The Players, and Saving Them.
 				for (Player player : world.getPlayers()) {
 					player.saveData();
 				}
-			} else { 
-				for(String worldname : ExWorlds) {
+				// Full Save On Players
+				Bukkit.savePlayers();
+			}
+			else { 
+				// Getting worlds in the config.
+				for (String worldname : ExWorlds) {
+					//Checking if a world doesn't exist.
 					if (Bukkit.getWorld(worldname) == null) {
 						sendConsoleMessage(ChatColor.RED + "[ERROR] Not Existing world in config!");
 						ExWorlds.remove(worldname);
@@ -138,21 +157,25 @@ public class Main extends JavaPlugin
 	}
 
 	public static void sendConsoleMessage(String msg) {
+		// My Nice Colored Console Message Prefix.
 		_cs.sendMessage(_prefix + ChatColor.AQUA + msg);
 	}
 
-	public static String colorize(String s){
+	public static String colorize(String s) {
+		// This little code supports coloring.
 	    if(s == null) return null;
 	    return s.replaceAll("&([0-9a-f])", "\u00A7$1");
 	}
 	
 	public void ConfigReload() {
+		// Getting all the values, then reloading them.
 		Delay = config.getInt("DelayInMinutes");
 		MSG = config.getString("SaveMSG");
 		MSG2 = config.getString("SaveMSG2");
 		EnableMsg = config.getBoolean("EnableSaveMSG");
 		ExWorlds = config.getStringList("Worlds");
 		CheckForUpdates = config.getBoolean("CheckForUpdates");
+		DisableDefaultWorldSave = config.getBoolean("DisableDefaultWorldSave");
 		Main.this.reloadConfig();
 		sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 	}

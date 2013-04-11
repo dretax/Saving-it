@@ -14,8 +14,8 @@ public class SaveItUpdate
 	 * @Author: DreTaX | SaveIt Update Checker File, rewritten from scratch.
 	 */
 	
-	private Main plugin;
-	private String updateVersion;
+	protected Main plugin;
+	protected String updateVersion;
 	Logger log = Logger.getLogger("Minecraft");
 
 	public SaveItUpdate(Main plugin) {
