@@ -90,7 +90,7 @@ public class Main extends JavaPlugin
 			this.isLatest = updateChecker.isLatest();
 			this.latestVersion = updateChecker.getUpdateVersion();
 		}
-	    sendConsoleMessage(ChatColor.GREEN + "SaveIt Successfully Enabled!");
+		sendConsoleMessage(ChatColor.GREEN + "SaveIt Successfully Enabled!");
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
