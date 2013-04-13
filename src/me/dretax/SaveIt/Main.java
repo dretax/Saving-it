@@ -28,21 +28,25 @@ public class Main extends JavaPlugin
 	protected static boolean EnableMsg;
 	protected static boolean CheckForUpdates;
 	protected static boolean DisableDefaultWorldSave;
+	protected static boolean SaveOnLogin;
+	protected static boolean SaveOnQuit;
 	protected String MSG;
 	protected String MSG2;
 	protected PluginManager _pm;
 	protected static ConsoleCommandSender _cs;
 	protected static final String _prefix = ChatColor.AQUA + "[SaveIt] ";
-	protected List<String> ExWorlds = Arrays.asList(new String[] { "world", "world_nether", "world_the_end"});
-	protected FileConfiguration config;
+	protected static List<String> ExWorlds = Arrays.asList(new String[] { "world", "world_nether", "world_the_end"});
+	protected static FileConfiguration config;
 	protected Boolean isLatest;
 	protected String latestVersion;
 	protected Main plugin;
+	public final SaveItExpansions expansions = new SaveItExpansions();
 	Logger log = Logger.getLogger("Minecraft");
 	
 	public void onDisable()
 	{
 		super.onDisable();
+		WorldSave();
 	}
 	
   
@@ -67,11 +71,16 @@ public class Main extends JavaPlugin
 		config.addDefault("SaveMSG2", "&aWorld save completed!");
 		config.addDefault("CheckForUpdates", true);
 		config.addDefault("DisableDefaultWorldSave", false);
+		config.addDefault("ExtraOptions.SaveOnLogin", false);
+		config.addDefault("ExtraOptions.SaveOnQuit", false);
 		config.options().copyDefaults(true);
 		saveConfig();
+		// Getting Some Config Values
 		EnableMsg = config.getBoolean("EnableSaveMSG");
 		CheckForUpdates = config.getBoolean("CheckForUpdates");
 		DisableDefaultWorldSave = config.getBoolean("DisableDefaultWorldSave");
+		SaveOnLogin = config.getBoolean("ExtraOptions.SaveOnLogin");
+		SaveOnQuit = config.getBoolean("ExtraOptions.SaveOnQuit");
 		int delay = config.getInt("DelayInMinutes");
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
@@ -90,6 +99,7 @@ public class Main extends JavaPlugin
 			this.isLatest = updateChecker.isLatest();
 			this.latestVersion = updateChecker.getUpdateVersion();
 		}
+		_pm.registerEvents(this.expansions, this);
 		sendConsoleMessage(ChatColor.GREEN + "SaveIt Successfully Enabled!");
 	}
 
@@ -117,19 +127,19 @@ public class Main extends JavaPlugin
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 		}
 		return false;
-			
+
 	}
   
-	public void WorldSave() {
+	public static void WorldSave() {
 		// Getting World list.
-		this.ExWorlds = config.getStringList("Worlds");
+		ExWorlds = config.getStringList("Worlds");
 		// Checking on "EnableSaveMSG".
 		if (EnableMsg) {
 			Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG")));
 		}
 		// Getting Worlds, and Saving Them.
 		for (World world : Bukkit.getWorlds()) {
-			if ((this.ExWorlds).contains(world.getName())) {
+			if ((ExWorlds).contains(world.getName())) {
 				world.save();
 				// Getting All The Players, and Saving Them.
 				for (Player player : world.getPlayers()) {
@@ -176,7 +186,9 @@ public class Main extends JavaPlugin
 		ExWorlds = config.getStringList("Worlds");
 		CheckForUpdates = config.getBoolean("CheckForUpdates");
 		DisableDefaultWorldSave = config.getBoolean("DisableDefaultWorldSave");
-		Main.this.reloadConfig();
+		SaveOnLogin = config.getBoolean("ExtraOptions.SaveOnLogin");
+		SaveOnQuit = config.getBoolean("ExtraOptions.SaveOnQuit");
+		reloadConfig();
 		sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 	}
 }
