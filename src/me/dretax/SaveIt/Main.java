@@ -3,6 +3,7 @@ package me.dretax.SaveIt;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
 import me.dretax.SaveIt.metrics.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,17 +31,21 @@ public class Main extends JavaPlugin
 	protected static boolean DisableDefaultWorldSave;
 	protected static boolean SaveOnLogin;
 	protected static boolean SaveOnQuit;
+	protected static boolean SaveOnBlockBreak;
+	protected static boolean SaveOnBlockPlace;
 	protected String MSG;
 	protected String MSG2;
 	protected PluginManager _pm;
 	protected static ConsoleCommandSender _cs;
 	protected static final String _prefix = ChatColor.AQUA + "[SaveIt] ";
 	protected static List<String> ExWorlds = Arrays.asList(new String[] { "world", "world_nether", "world_the_end"});
-	protected static FileConfiguration config;
 	protected Boolean isLatest;
 	protected String latestVersion;
 	protected Main plugin;
-	public final SaveItExpansions expansions = new SaveItExpansions();
+	protected final SaveItExpansions expansions = new SaveItExpansions(plugin);
+	protected static FileConfiguration config;
+	protected static int SaveOnBlockBreakcount;
+	protected static int SaveOnBlockPlacecount;
 	Logger log = Logger.getLogger("Minecraft");
 	
 	public void onDisable()
@@ -53,7 +58,9 @@ public class Main extends JavaPlugin
 	public void onEnable() {
 		this._pm = getServer().getPluginManager();
 		_cs = getServer().getConsoleSender();
-		// Enabling Metrics.
+		/*
+		 * Metrics
+		 */
 		try {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
@@ -62,6 +69,9 @@ public class Main extends JavaPlugin
 		// Couldn't Connect.
 		catch (IOException localIOException) {
 		}
+		/*
+		 * Config and Commands
+		 */
 		getCommand("saveit").setExecutor(this);
 		config = this.getConfig();
 		config.addDefault("DelayInMinutes", Integer.valueOf(10));
@@ -73,15 +83,34 @@ public class Main extends JavaPlugin
 		config.addDefault("DisableDefaultWorldSave", false);
 		config.addDefault("ExtraOptions.SaveOnLogin", false);
 		config.addDefault("ExtraOptions.SaveOnQuit", false);
+		config.addDefault("ExtraOptions.SaveOnBlockBreak", false);
+		config.addDefault("ExtraOptions.SaveOnBlockPlace", false);
+		config.addDefault("ExtraOptions.SaveOnBlockBreakcount", Integer.valueOf(500));
+		config.addDefault("ExtraOptions.SaveOnBlockPlacecount", Integer.valueOf(500));
+		config.addDefault("ExtraOptions.check", Integer.valueOf(5));
 		config.options().copyDefaults(true);
 		saveConfig();
-		// Getting Some Config Values
+		/*
+		 * Regural Variables
+		 */
 		EnableMsg = config.getBoolean("EnableSaveMSG");
 		CheckForUpdates = config.getBoolean("CheckForUpdates");
 		DisableDefaultWorldSave = config.getBoolean("DisableDefaultWorldSave");
+		/*
+		 * Special Savings
+		 */
 		SaveOnLogin = config.getBoolean("ExtraOptions.SaveOnLogin");
 		SaveOnQuit = config.getBoolean("ExtraOptions.SaveOnQuit");
+		SaveOnBlockBreak = config.getBoolean("ExtraOptions.SaveOnBlockBreak");
+		SaveOnBlockPlace = config.getBoolean("ExtraOptions.SaveOnBlockPlace");
+		SaveOnBlockBreakcount = config.getInt("ExtraOptions.SaveOnBlockBreakcount");
+		SaveOnBlockPlacecount = config.getInt("ExtraOptions.SaveOnBlockPlacecount");
+		/*
+		 * Delays
+		 */
+		
 		int delay = config.getInt("DelayInMinutes");
+		
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {
@@ -89,16 +118,23 @@ public class Main extends JavaPlugin
 			}
 		}
 		, 1200L * delay, 1200L * delay);
+		
+		/*
+		 * Others
+		 */
+		
 		if (DisableDefaultWorldSave) {
 			for (World world : Bukkit.getWorlds()) {
 				world.setAutoSave(false);
 			}
 		}
+		
 		SaveItUpdate updateChecker = new SaveItUpdate(this);
 		if (CheckForUpdates) {
 			this.isLatest = updateChecker.isLatest();
 			this.latestVersion = updateChecker.getUpdateVersion();
 		}
+		
 		_pm.registerEvents(this.expansions, this);
 		sendConsoleMessage(ChatColor.GREEN + "SaveIt Successfully Enabled!");
 	}
@@ -188,7 +224,21 @@ public class Main extends JavaPlugin
 		DisableDefaultWorldSave = config.getBoolean("DisableDefaultWorldSave");
 		SaveOnLogin = config.getBoolean("ExtraOptions.SaveOnLogin");
 		SaveOnQuit = config.getBoolean("ExtraOptions.SaveOnQuit");
+		SaveOnBlockBreak = config.getBoolean("ExtraOptions.SaveOnBlockBreak");
+		SaveOnBlockPlace = config.getBoolean("ExtraOptions.SaveOnBlockPlace");
+		setSaveOnBlockBreakcount(config.getInt("ExtraOptions.SaveOnBlockBreak.count"));
+		SaveOnBlockPlacecount = config.getInt("ExtraOptions.SaveOnBlockPlace.count");
 		reloadConfig();
 		sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
+	}
+
+
+	public static int getSaveOnBlockBreakcount() {
+		return SaveOnBlockBreakcount;
+	}
+
+
+	public static void setSaveOnBlockBreakcount(int saveOnBlockBreakcount) {
+		SaveOnBlockBreakcount = saveOnBlockBreakcount;
 	}
 }
