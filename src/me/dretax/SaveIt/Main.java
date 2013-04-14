@@ -87,7 +87,6 @@ public class Main extends JavaPlugin
 		config.addDefault("ExtraOptions.SaveOnBlockPlace", false);
 		config.addDefault("ExtraOptions.SaveOnBlockBreakcount", Integer.valueOf(500));
 		config.addDefault("ExtraOptions.SaveOnBlockPlacecount", Integer.valueOf(500));
-		config.addDefault("ExtraOptions.check", Integer.valueOf(5));
 		config.options().copyDefaults(true);
 		saveConfig();
 		/*
@@ -226,19 +225,10 @@ public class Main extends JavaPlugin
 		SaveOnQuit = config.getBoolean("ExtraOptions.SaveOnQuit");
 		SaveOnBlockBreak = config.getBoolean("ExtraOptions.SaveOnBlockBreak");
 		SaveOnBlockPlace = config.getBoolean("ExtraOptions.SaveOnBlockPlace");
-		setSaveOnBlockBreakcount(config.getInt("ExtraOptions.SaveOnBlockBreak.count"));
+		SaveOnBlockBreakcount = config.getInt("ExtraOptions.SaveOnBlockBreak.count");
 		SaveOnBlockPlacecount = config.getInt("ExtraOptions.SaveOnBlockPlace.count");
 		reloadConfig();
 		sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 	}
 
-
-	public static int getSaveOnBlockBreakcount() {
-		return SaveOnBlockBreakcount;
-	}
-
-
-	public static void setSaveOnBlockBreakcount(int saveOnBlockBreakcount) {
-		SaveOnBlockBreakcount = saveOnBlockBreakcount;
-	}
 }
