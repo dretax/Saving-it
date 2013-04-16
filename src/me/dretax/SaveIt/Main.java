@@ -33,6 +33,7 @@ public class Main extends JavaPlugin
 	protected static boolean SaveOnQuit;
 	protected static boolean SaveOnBlockBreak;
 	protected static boolean SaveOnBlockPlace;
+	protected static boolean SelfInventorySave;
 	protected String MSG;
 	protected String MSG2;
 	protected PluginManager _pm;
@@ -70,7 +71,7 @@ public class Main extends JavaPlugin
 		catch (IOException localIOException) {
 		}
 		/*
-		 * Config and Commands
+		 * Configuration and Command Definitions
 		 */
 		getCommand("saveit").setExecutor(this);
 		config = this.getConfig();
@@ -87,6 +88,7 @@ public class Main extends JavaPlugin
 		config.addDefault("ExtraOptions.SaveOnBlockPlace", false);
 		config.addDefault("ExtraOptions.SaveOnBlockBreakcount", Integer.valueOf(500));
 		config.addDefault("ExtraOptions.SaveOnBlockPlacecount", Integer.valueOf(500));
+		config.addDefault("ExtraOptions.EnableSelfInventorySave", true);
 		config.options().copyDefaults(true);
 		saveConfig();
 		/*
@@ -104,6 +106,7 @@ public class Main extends JavaPlugin
 		SaveOnBlockPlace = config.getBoolean("ExtraOptions.SaveOnBlockPlace");
 		SaveOnBlockBreakcount = config.getInt("ExtraOptions.SaveOnBlockBreakcount");
 		SaveOnBlockPlacecount = config.getInt("ExtraOptions.SaveOnBlockPlacecount");
+		SelfInventorySave = config.getBoolean("ExtraOptions.EnableSelfInventorySave");
 		/*
 		 * Delays
 		 */
@@ -154,12 +157,28 @@ public class Main extends JavaPlugin
 				}
 				else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 			}
+			if (args[0].equalsIgnoreCase("selfsave")) {
+				if (SelfInventorySave) {
+					if (sender.hasPermission("saveit.selfsave")) {
+						if (!(sender instanceof Player)) {
+							sender.sendMessage(_prefix + ChatColor.GREEN + "This command can only be run by a player.");
+						}
+						else {
+							((Player) sender).saveData();
+							sender.sendMessage(_prefix + ChatColor.GREEN + "Your Inventory has been Saved!");
+						}
+					}
+					else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
+				}
+				else sender.sendMessage(_prefix + ChatColor.RED + "This Option isn't Enabled!");
+			}
 		}
 		else 
 		{
 			sender.sendMessage(_prefix + "===Commands:===");
-			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds");
+			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories (FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
+			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
 		}
 		return false;
 
@@ -227,6 +246,7 @@ public class Main extends JavaPlugin
 		SaveOnBlockPlace = config.getBoolean("ExtraOptions.SaveOnBlockPlace");
 		SaveOnBlockBreakcount = config.getInt("ExtraOptions.SaveOnBlockBreak.count");
 		SaveOnBlockPlacecount = config.getInt("ExtraOptions.SaveOnBlockPlace.count");
+		SelfInventorySave = config.getBoolean("ExtraOptions.EnableSelfInventorySave");
 		reloadConfig();
 		sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 	}
