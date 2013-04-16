@@ -99,7 +99,7 @@ public class Main extends JavaPlugin
 		DisableDefaultWorldSave = config.getBoolean("DisableDefaultWorldSave");
 		/*
 		 * Special Savings
-		 */
+		 */ 
 		SaveOnLogin = config.getBoolean("ExtraOptions.SaveOnLogin");
 		SaveOnQuit = config.getBoolean("ExtraOptions.SaveOnQuit");
 		SaveOnBlockBreak = config.getBoolean("ExtraOptions.SaveOnBlockBreak");
