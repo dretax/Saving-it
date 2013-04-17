@@ -18,8 +18,9 @@ public class SaveItUpdate
 	protected String updateVersion;
 	Logger log = Logger.getLogger("Minecraft");
 
-	public SaveItUpdate(Main plugin) {
-		this.plugin = plugin;
+	public SaveItUpdate(Main instance)
+	{
+		plugin = instance;
 	}
 
 	public Boolean isLatest() {
@@ -45,8 +46,8 @@ public class SaveItUpdate
 			return Boolean.valueOf(true);
 		}
 		catch (Exception e) {
-			sendConsoleMessage(ChatColor.GREEN + "Error Occured while check, notify DreTaX!");
 			e.printStackTrace();
+			sendConsoleMessage(ChatColor.GREEN + "Error Occured while check, notify DreTaX!");
 		}return Boolean.valueOf(true);
 	}
 

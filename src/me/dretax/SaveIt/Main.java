@@ -3,7 +3,6 @@ package me.dretax.SaveIt;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
 import me.dretax.SaveIt.metrics.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -51,8 +50,9 @@ public class Main extends JavaPlugin
 	
 	public void onDisable()
 	{
-		super.onDisable();
 		WorldSave();
+		sendConsoleMessage(ChatColor.GREEN + "Saved On Disable!");
+		super.onDisable();
 	}
 	
   
@@ -81,14 +81,14 @@ public class Main extends JavaPlugin
 		config.addDefault("SaveMSG", "&aStarting world save...");
 		config.addDefault("SaveMSG2", "&aWorld save completed!");
 		config.addDefault("CheckForUpdates", true);
-		config.addDefault("DisableDefaultWorldSave", false);
+		config.addDefault("DisableDefaultWorldSave", true);
 		config.addDefault("ExtraOptions.SaveOnLogin", false);
 		config.addDefault("ExtraOptions.SaveOnQuit", false);
 		config.addDefault("ExtraOptions.SaveOnBlockBreak", false);
 		config.addDefault("ExtraOptions.SaveOnBlockPlace", false);
 		config.addDefault("ExtraOptions.SaveOnBlockBreakcount", Integer.valueOf(500));
 		config.addDefault("ExtraOptions.SaveOnBlockPlacecount", Integer.valueOf(500));
-		config.addDefault("ExtraOptions.EnableSelfInventorySave", true);
+		config.addDefault("ExtraOptions.EnableSelfInventorySave", false);
 		config.options().copyDefaults(true);
 		saveConfig();
 		/*
@@ -137,8 +137,9 @@ public class Main extends JavaPlugin
 			this.latestVersion = updateChecker.getUpdateVersion();
 		}
 		
+		
 		_pm.registerEvents(this.expansions, this);
-		sendConsoleMessage(ChatColor.GREEN + "SaveIt Successfully Enabled!");
+		sendConsoleMessage(ChatColor.GREEN + "Successfully Enabled!");
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -176,7 +177,7 @@ public class Main extends JavaPlugin
 		else 
 		{
 			sender.sendMessage(_prefix + "===Commands:===");
-			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories (FULLSAVE)");
+			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW +  "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
 		}
@@ -193,6 +194,7 @@ public class Main extends JavaPlugin
 		}
 		// Getting Worlds, and Saving Them.
 		for (World world : Bukkit.getWorlds()) {
+			// Checking if an Existing World is written in the Config
 			if ((ExWorlds).contains(world.getName())) {
 				world.save();
 				// Getting All The Players, and Saving Them.
@@ -227,8 +229,16 @@ public class Main extends JavaPlugin
 
 	public static String colorize(String s) {
 		// This little code supports coloring.
+		// If String is null it will return null
 		if(s == null) return null;
-		return s.replaceAll("&([0-9a-f])", "\u00A7$1");
+		// Extra Stuff, taken from My SimpleNames Plugin
+		s = s.replaceAll("&r", ChatColor.RESET + "");
+	    s = s.replaceAll("&l", ChatColor.BOLD + "");
+	    s = s.replaceAll("&m", ChatColor.STRIKETHROUGH + "");
+	    s = s.replaceAll("&o", ChatColor.ITALIC + "");
+	    s = s.replaceAll("&n", ChatColor.UNDERLINE + "");
+	    //This one Supports all the Default Colors
+	    return s.replaceAll("&([0-9a-f])", "\u00A7$1");
 	}
 	
 	public void ConfigReload() {
