@@ -233,12 +233,12 @@ public class Main extends JavaPlugin
 		if(s == null) return null;
 		// Extra Stuff, taken from My SimpleNames Plugin
 		s = s.replaceAll("&r", ChatColor.RESET + "");
-	    s = s.replaceAll("&l", ChatColor.BOLD + "");
-	    s = s.replaceAll("&m", ChatColor.STRIKETHROUGH + "");
-	    s = s.replaceAll("&o", ChatColor.ITALIC + "");
-	    s = s.replaceAll("&n", ChatColor.UNDERLINE + "");
-	    //This one Supports all the Default Colors
-	    return s.replaceAll("&([0-9a-f])", "\u00A7$1");
+		s = s.replaceAll("&l", ChatColor.BOLD + "");
+		s = s.replaceAll("&m", ChatColor.STRIKETHROUGH + "");
+		s = s.replaceAll("&o", ChatColor.ITALIC + "");
+		s = s.replaceAll("&n", ChatColor.UNDERLINE + "");
+		//This one Supports all the Default Colors
+		return s.replaceAll("&([0-9a-f])", "\u00A7$1");
 	}
 	
 	public void ConfigReload() {
