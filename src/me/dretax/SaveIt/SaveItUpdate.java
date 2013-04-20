@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginDescriptionFile;
 
@@ -16,11 +15,10 @@ public class SaveItUpdate
 	
 	protected Main plugin;
 	protected String updateVersion;
-	Logger log = Logger.getLogger("Minecraft");
 
 	public SaveItUpdate(Main instance)
 	{
-		plugin = instance;
+		this.plugin = instance;
 	}
 
 	public Boolean isLatest() {
@@ -55,8 +53,8 @@ public class SaveItUpdate
 		return this.updateVersion;
 	}
   
-	public static void sendConsoleMessage(String msg) {
-		Main._cs.sendMessage(Main._prefix + ChatColor.AQUA + msg);
+	public void sendConsoleMessage(String msg) {
+		plugin._cs.sendMessage(plugin._prefix + ChatColor.AQUA + msg);
 	}
   
 }

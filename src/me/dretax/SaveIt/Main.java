@@ -14,7 +14,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.util.logging.Logger;
 
 public class Main extends JavaPlugin
 {
@@ -24,32 +23,30 @@ public class Main extends JavaPlugin
 	 * 
 	 */
 	protected boolean Worldd;
-	protected static boolean EnableMsg;
-	protected static boolean CheckForUpdates;
-	protected static boolean DisableDefaultWorldSave;
-	protected static boolean SaveOnLogin;
-	protected static boolean SaveOnQuit;
-	protected static boolean SaveOnBlockBreak;
-	protected static boolean SaveOnBlockPlace;
-	protected static boolean SelfInventorySave;
-	protected static boolean SavePlayersFully;
+	protected boolean EnableMsg;
+	protected boolean CheckForUpdates;
+	protected boolean DisableDefaultWorldSave;
+	protected boolean SaveOnLogin;
+	protected boolean SaveOnQuit;
+	protected boolean SaveOnBlockBreak;
+	protected boolean SaveOnBlockPlace;
+	protected boolean SelfInventorySave;
+	protected boolean SavePlayersFully;
 	protected int Delay;
-	protected static int SaveOnBlockBreakcount;
-	protected static int SaveOnBlockPlacecount;
-	protected static int SaveOnLoginCount;
-	protected static int SaveOnQuitCount;
+	protected int SaveOnBlockBreakcount;
+	protected int SaveOnBlockPlacecount;
+	protected int SaveOnLoginCount;
+	protected int SaveOnQuitCount;
 	protected String MSG;
 	protected String MSG2;
 	protected PluginManager _pm;
-	protected static ConsoleCommandSender _cs;
-	protected static final String _prefix = ChatColor.AQUA + "[SaveIt] ";
-	protected static List<String> ExWorlds = Arrays.asList(new String[] { "world", "world_nether", "world_the_end"});
+	protected ConsoleCommandSender _cs;
+	protected final String _prefix = ChatColor.AQUA + "[SaveIt] ";
+	protected List<String> ExWorlds = Arrays.asList(new String[] { "world", "world_nether", "world_the_end"});
 	protected Boolean isLatest;
 	protected String latestVersion;
-	protected Main plugin;
-	protected final SaveItExpansions expansions = new SaveItExpansions(plugin);
-	protected static FileConfiguration config;
-	Logger log = Logger.getLogger("Minecraft");
+	protected final SaveItExpansions expansions = new SaveItExpansions(this);
+	protected FileConfiguration config;
 	
 	public void onDisable()
 	{
@@ -142,8 +139,8 @@ public class Main extends JavaPlugin
 		
 		SaveItUpdate updateChecker = new SaveItUpdate(this);
 		if (CheckForUpdates) {
-			this.isLatest = updateChecker.isLatest();
-			this.latestVersion = updateChecker.getUpdateVersion();
+			isLatest = updateChecker.isLatest();
+			latestVersion = updateChecker.getUpdateVersion();
 		}
 		
 		
@@ -194,10 +191,7 @@ public class Main extends JavaPlugin
 
 	}
   
-	public static void WorldSave() {
-		// Getting World list.
-		ExWorlds = config.getStringList("Worlds");
-		SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
+	public void WorldSave() {
 		// Checking on "EnableSaveMSG".
 		if (EnableMsg) {
 			Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG")));
@@ -240,12 +234,12 @@ public class Main extends JavaPlugin
 	    }
 	}
 
-	public static void sendConsoleMessage(String msg) {
+	public void sendConsoleMessage(String msg) {
 		// My Nice Colored Console Message Prefix.
 		_cs.sendMessage(_prefix + ChatColor.AQUA + msg);
 	}
 
-	public static String colorize(String s) {
+	public String colorize(String s) {
 		// This little code supports coloring.
 		// If String is null it will return null
 		if(s == null) return null;
@@ -260,6 +254,7 @@ public class Main extends JavaPlugin
 	}
 	
 	public void ConfigReload() {
+		config = this.getConfig();
 		// Getting all the values, then reloading them.
 		Delay = config.getInt("DelayInMinutes");
 		MSG = config.getString("SaveMSG");
@@ -278,7 +273,7 @@ public class Main extends JavaPlugin
 		SaveOnBlockBreakcount = config.getInt("ExtraOptions.SaveOnBlockBreak.count");
 		SaveOnBlockPlacecount = config.getInt("ExtraOptions.SaveOnBlockPlace.count");
 		SelfInventorySave = config.getBoolean("ExtraOptions.EnableSelfInventorySave");
-		Main.this.reloadConfig();
+		this.reloadConfig();
 		sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 	}
 
