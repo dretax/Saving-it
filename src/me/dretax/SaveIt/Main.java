@@ -23,7 +23,6 @@ public class Main extends JavaPlugin
 	 * @Author: DreTaX
 	 * 
 	 */
-	protected int Delay;
 	protected boolean Worldd;
 	protected static boolean EnableMsg;
 	protected static boolean CheckForUpdates;
@@ -33,6 +32,12 @@ public class Main extends JavaPlugin
 	protected static boolean SaveOnBlockBreak;
 	protected static boolean SaveOnBlockPlace;
 	protected static boolean SelfInventorySave;
+	protected static boolean SavePlayersFully;
+	protected int Delay;
+	protected static int SaveOnBlockBreakcount;
+	protected static int SaveOnBlockPlacecount;
+	protected static int SaveOnLoginCount;
+	protected static int SaveOnQuitCount;
 	protected String MSG;
 	protected String MSG2;
 	protected PluginManager _pm;
@@ -44,8 +49,6 @@ public class Main extends JavaPlugin
 	protected Main plugin;
 	protected final SaveItExpansions expansions = new SaveItExpansions(plugin);
 	protected static FileConfiguration config;
-	protected static int SaveOnBlockBreakcount;
-	protected static int SaveOnBlockPlacecount;
 	Logger log = Logger.getLogger("Minecraft");
 	
 	public void onDisable()
@@ -80,10 +83,13 @@ public class Main extends JavaPlugin
 		config.addDefault("EnableSaveMSG", true);
 		config.addDefault("SaveMSG", "&aStarting world save...");
 		config.addDefault("SaveMSG2", "&aWorld save completed!");
+		config.addDefault("SavePlayersEverywhere", true);
 		config.addDefault("CheckForUpdates", true);
 		config.addDefault("DisableDefaultWorldSave", true);
 		config.addDefault("ExtraOptions.SaveOnLogin", false);
+		config.addDefault("ExtraOptions.SaveOnLoginCount", Integer.valueOf(50));
 		config.addDefault("ExtraOptions.SaveOnQuit", false);
+		config.addDefault("ExtraOptions.SaveOnQuitCount", Integer.valueOf(50));
 		config.addDefault("ExtraOptions.SaveOnBlockBreak", false);
 		config.addDefault("ExtraOptions.SaveOnBlockPlace", false);
 		config.addDefault("ExtraOptions.SaveOnBlockBreakcount", Integer.valueOf(500));
@@ -96,22 +102,25 @@ public class Main extends JavaPlugin
 		 */
 		EnableMsg = config.getBoolean("EnableSaveMSG");
 		CheckForUpdates = config.getBoolean("CheckForUpdates");
+		SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
 		DisableDefaultWorldSave = config.getBoolean("DisableDefaultWorldSave");
 		/*
 		 * Special Savings
 		 */ 
 		SaveOnLogin = config.getBoolean("ExtraOptions.SaveOnLogin");
+		SaveOnLoginCount = config.getInt("ExtraOptions.SaveOnLoginCount");
 		SaveOnQuit = config.getBoolean("ExtraOptions.SaveOnQuit");
+		SaveOnQuitCount = config.getInt("ExtraOptions.SaveOnQuitCount");
 		SaveOnBlockBreak = config.getBoolean("ExtraOptions.SaveOnBlockBreak");
 		SaveOnBlockPlace = config.getBoolean("ExtraOptions.SaveOnBlockPlace");
 		SaveOnBlockBreakcount = config.getInt("ExtraOptions.SaveOnBlockBreakcount");
 		SaveOnBlockPlacecount = config.getInt("ExtraOptions.SaveOnBlockPlacecount");
 		SelfInventorySave = config.getBoolean("ExtraOptions.EnableSelfInventorySave");
 		/*
-		 * Delays
+		 * Delay
 		 */
 		
-		int delay = config.getInt("DelayInMinutes");
+		Delay = config.getInt("DelayInMinutes");
 		
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
@@ -119,7 +128,7 @@ public class Main extends JavaPlugin
 				WorldSave();
 			}
 		}
-		, 1200L * delay, 1200L * delay);
+		, 1200L * Delay, 1200L * Delay);
 		
 		/*
 		 * Others
@@ -188,6 +197,7 @@ public class Main extends JavaPlugin
 	public static void WorldSave() {
 		// Getting World list.
 		ExWorlds = config.getStringList("Worlds");
+		SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
 		// Checking on "EnableSaveMSG".
 		if (EnableMsg) {
 			Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG")));
@@ -197,12 +207,20 @@ public class Main extends JavaPlugin
 			// Checking if an Existing World is written in the Config
 			if ((ExWorlds).contains(world.getName())) {
 				world.save();
-				// Getting All The Players, and Saving Them.
-				for (Player player : world.getPlayers()) {
-					player.saveData();
+				
+				/* Full Save On Players, if Enabled
+				 * If not, It will only Save Players in
+				 * The Configured Worlds
+				 */			
+				if (SavePlayersFully) {
+					Bukkit.savePlayers();
 				}
-				// Full Save On Players
-				Bukkit.savePlayers();
+				else {
+					// Getting All The Players, and Saving Them, only in the Configured Worlds.
+					for (Player player : world.getPlayers()) {
+						player.saveData();
+					}
+				}
 			}
 			else { 
 				// Getting worlds in the config.
@@ -249,15 +267,18 @@ public class Main extends JavaPlugin
 		EnableMsg = config.getBoolean("EnableSaveMSG");
 		ExWorlds = config.getStringList("Worlds");
 		CheckForUpdates = config.getBoolean("CheckForUpdates");
+		SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
 		DisableDefaultWorldSave = config.getBoolean("DisableDefaultWorldSave");
 		SaveOnLogin = config.getBoolean("ExtraOptions.SaveOnLogin");
+		SaveOnLoginCount = config.getInt("ExtraOptions.SaveOnLoginCount");
 		SaveOnQuit = config.getBoolean("ExtraOptions.SaveOnQuit");
+		SaveOnQuitCount = config.getInt("ExtraOptions.SaveOnQuitCount");
 		SaveOnBlockBreak = config.getBoolean("ExtraOptions.SaveOnBlockBreak");
 		SaveOnBlockPlace = config.getBoolean("ExtraOptions.SaveOnBlockPlace");
 		SaveOnBlockBreakcount = config.getInt("ExtraOptions.SaveOnBlockBreak.count");
 		SaveOnBlockPlacecount = config.getInt("ExtraOptions.SaveOnBlockPlace.count");
 		SelfInventorySave = config.getBoolean("ExtraOptions.EnableSelfInventorySave");
-		reloadConfig();
+		Main.this.reloadConfig();
 		sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 	}
 

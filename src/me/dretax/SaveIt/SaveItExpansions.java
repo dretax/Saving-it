@@ -27,14 +27,24 @@ public class SaveItExpansions implements Listener {
 	@EventHandler
 	public void onPlayerLoginEvent(PlayerLoginEvent e) {
 		if (Main.SaveOnLogin) {
-			Main.WorldSave();
+			SaveItAccessor.logins += 1;
+			if (SaveItAccessor.logins == (Main.SaveOnLoginCount)) {
+				Main.WorldSave();
+				SaveItAccessor.logins -= (Main.SaveOnLoginCount);
+				Main.sendConsoleMessage(ChatColor.GREEN + "Login number reached, reseted!");
+			}
 		}
 	}
 	
 	@EventHandler
 	public void onPlayerQuitEvent(PlayerQuitEvent e) {
 		if (Main.SaveOnQuit) {
-			Main.WorldSave();
+			SaveItAccessor.quits += 1;
+			if (SaveItAccessor.quits == (Main.SaveOnQuitCount)) {
+				Main.WorldSave();
+				SaveItAccessor.quits -= (Main.SaveOnQuitCount);
+				Main.sendConsoleMessage(ChatColor.GREEN + "Quit number reached, reseted!");
+			}
 		}
 	}
 	

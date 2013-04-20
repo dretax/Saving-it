@@ -1,6 +1,6 @@
 name: SaveIt
 main: me.dretax.SaveIt.Main
-version: 2.5
+version: 2.6
 authors: [DreTaX]
 commands:
   saveit:
