@@ -3,6 +3,6 @@ Saving-it
 
 Saving It
 
-The Official Source can be requested only in PM. This GIT is only going to be used for the auto updater.
+The Official Source, is now available again.
 
-You can Still find the older version of the source here, through the commits.
+Haha, i will be looking at my rivals :D :D
