@@ -14,9 +14,9 @@
 
     <!-- Source code -->
     <scm>
-        <developerConnection>scm:git:git@github.com:dretax/Saving-it.git</developerConnection>
-        <connection>scm:git:git@github.com:dretax/Saving-it.git</connection>
-        <url>https://github.com/dretax/Saving-it</url>
+        <developerConnection>scm:git:git@bitbucket.org:DreTaX/saveit.git</developerConnection>
+        <connection>scm:git:git@bitbucket.org:DreTaX/saveit.git</connection>
+        <url>https://bitbucket.org/DreTaX/saveit</url>
     </scm>
 
     <!-- Repository locations -->
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.5.2-R0.1</version>
+            <version>1.5.2-R1.0</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>

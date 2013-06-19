@@ -30,3 +30,4 @@ ExtraOptions:
 EnablePowerSave: false
 SaveAllWorlds: false
 BroadCastWorldErrorIg: false
+DenyWorldSaving:
