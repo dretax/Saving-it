@@ -1,7 +1,6 @@
 package me.dretax.SaveIt;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import me.dretax.SaveIt.metrics.Metrics;
 import org.bukkit.Bukkit;
@@ -27,8 +26,7 @@ public class Main extends JavaPlugin
 	protected PluginManager _pm;
 	protected ConsoleCommandSender _cs;
 	protected final String _prefix = ChatColor.AQUA + "[SaveIt] ";
-    protected List<String> ExWorlds;
-    protected List<String> DWorlds;
+    protected List<String> ExWorlds, DWorlds;
     protected Boolean isLatest;
 	protected String latestVersion;
 	protected final SaveItExpansions expansions = new SaveItExpansions(this);
@@ -143,7 +141,7 @@ public class Main extends JavaPlugin
 
     public void CheckConfig() {
         config = this.getConfig();
-        if(!config.contains("SaveOnDisable")) {
+        if(!config.contains("ExtraOptions.SaveOnDisable")) {
             config.addDefault("ExtraOptions.SaveOnDisable", true);
             config.options().copyDefaults(true);
             saveConfig();
@@ -279,7 +277,7 @@ public class Main extends JavaPlugin
 		}
 		else 
 		{
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.4 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.5 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW +  "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
@@ -342,6 +340,9 @@ public class Main extends JavaPlugin
                             }
                         }
                         , 20L * Delay2);
+                        if (Debug) {
+                            sendConsoleMessage(ChatColor.GREEN + "Saving " + ChatColor.GOLD + Bukkit.getWorld(worldname).getName());
+                        }
                     }
                     if (Bukkit.getWorld(worldname) == null) {
                         sendConsoleMessage(ChatColor.RED + "[ERROR] Not Existing World in Config!");
@@ -369,12 +370,12 @@ public class Main extends JavaPlugin
                                     player.saveData();
                                 }
                             }
-                            if (Debug) {
-                                sendConsoleMessage(ChatColor.GREEN + "Saving " + ChatColor.GOLD + world.getName());
-                            }
                         }
                     }
                     , 20L * Delay2);
+                    if (Debug) {
+                        sendConsoleMessage(ChatColor.GREEN + "Saving " + ChatColor.GOLD + world.getName());
+                    }
 
                 }
             }
@@ -387,22 +388,36 @@ public class Main extends JavaPlugin
 	
 	public void WorldSaveOnStop() {
 		ExWorlds = config.getStringList("Worlds");
+        DWorlds = config.getStringList("DenyWorldSaving");
 		SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
 		
 		if (SavePlayersFully) {
 			Bukkit.savePlayers();
 		}
-		
+
 		for (World world : Bukkit.getWorlds()) {
-			if ((ExWorlds).contains(world.getName())) {
-				world.save();
-				if (!SavePlayersFully) {	
-					for (Player player : world.getPlayers()) {
-						player.saveData();
-					}
-				}
-			}
-	    }
+            if (!SaveAllWorlds) {
+			    if ((ExWorlds).contains(world.getName())) {
+				    world.save();
+				    if (!SavePlayersFully) {
+					    for (Player player : world.getPlayers()) {
+						    player.saveData();
+					    }
+				    }
+			    }
+
+            }
+            else {
+                if(!DWorlds.contains(world.getName())) {
+                    world.save();
+                    if (!SavePlayersFully) {
+                        for (Player player : world.getPlayers()) {
+                            player.saveData();
+                        }
+                    }
+                }
+            }
+        }
 	}
 
 	public void sendConsoleMessage(String msg) {
@@ -447,6 +462,7 @@ public class Main extends JavaPlugin
 		PowerSave = config.getBoolean("EnablePowerSave");
         SaveAllWorlds = config.getBoolean("SaveAllWorlds");
         BroadCastErrorIg = config.getBoolean("BroadCastWorldErrorIg");
+        DWorlds = config.getStringList("DenyWorldSaving");
 		this.reloadConfig();
 		this.saveConfig();
 		if (Debug) {
