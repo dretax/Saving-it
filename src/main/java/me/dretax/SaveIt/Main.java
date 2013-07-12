@@ -1,7 +1,6 @@
 package me.dretax.SaveIt;
 
 import java.io.IOException;
-import java.util.List;
 import me.dretax.SaveIt.metrics.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,20 +20,18 @@ public class Main extends JavaPlugin
 	 * @Author: DreTaX
 	 * 
 	 */
-	protected boolean EnableMsg, CheckForUpdates, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg;
-	protected int Delay, Delay2, SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount;
+	protected int Delay, Delay2;
 	protected PluginManager _pm;
 	protected ConsoleCommandSender _cs;
-	protected final String _prefix = ChatColor.AQUA + "[SaveIt] ";
-    protected List<String> ExWorlds, DWorlds;
+	protected String _prefix = ChatColor.AQUA + "[SaveIt] ";
     protected Boolean isLatest;
 	protected String latestVersion;
-	protected final SaveItExpansions expansions = new SaveItExpansions(this);
-	protected FileConfiguration config;
+    protected final SaveItExpansions expansions= new SaveItExpansions(this);
+    private FileConfiguration cf;
 
     public void onDisable() {
 		WorldSaveOnStop();
-		if (Debug) {
+		if (SaveItConfig.Debug) {
 			sendConsoleMessage(ChatColor.YELLOW + "Saved on Disable!");
 		}
 		super.onDisable();
@@ -50,56 +47,30 @@ public class Main extends JavaPlugin
         try {
             Metrics metrics = new Metrics(this);
             metrics.start();
-            if(Debug) {
+            if(SaveItConfig.Debug) {
                 sendConsoleMessage(ChatColor.GREEN + "SaveIt Metrics Successfully Enabled!");
             }
         }
         // Couldn't Connect.
         catch (IOException localIOException) {
-            if(Debug) {
+            if(SaveItConfig.Debug) {
                 sendConsoleMessage(ChatColor.RED + "SaveIt Metrics Failed to boot! Notify DreTaX!");
             }
         }
-		/*
-		 * Configuration and Command Definitions
-		 */
 		getCommand("saveit").setExecutor(this);
-        config = this.getConfig();
-		/*
-		 * Regural Variables
-		 */
-		EnableMsg = config.getBoolean("EnableSaveMSG");
-		CheckForUpdates = config.getBoolean("CheckForUpdates");
-		SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
-		DisableDefaultWorldSave = config.getBoolean("DisableDefaultWorldSave");
-		PowerSave = config.getBoolean("EnablePowerSave");
-        SaveAllWorlds = config.getBoolean("SaveAllWorlds");
-        BroadCastErrorIg = config.getBoolean("BroadCastWorldErrorIg");
-		/*
-		 * Special Savings
-		 */ 
-		SaveOnLogin = config.getBoolean("ExtraOptions.SaveOnLogin");
-		SaveOnLoginCount = config.getInt("ExtraOptions.SaveOnLoginCount");
-		SaveOnQuit = config.getBoolean("ExtraOptions.SaveOnQuit");
-		SaveOnQuitCount = config.getInt("ExtraOptions.SaveOnQuitCount");
-		SaveOnBlockBreak = config.getBoolean("ExtraOptions.SaveOnBlockBreak");
-		SaveOnBlockPlace = config.getBoolean("ExtraOptions.SaveOnBlockPlace");
-		SaveOnBlockBreakcount = config.getInt("ExtraOptions.SaveOnBlockBreakcount");
-		SaveOnBlockPlacecount = config.getInt("ExtraOptions.SaveOnBlockPlacecount");
-		SelfInventorySave = config.getBoolean("ExtraOptions.EnableSelfInventorySave");
-		Debug = config.getBoolean("ExtraOptions.EnableDebugMSGs");
+        cf = this.getConfig();
 
-        saveDefaultConfig();
+        SaveItConfig.create();
 		/*
 		 * Delay
 		 */
 		
-		Delay = config.getInt("DelayInMinutes");
+		Delay = cf.getInt("DelayInMinutes");
 		
 		Bukkit.getScheduler().runTaskTimer(this, new Runnable()
 		{
 			public void run() {
-				if (PowerSave) {
+				if (SaveItConfig.PowerSave) {
 					for(Player p : getServer().getOnlinePlayers()) {
 						if (p == null) {
 							return;
@@ -122,47 +93,24 @@ public class Main extends JavaPlugin
 		 * Others
 		 */
 		
-		if (DisableDefaultWorldSave) {
+		if (SaveItConfig.DisableDefaultWorldSave) {
 			for (World world : Bukkit.getWorlds()) {
 				world.setAutoSave(false);
 			}
 		}
 		
-		if (CheckForUpdates) {
+		if (SaveItConfig.CheckForUpdates) {
 			SaveItUpdate updateChecker = new SaveItUpdate(this);
 			isLatest = updateChecker.isLatest();
 			latestVersion = updateChecker.getUpdateVersion();
 		}
-
-        CheckConfig();
+		
 		_pm.registerEvents(this.expansions, this);
 		sendConsoleMessage(ChatColor.GREEN + "Successfully Enabled!");
 	}
 
-    public void CheckConfig() {
-        config = this.getConfig();
-        if(!config.contains("ExtraOptions.SaveOnDisable")) {
-            config.addDefault("ExtraOptions.SaveOnDisable", true);
-            config.options().copyDefaults(true);
-            saveConfig();
-            reloadConfig();
-        }
-        if(!config.contains("SaveAllWorlds")) {
-            config.addDefault("SaveAllWorlds", false);
-            config.options().copyDefaults(true);
-            saveConfig();
-            reloadConfig();
-        }
-        if(!config.contains("BroadCastWorldErrorIg"))  {
-            config.addDefault("BroadCastWorldErrorIg", false);
-            config.options().copyDefaults(true);
-            saveConfig();
-            reloadConfig();
-        }
-    }
-
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        ExWorlds = config.getStringList("Worlds");
+        SaveItConfig.ExWorlds = cf.getStringList("Worlds");
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("save")) {
 				if (sender.hasPermission("saveit.save")) {
@@ -179,7 +127,7 @@ public class Main extends JavaPlugin
 				else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 			}
 			if (args[0].equalsIgnoreCase("selfsave")) {
-				if (SelfInventorySave) {
+				if (SaveItConfig.SelfInventorySave) {
 					if (sender.hasPermission("saveit.selfsave")) {
 						if (!(sender instanceof Player)) {
 							sender.sendMessage(_prefix + ChatColor.GREEN + "This command can only be run by a player.");
@@ -195,32 +143,17 @@ public class Main extends JavaPlugin
 			}
             if (args[0].equalsIgnoreCase("add")) {
                 if (sender.hasPermission("saveit.manage")) {
-                    ExWorlds = config.getStringList("Worlds");
-                    DWorlds = config.getStringList("DenyWorldSaving");
+                    SaveItConfig.ExWorlds = cf.getStringList("Worlds");
                     if (args.length == 2) {
-                        if (!SaveAllWorlds) {
-                            if(!ExWorlds.contains(args[1])) {
-                                ExWorlds.add(args[1]);
-                                config.set("Worlds", ExWorlds);
-                                saveConfig();
-                                ConfigReload();
-                                sender.sendMessage(_prefix + ChatColor.GREEN + "Added World: " + args[1]);
-                            }
-                            else {
-                                sender.sendMessage(_prefix + ChatColor.RED + "World Already Exists in config: " + args[1]);
-                            }
+                        if(!SaveItConfig.ExWorlds.contains(args[1])) {
+                            SaveItConfig.ExWorlds.add(args[1]);
+                            cf.set("Worlds", SaveItConfig.ExWorlds);
+                            saveConfig();
+                            ConfigReload();
+                            sender.sendMessage(_prefix + ChatColor.GREEN + "Added World: " + args[1]);
                         }
-                        if (SaveAllWorlds) {
-                            if(!DWorlds.contains(args[1])) {
-                                DWorlds.add(args[1]);
-                                config.set("DenyWorldSaving", DWorlds);
-                                saveConfig();
-                                ConfigReload();
-                                sender.sendMessage(_prefix + ChatColor.GREEN + "Added World: " + args[1]);
-                            }
-                            else {
-                                sender.sendMessage(_prefix + ChatColor.RED + "World Already Exists in config: " + args[1]);
-                            }
+                        else {
+                            sender.sendMessage(_prefix + ChatColor.RED + "World Already Exists in config: " + args[1]);
                         }
                     }
                     else sender.sendMessage(_prefix + ChatColor.RED + "Specify a World Name!");
@@ -229,32 +162,17 @@ public class Main extends JavaPlugin
             }
             if (args[0].equalsIgnoreCase("remove")) {
                 if (sender.hasPermission("saveit.manage"))  {
-                    ExWorlds = config.getStringList("Worlds");
-                    DWorlds = config.getStringList("DenyWorldSaving");
+                    SaveItConfig.ExWorlds = cf.getStringList("Worlds");
                     if (args.length == 2) {
-                        if (!SaveAllWorlds) {
-                            if (ExWorlds.contains(args[1])) {
-                                ExWorlds.remove(args[1]);
-                                config.set("Worlds", ExWorlds);
-                                saveConfig();
-                                ConfigReload();
-                                sender.sendMessage(_prefix + ChatColor.GREEN + "Removed World: " + args[1]);
-                            }
-                            else {
-                                sender.sendMessage(_prefix + ChatColor.RED + "World Doesn't Exist in config: " + args[1]);
-                            }
+                        if(SaveItConfig.ExWorlds.contains(args[1])) {
+                            SaveItConfig.ExWorlds.remove(args[1]);
+                            cf.set("Worlds", SaveItConfig.ExWorlds);
+                            saveConfig();
+                            ConfigReload();
+                            sender.sendMessage(_prefix + ChatColor.GREEN + "Removed World: " + args[1]);
                         }
-                        if (SaveAllWorlds) {
-                            if (DWorlds.contains(args[1])) {
-                                DWorlds.remove(args[1]);
-                                config.set("DenyWorldSaving", DWorlds);
-                                saveConfig();
-                                ConfigReload();
-                                sender.sendMessage(_prefix + ChatColor.GREEN + "Removed World: " + args[1]);
-                            }
-                            else {
-                                sender.sendMessage(_prefix + ChatColor.RED + "World Doesn't Exist in config: " + args[1]);
-                            }
+                        else {
+                            sender.sendMessage(_prefix + ChatColor.RED + "World Doesn't Exist in config: " + args[1]);
                         }
                     }
                     else sender.sendMessage(_prefix + ChatColor.RED + "Specify a World Name!");
@@ -263,13 +181,13 @@ public class Main extends JavaPlugin
             }
             if (args[0].equalsIgnoreCase("list")) {
                 if (sender.hasPermission("saveit.manage"))  {
-                    if (!SaveAllWorlds) {
-                        ExWorlds = config.getStringList("Worlds");
-                        sender.sendMessage(_prefix + ChatColor.GREEN + ExWorlds);
+                    if (!SaveItConfig.SaveAllWorlds) {
+                        SaveItConfig.ExWorlds = cf.getStringList("Worlds");
+                        sender.sendMessage(_prefix + ChatColor.GREEN + SaveItConfig.ExWorlds);
                     }
                     else {
-                        DWorlds = config.getStringList("DenyWorldSaving");
-                        sender.sendMessage(_prefix + ChatColor.GREEN + DWorlds);
+                        sender.sendMessage(_prefix + ChatColor.GREEN + "You are Saving all Existing Worlds.");
+                        sender.sendMessage(_prefix + ChatColor.GREEN + "You don't need the list.");
                     }
                 }
                 else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
@@ -277,7 +195,7 @@ public class Main extends JavaPlugin
 		}
 		else 
 		{
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.5 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.6 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW +  "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
@@ -291,18 +209,16 @@ public class Main extends JavaPlugin
 	
 	public void WorldSaveDelayed() {
 		// Getting Variables
-        config = this.getConfig();
-		EnableMsg = config.getBoolean("EnableSaveMSG");
-		ExWorlds = config.getStringList("Worlds");
-		SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
-        SaveAllWorlds = config.getBoolean("SaveAllWorlds");
-        BroadCastErrorIg = config.getBoolean("BroadCastWorldErrorIg");
-        DWorlds = config.getStringList("DenyWorldSaving");
-        Debug = config.getBoolean("ExtraOptions.EnableDebugMSGs");
+        cf = this.getConfig();
+        SaveItConfig.EnableMsg = cf.getBoolean("EnableSaveMSG");
+        SaveItConfig.ExWorlds = cf.getStringList("Worlds");
+        SaveItConfig.SavePlayersFully = cf.getBoolean("SavePlayersEverywhere");
+        SaveItConfig.SaveAllWorlds = cf.getBoolean("SaveAllWorlds");
+        SaveItConfig.BroadCastErrorIg = cf.getBoolean("BroadCastWorldErrorIg");
 		Delay2 = 1;
 		// Checking on "EnableSaveMSG".
-		if (EnableMsg) {
-			Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG")));
+		if (SaveItConfig.EnableMsg) {
+			Bukkit.getServer().broadcastMessage(colorize(cf.getString("SaveMSG")));
 		}
 		
 		
@@ -310,7 +226,7 @@ public class Main extends JavaPlugin
 		 * If not, It will only Save Players in
 		 * The Configured Worlds
 		 */		
-		if (SavePlayersFully) {
+		if (SaveItConfig.SavePlayersFully) {
 			Bukkit.getScheduler().runTaskLater(this, new Runnable()
 			{
 	               public void run() {
@@ -320,52 +236,17 @@ public class Main extends JavaPlugin
 			}
 			, 20L * Delay2);
 		}
-			
-		// Getting Worlds, and Saving Them.
-        for (final World world : Bukkit.getWorlds()) {
-            if (!SaveAllWorlds) {
-                // Checking if an Existing World is written in the Config
-                for (final String worldname : ExWorlds) {
-                    if (Bukkit.getWorld(worldname) != null) {
-                        Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-                            public void run() {
-                                Delay2 += 1;
-                                Bukkit.getWorld(worldname).save();
-                                // Getting All The Players, and Saving Them, only in the Configured Worlds.
-                                if (!SavePlayersFully) {
-                                    for (Player player : Bukkit.getWorld(worldname).getPlayers()) {
-                                        player.saveData();
-                                    }
-                                }
-                            }
-                        }
-                        , 20L * Delay2);
-                        if (Debug) {
-                            sendConsoleMessage(ChatColor.GREEN + "Saving " + ChatColor.GOLD + Bukkit.getWorld(worldname).getName());
-                        }
-                    }
-                    if (Bukkit.getWorld(worldname) == null) {
-                        sendConsoleMessage(ChatColor.RED + "[ERROR] Not Existing World in Config!");
-                        sendConsoleMessage(ChatColor.RED + "[ERROR] " + ChatColor.BLUE + worldname + ChatColor.RED + " does not exist! Remove it from the config!");
-                        if (BroadCastErrorIg) {
-                            Bukkit.getServer().broadcastMessage(_prefix + ChatColor.RED + "[ERROR] Not Existing World In Config!");
-                            Bukkit.getServer().broadcastMessage(_prefix + ChatColor.RED + "[ERROR] " + ChatColor.BLUE + worldname + ChatColor.RED + " does not exist! Remove it from the config!");
-                        }
-                    }
-                }
-            }
-            /* If SaveAllWorlds is true
-		    * We will Save all the worlds instead of the configured one
-		    * Also Calling Performance Method here
-		    */
-            else {
-                if(!DWorlds.contains(world.getName())) {
-                    Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+        if (!SaveItConfig.SaveAllWorlds) {
+		    // Checking if an Existing World is written in the Config
+            for (String worldname : SaveItConfig.ExWorlds) {
+                final World world = Bukkit.getWorld(worldname);
+                if (world != null) {
+				    Bukkit.getScheduler().runTaskLater(this, new Runnable() {
                         public void run() {
                             Delay2 += 1;
                             world.save();
                             // Getting All The Players, and Saving Them, only in the Configured Worlds.
-                            if (!SavePlayersFully) {
+                            if (!SaveItConfig.SavePlayersFully) {
                                 for (Player player : world.getPlayers()) {
                                     player.saveData();
                                 }
@@ -373,51 +254,73 @@ public class Main extends JavaPlugin
                         }
                     }
                     , 20L * Delay2);
-                    if (Debug) {
-                        sendConsoleMessage(ChatColor.GREEN + "Saving " + ChatColor.GOLD + world.getName());
+                }
+                else {
+                    sendConsoleMessage(ChatColor.RED + "[ERROR] Not Existing World in Config!");
+                    sendConsoleMessage(ChatColor.RED + "[ERROR] " + ChatColor.BLUE + worldname + ChatColor.RED + " does not exist! Remove it from the config!");
+                    if (SaveItConfig.BroadCastErrorIg) {
+                        Bukkit.getServer().broadcastMessage(_prefix + ChatColor.RED + "[ERROR] Not Existing World In Config!");
+                        Bukkit.getServer().broadcastMessage(_prefix + ChatColor.RED + "[ERROR] " + ChatColor.BLUE + worldname + ChatColor.RED + " does not exist! Remove it from the config!");
                     }
-
                 }
             }
         }
+        /* If SaveAllWorlds is true
+		* We will Save all the worlds instead of the configured one
+		* Also Calling Performance Method here
+		*/
+        else {
+            // Getting Worlds, and Saving Them.
+            for (final World world : Bukkit.getWorlds()) {
+                Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                    public void run() {
+                        Delay2 += 1;
+                        world.save();
+                        // Getting All The Players, and Saving Them, only in the Configured Worlds.
+                        if (!SaveItConfig.SavePlayersFully) {
+                            for (Player player : world.getPlayers()) {
+                                player.saveData();
+                            }
+                        }
+                    }
+                }
+                , 20L * Delay2);
+            }
+        }
 		
-	    if (EnableMsg) {
-	    	Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG2")));
+	    if (SaveItConfig.EnableMsg) {
+	    	Bukkit.getServer().broadcastMessage(colorize(cf.getString("SaveMSG2")));
 	    }
 	}
 	
 	public void WorldSaveOnStop() {
-		ExWorlds = config.getStringList("Worlds");
-        DWorlds = config.getStringList("DenyWorldSaving");
-		SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
+        SaveItConfig.ExWorlds = cf.getStringList("Worlds");
+        SaveItConfig.SavePlayersFully = cf.getBoolean("SavePlayersEverywhere");
 		
-		if (SavePlayersFully) {
+		if (SaveItConfig.SavePlayersFully) {
 			Bukkit.savePlayers();
 		}
-
+		
 		for (World world : Bukkit.getWorlds()) {
-            if (!SaveAllWorlds) {
-			    if ((ExWorlds).contains(world.getName())) {
+            if (!SaveItConfig.SaveAllWorlds) {
+			    if ((SaveItConfig.ExWorlds).contains(world.getName())) {
 				    world.save();
-				    if (!SavePlayersFully) {
+				    if (!SaveItConfig.SavePlayersFully) {
 					    for (Player player : world.getPlayers()) {
 						    player.saveData();
 					    }
 				    }
 			    }
-
             }
             else {
-                if(!DWorlds.contains(world.getName())) {
-                    world.save();
-                    if (!SavePlayersFully) {
-                        for (Player player : world.getPlayers()) {
-                            player.saveData();
-                        }
+                world.save();
+                if (!SaveItConfig.SavePlayersFully) {
+                    for (Player player : world.getPlayers()) {
+                        player.saveData();
                     }
                 }
             }
-        }
+	    }
 	}
 
 	public void sendConsoleMessage(String msg) {
@@ -435,37 +338,13 @@ public class Main extends JavaPlugin
 		s = s.replaceAll("&m", ChatColor.STRIKETHROUGH + "");
 		s = s.replaceAll("&o", ChatColor.ITALIC + "");
 		s = s.replaceAll("&n", ChatColor.UNDERLINE + "");
-        s = s.replaceAll("'", "");
 		//This one Supports all the Default Colors
 		return s.replaceAll("&([0-9a-f])", "\u00A7$1");
 	}
 	
 	public void ConfigReload() {
-		this.reloadConfig();
-		config = this.getConfig();
-		// Getting all the values, then reloading them.
-		EnableMsg = config.getBoolean("EnableSaveMSG");
-		CheckForUpdates = config.getBoolean("CheckForUpdates");
-		SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
-		DisableDefaultWorldSave = config.getBoolean("DisableDefaultWorldSave");
-		SaveOnLogin = config.getBoolean("ExtraOptions.SaveOnLogin");
-		SaveOnLoginCount = config.getInt("ExtraOptions.SaveOnLoginCount");
-		SaveOnQuit = config.getBoolean("ExtraOptions.SaveOnQuit");
-		SaveOnQuitCount = config.getInt("ExtraOptions.SaveOnQuitCount");
-		SaveOnBlockBreak = config.getBoolean("ExtraOptions.SaveOnBlockBreak");
-		SaveOnBlockPlace = config.getBoolean("ExtraOptions.SaveOnBlockPlace");
-		SaveOnBlockBreakcount = config.getInt("ExtraOptions.SaveOnBlockBreakcount");
-		SaveOnBlockPlacecount = config.getInt("ExtraOptions.SaveOnBlockPlacecount");
-		SelfInventorySave = config.getBoolean("ExtraOptions.EnableSelfInventorySave");
-		Debug = config.getBoolean("ExtraOptions.EnableDebugMSGs");
-		Delay = config.getInt("DelayInMinutes");
-		PowerSave = config.getBoolean("EnablePowerSave");
-        SaveAllWorlds = config.getBoolean("SaveAllWorlds");
-        BroadCastErrorIg = config.getBoolean("BroadCastWorldErrorIg");
-        DWorlds = config.getStringList("DenyWorldSaving");
-		this.reloadConfig();
-		this.saveConfig();
-		if (Debug) {
+        SaveItConfig.load();
+		if (SaveItConfig.Debug) {
 			sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 		}
 	}

@@ -19,21 +19,21 @@ public class SaveItExpansions implements Listener {
 	protected int logins = 0;
 	protected int quits = 0;
 	protected Main plugin;
+
 	
 	public SaveItExpansions(Main instance)
 	{
 		this.plugin = instance;
 	}
-	
 
-	@EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW)
 	public void onPlayerLoginEvent(PlayerLoginEvent e) {
-		if (plugin.SaveOnLogin) {
+		if (SaveItConfig.SaveOnLogin) {
 			this.logins += 1;
-			if (this.logins == (plugin.SaveOnLoginCount)) {
+			if (this.logins == (SaveItConfig.SaveOnLoginCount)) {
 				plugin.WorldSaveDelayed();
-				this.logins -= (plugin.SaveOnLoginCount);
-				if (plugin.Debug) {
+				this.logins -= (SaveItConfig.SaveOnLoginCount);
+				if (SaveItConfig.Debug) {
 					sendConsoleMessage(ChatColor.GREEN + "Login limit reached, reseted!");
 				}
 			}
@@ -42,12 +42,12 @@ public class SaveItExpansions implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerQuitEvent(PlayerQuitEvent e) {
-		if (plugin.SaveOnQuit) {
+		if (SaveItConfig.SaveOnQuit) {
 			this.quits += 1;
-			if (this.quits == (plugin.SaveOnQuitCount)) {
+			if (this.quits == (SaveItConfig.SaveOnQuitCount)) {
 				plugin.WorldSaveDelayed();
-				this.quits -= (plugin.SaveOnQuitCount);
-				if (plugin.Debug) {
+				this.quits -= (SaveItConfig.SaveOnQuitCount);
+				if (SaveItConfig.Debug) {
 					sendConsoleMessage(ChatColor.GREEN + "Quit limit reached, reseted!");
 				}
 			}
@@ -56,12 +56,12 @@ public class SaveItExpansions implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (plugin.SaveOnBlockPlace) {
+		if (SaveItConfig.SaveOnBlockPlace) {
 			this.places += 1;
-			if (this.places == (plugin.SaveOnBlockPlacecount)) {
+			if (this.places == (SaveItConfig.SaveOnBlockPlacecount)) {
 				plugin.WorldSaveDelayed();
-				this.places -= (plugin.SaveOnBlockPlacecount);
-				if (plugin.Debug) {
+				this.places -= (SaveItConfig.SaveOnBlockPlacecount);
+				if (SaveItConfig.Debug) {
 					sendConsoleMessage(ChatColor.GREEN + "Place limit reached, reseted!");
 				}
 			}
@@ -70,12 +70,12 @@ public class SaveItExpansions implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(BlockBreakEvent event) {
-		if(plugin.SaveOnBlockBreak) {
+		if(SaveItConfig.SaveOnBlockBreak) {
 			this.breaks += 1;
-			if (this.breaks == (plugin.SaveOnBlockBreakcount)) {
+			if (this.breaks == (SaveItConfig.SaveOnBlockBreakcount)) {
 				plugin.WorldSaveDelayed();
-				this.breaks -= (plugin.SaveOnBlockBreakcount);
-				if (plugin.Debug) {
+				this.breaks -= (SaveItConfig.SaveOnBlockBreakcount);
+				if (SaveItConfig.Debug) {
 					sendConsoleMessage(ChatColor.GREEN + "Break limit reached, reseted!");
 				}
 			}
