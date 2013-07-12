@@ -346,6 +346,7 @@ public class Main extends JavaPlugin
 	
 	public void ConfigReload() {
         SaveItConfig.load();
+        Delay = cf.getInt("DelayInMinutes");
 		if (SaveItConfig.Debug) {
 			sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 		}
