@@ -1,6 +1,7 @@
 package me.dretax.SaveIt;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
@@ -37,7 +38,7 @@ public class SaveItConfig {
                 config.set("DelayInMinutes", 10);
                 config.set("Worlds", ExWorlds);
                 config.set("EnableSaveMSG", true);
-                config.set("SaveMSG2", "&aStarting world save...");
+                config.set("SaveMSG", "&aStarting world save...");
                 config.set("SaveMSG2", "&aWorld save completed!");
                 config.set("SavePlayersEverywhere", false);
                 config.set("CheckForUpdates", true);
@@ -70,6 +71,7 @@ public class SaveItConfig {
 
     public static void load() {
         config = new YamlConfiguration();
+        configFile = new File(Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder(), "config.yml");
         try {
             config.load(configFile);
         } catch (Exception e) {

@@ -26,7 +26,7 @@ public class Main extends JavaPlugin
 	protected String _prefix = ChatColor.AQUA + "[SaveIt] ";
     protected Boolean isLatest;
 	protected String latestVersion;
-    protected final SaveItExpansions expansions= new SaveItExpansions(this);
+    protected SaveItExpansions expansions= new SaveItExpansions(this);
     private FileConfiguration cf;
 
     public void onDisable() {
@@ -215,10 +215,12 @@ public class Main extends JavaPlugin
         SaveItConfig.SavePlayersFully = cf.getBoolean("SavePlayersEverywhere");
         SaveItConfig.SaveAllWorlds = cf.getBoolean("SaveAllWorlds");
         SaveItConfig.BroadCastErrorIg = cf.getBoolean("BroadCastWorldErrorIg");
+        String msg = cf.getString("SaveMSG");
+        String msg2 = cf.getString("SaveMSG2");
 		Delay2 = 1;
 		// Checking on "EnableSaveMSG".
 		if (SaveItConfig.EnableMsg) {
-			Bukkit.getServer().broadcastMessage(colorize(cf.getString("SaveMSG")));
+			Bukkit.getServer().broadcastMessage(colorize(msg));
 		}
 		
 		
@@ -289,7 +291,7 @@ public class Main extends JavaPlugin
         }
 		
 	    if (SaveItConfig.EnableMsg) {
-	    	Bukkit.getServer().broadcastMessage(colorize(cf.getString("SaveMSG2")));
+	    	Bukkit.getServer().broadcastMessage(colorize(msg2));
 	    }
 	}
 	
