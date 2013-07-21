@@ -69,20 +69,7 @@ public class Main extends JavaPlugin
 		Bukkit.getScheduler().runTaskTimer(this, new Runnable()
 		{
 			public void run() {
-				if (SaveItConfig.PowerSave) {
-					for(Player p : getServer().getOnlinePlayers()) {
-						if (p == null) {
-							return;
-						}
-						else {
-							WorldSaveDelayed();
-						}
-					}
-				}
-				else {
-					WorldSaveDelayed();
-				}
-				
+                WorldSaveDelayed();
 			}
 		}
 		, 1200L * Delay, 1200L * Delay);
@@ -229,12 +216,18 @@ public class Main extends JavaPlugin
         SaveItConfig.SavePlayersFully = SaveItConfig.config.getBoolean("SavePlayersEverywhere");
         SaveItConfig.SaveAllWorlds = SaveItConfig.config.getBoolean("SaveAllWorlds");
         SaveItConfig.BroadCastErrorIg = SaveItConfig.config.getBoolean("BroadCastWorldErrorIg");
-        String msg = SaveItConfig.config.getString("SaveMSG");
-        String msg2 = SaveItConfig.config.getString("SaveMSG2");
+        SaveItConfig.PowerSave = SaveItConfig.config.getBoolean("EnablePowerSave");
+        if (SaveItConfig.PowerSave) {
+            for(Player p : getServer().getOnlinePlayers()) {
+                if (p == null) {
+                    break;
+                }
+            }
+        }
 		Delay2 = 1;
 		// Checking on "EnableSaveMSG".
 		if (SaveItConfig.EnableMsg) {
-			Bukkit.getServer().broadcastMessage(colorize(msg));
+			Bukkit.getServer().broadcastMessage(colorize(SaveItConfig.config.getString("SaveMSG")));
 		}
 		
 		
@@ -304,7 +297,7 @@ public class Main extends JavaPlugin
         }
 		
 	    if (SaveItConfig.EnableMsg) {
-	    	Bukkit.getServer().broadcastMessage(colorize(msg2));
+	    	Bukkit.getServer().broadcastMessage(colorize(SaveItConfig.config.getString("SaveMSG2")));
 	    }
 	}
 	
