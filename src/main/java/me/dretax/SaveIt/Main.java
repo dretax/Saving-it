@@ -220,7 +220,7 @@ public class Main extends JavaPlugin
         if (SaveItConfig.PowerSave) {
             for(Player p : getServer().getOnlinePlayers()) {
                 if (p == null) {
-                    break;
+                    return;
                 }
             }
         }
