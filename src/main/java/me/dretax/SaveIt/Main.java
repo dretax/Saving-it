@@ -26,6 +26,7 @@ public class Main extends JavaPlugin
     protected Boolean isLatest;
 	protected String latestVersion;
     protected SaveItExpansions expansions= new SaveItExpansions(this);
+    //private List<Player> playerList = Arrays.asList(Bukkit.getServer().getOnlinePlayers());
 
     public void onDisable() {
         if (SaveItConfig.SaveOnDisable) {
@@ -217,11 +218,11 @@ public class Main extends JavaPlugin
         SaveItConfig.SaveAllWorlds = SaveItConfig.config.getBoolean("SaveAllWorlds");
         SaveItConfig.BroadCastErrorIg = SaveItConfig.config.getBoolean("BroadCastWorldErrorIg");
         SaveItConfig.PowerSave = SaveItConfig.config.getBoolean("EnablePowerSave");
+
         if (SaveItConfig.PowerSave) {
-            for(Player p : getServer().getOnlinePlayers()) {
-                if (p == null) {
-                    return;
-                }
+            int players = this.getServer().getOnlinePlayers().length;
+            if (players == 0)  {
+                return;
             }
         }
 		Delay2 = 1;
