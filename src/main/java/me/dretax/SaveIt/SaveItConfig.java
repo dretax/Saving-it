@@ -1,7 +1,6 @@
 package me.dretax.SaveIt;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
@@ -15,56 +14,56 @@ import java.util.List;
  * Time: 19:41
  */
 public class SaveItConfig {
-    protected static boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg;
+    protected static boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable;
     protected static int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount;
-    private static FileConfiguration config;
-    private static File configFile;
+    protected static FileConfiguration config;
+    protected static File configFile;
     protected static List<String> ExWorlds = Arrays.asList(new String[] { "world"});
 
     public static void create() {
-        config = new YamlConfiguration();
+        if(!Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder().exists()) Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder().mkdir();
         configFile = new File(Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder(), "config.yml");
-
         if ((configFile.exists())) {
             load();
-        } else {
-            if (!configFile.exists()) {
-                try {
-                    configFile.createNewFile();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                config = new YamlConfiguration();
-                config.set("DelayInMinutes", 10);
-                config.set("Worlds", ExWorlds);
-                config.set("EnableSaveMSG", true);
-                config.set("SaveMSG", "&aStarting world save...");
-                config.set("SaveMSG2", "&aWorld save completed!");
-                config.set("SavePlayersEverywhere", false);
-                config.set("CheckForUpdates", true);
-                config.set("DisableDefaultWorldSave", true);
-                config.set("ExtraOptions.SaveOnLogin", false);
-                config.set("ExtraOptions.SaveOnLoginCount", 50);
-                config.set("ExtraOptions.SaveOnQuit", false);
-                config.set("ExtraOptions.SaveOnQuitCount", 50);
-                config.set("ExtraOptions.SaveOnBlockBreak", false);
-                config.set("ExtraOptions.SaveOnBlockPlace", false);
-                config.set("ExtraOptions.SaveOnBlockBreakcount", 500);
-                config.set("ExtraOptions.SaveOnBlockPlacecount", 500);
-                config.set("ExtraOptions.SaveOnDisable", true);
-                config.set("ExtraOptions.EnableSelfInventorySave", false);
-                config.set("ExtraOptions.EnableDebugMSGs", false);
-                config.set("EnablePowerSave", false);
-                config.set("SaveAllWorlds", false);
-                config.set("BroadCastWorldErrorIg", false);
-                try {
-                    config.save(configFile);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                load();
-
+        }
+        else {
+            configFile = new File(Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder(), "config.yml");
+            try {
+                configFile.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            config = new YamlConfiguration();
+            config.addDefault("DelayInMinutes", 10);
+            config.addDefault("Worlds", ExWorlds);
+            config.addDefault("EnableSaveMSG", true);
+            config.addDefault("SaveMSG", "&aStarting world save...");
+            config.addDefault("SaveMSG2", "&aWorld save completed!");
+            config.addDefault("SavePlayersEverywhere", false);
+            config.addDefault("CheckForUpdates", true);
+            config.addDefault("DisableDefaultWorldSave", true);
+            config.addDefault("ExtraOptions.SaveOnLogin", false);
+            config.addDefault("ExtraOptions.SaveOnLoginCount", 50);
+            config.addDefault("ExtraOptions.SaveOnQuit", false);
+            config.addDefault("ExtraOptions.SaveOnQuitCount", 50);
+            config.addDefault("ExtraOptions.SaveOnBlockBreak", false);
+            config.addDefault("ExtraOptions.SaveOnBlockPlace", false);
+            config.addDefault("ExtraOptions.SaveOnBlockBreakcount", 500);
+            config.addDefault("ExtraOptions.SaveOnBlockPlacecount", 500);
+            config.addDefault("ExtraOptions.SaveOnDisable", true);
+            config.addDefault("ExtraOptions.EnableSelfInventorySave", false);
+            config.addDefault("ExtraOptions.EnableDebugMSGs", false);
+            config.addDefault("EnablePowerSave", false);
+            config.addDefault("SaveAllWorlds", false);
+            config.addDefault("BroadCastWorldErrorIg", false);
+            config.options().copyDefaults(true);
+            try {
+                config.save(configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            load();
+
         }
 
     }
@@ -101,6 +100,7 @@ public class SaveItConfig {
         SaveOnBlockPlace = config.getBoolean("ExtraOptions.SaveOnBlockPlace");
         SaveOnBlockBreakcount = config.getInt("ExtraOptions.SaveOnBlockBreakcount");
         SaveOnBlockPlacecount = config.getInt("ExtraOptions.SaveOnBlockPlacecount");
+        SaveOnDisable = config.getBoolean("ExtraOptions.SaveOnDisable");
         SelfInventorySave = config.getBoolean("ExtraOptions.EnableSelfInventorySave");
         Debug = config.getBoolean("ExtraOptions.EnableDebugMSGs");
 

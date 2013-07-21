@@ -8,7 +8,6 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,18 +26,20 @@ public class Main extends JavaPlugin
     protected Boolean isLatest;
 	protected String latestVersion;
     protected SaveItExpansions expansions= new SaveItExpansions(this);
-    private FileConfiguration cf;
 
     public void onDisable() {
-		WorldSaveOnStop();
-		if (SaveItConfig.Debug) {
-			sendConsoleMessage(ChatColor.YELLOW + "Saved on Disable!");
-		}
+        if (SaveItConfig.SaveOnDisable) {
+		    WorldSaveOnStop();
+            if (SaveItConfig.Debug) {
+                sendConsoleMessage(ChatColor.YELLOW + "Saved on Disable!");
+            }
+        }
 		super.onDisable();
 	}
 	
   
 	public void onEnable() {
+        SaveItConfig.create();
 		this._pm = getServer().getPluginManager();
 		_cs = getServer().getConsoleSender();
 		/*
@@ -58,14 +59,12 @@ public class Main extends JavaPlugin
             }
         }
 		getCommand("saveit").setExecutor(this);
-        cf = this.getConfig();
 
-        SaveItConfig.create();
 		/*
 		 * Delay
 		 */
 		
-		Delay = cf.getInt("DelayInMinutes");
+		Delay = SaveItConfig.config.getInt("DelayInMinutes");
 		
 		Bukkit.getScheduler().runTaskTimer(this, new Runnable()
 		{
@@ -110,10 +109,11 @@ public class Main extends JavaPlugin
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        SaveItConfig.ExWorlds = cf.getStringList("Worlds");
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("save")) {
 				if (sender.hasPermission("saveit.save")) {
+                    SaveItConfig.config = getConfig();
+                    SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
 					WorldSaveDelayed();
 				}
 				else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
@@ -143,12 +143,18 @@ public class Main extends JavaPlugin
 			}
             if (args[0].equalsIgnoreCase("add")) {
                 if (sender.hasPermission("saveit.manage")) {
-                    SaveItConfig.ExWorlds = cf.getStringList("Worlds");
                     if (args.length == 2) {
+                        SaveItConfig.config = getConfig();
                         if(!SaveItConfig.ExWorlds.contains(args[1])) {
+                            SaveItConfig.load();
+                            SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
                             SaveItConfig.ExWorlds.add(args[1]);
-                            cf.set("Worlds", SaveItConfig.ExWorlds);
-                            saveConfig();
+                            SaveItConfig.config.set("Worlds", SaveItConfig.ExWorlds);
+                            try {
+                                SaveItConfig.config.save(SaveItConfig.configFile);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             ConfigReload();
                             sender.sendMessage(_prefix + ChatColor.GREEN + "Added World: " + args[1]);
                         }
@@ -162,12 +168,18 @@ public class Main extends JavaPlugin
             }
             if (args[0].equalsIgnoreCase("remove")) {
                 if (sender.hasPermission("saveit.manage"))  {
-                    SaveItConfig.ExWorlds = cf.getStringList("Worlds");
                     if (args.length == 2) {
+                        SaveItConfig.config = getConfig();
                         if(SaveItConfig.ExWorlds.contains(args[1])) {
+                            SaveItConfig.load();
+                            SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
                             SaveItConfig.ExWorlds.remove(args[1]);
-                            cf.set("Worlds", SaveItConfig.ExWorlds);
-                            saveConfig();
+                            SaveItConfig.config.set("Worlds", SaveItConfig.ExWorlds);
+                            try {
+                                SaveItConfig.config.save(SaveItConfig.configFile);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             ConfigReload();
                             sender.sendMessage(_prefix + ChatColor.GREEN + "Removed World: " + args[1]);
                         }
@@ -181,8 +193,10 @@ public class Main extends JavaPlugin
             }
             if (args[0].equalsIgnoreCase("list")) {
                 if (sender.hasPermission("saveit.manage"))  {
+                    SaveItConfig.config = getConfig();
                     if (!SaveItConfig.SaveAllWorlds) {
-                        SaveItConfig.ExWorlds = cf.getStringList("Worlds");
+                        SaveItConfig.load();
+                        SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
                         sender.sendMessage(_prefix + ChatColor.GREEN + SaveItConfig.ExWorlds);
                     }
                     else {
@@ -195,7 +209,7 @@ public class Main extends JavaPlugin
 		}
 		else 
 		{
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.6 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.7 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW +  "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
@@ -209,14 +223,14 @@ public class Main extends JavaPlugin
 	
 	public void WorldSaveDelayed() {
 		// Getting Variables
-        cf = this.getConfig();
-        SaveItConfig.EnableMsg = cf.getBoolean("EnableSaveMSG");
-        SaveItConfig.ExWorlds = cf.getStringList("Worlds");
-        SaveItConfig.SavePlayersFully = cf.getBoolean("SavePlayersEverywhere");
-        SaveItConfig.SaveAllWorlds = cf.getBoolean("SaveAllWorlds");
-        SaveItConfig.BroadCastErrorIg = cf.getBoolean("BroadCastWorldErrorIg");
-        String msg = cf.getString("SaveMSG");
-        String msg2 = cf.getString("SaveMSG2");
+        SaveItConfig.config = getConfig();
+        SaveItConfig.EnableMsg = SaveItConfig.config.getBoolean("EnableSaveMSG");
+        SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
+        SaveItConfig.SavePlayersFully = SaveItConfig.config.getBoolean("SavePlayersEverywhere");
+        SaveItConfig.SaveAllWorlds = SaveItConfig.config.getBoolean("SaveAllWorlds");
+        SaveItConfig.BroadCastErrorIg = SaveItConfig.config.getBoolean("BroadCastWorldErrorIg");
+        String msg = SaveItConfig.config.getString("SaveMSG");
+        String msg2 = SaveItConfig.config.getString("SaveMSG2");
 		Delay2 = 1;
 		// Checking on "EnableSaveMSG".
 		if (SaveItConfig.EnableMsg) {
@@ -296,8 +310,9 @@ public class Main extends JavaPlugin
 	}
 	
 	public void WorldSaveOnStop() {
-        SaveItConfig.ExWorlds = cf.getStringList("Worlds");
-        SaveItConfig.SavePlayersFully = cf.getBoolean("SavePlayersEverywhere");
+        SaveItConfig.config = getConfig();
+        SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
+        SaveItConfig.SavePlayersFully = SaveItConfig.config.getBoolean("SavePlayersEverywhere");
 		
 		if (SaveItConfig.SavePlayersFully) {
 			Bukkit.savePlayers();
@@ -345,8 +360,9 @@ public class Main extends JavaPlugin
 	}
 	
 	public void ConfigReload() {
+        SaveItConfig.config = getConfig();
         SaveItConfig.load();
-        Delay = cf.getInt("DelayInMinutes");
+        Delay = SaveItConfig.config.getInt("DelayInMinutes");
 		if (SaveItConfig.Debug) {
 			sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 		}
