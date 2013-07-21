@@ -254,19 +254,18 @@ public class Main extends JavaPlugin
 		}
         if (!SaveItConfig.SaveAllWorlds) {
 		    // Checking if an Existing World is written in the Config
-            for (String worldname : SaveItConfig.ExWorlds) {
-                final World world = Bukkit.getWorld(worldname);
-                if (world != null) {
+            for (final String worldname : SaveItConfig.ExWorlds) {
+                if (Bukkit.getWorld(worldname) != null) {
 				    Bukkit.getScheduler().runTaskLater(this, new Runnable() {
                         public void run() {
-                            Delay2 += 1;
-                            world.save();
-                            // Getting All The Players, and Saving Them, only in the Configured Worlds.
-                            if (!SaveItConfig.SavePlayersFully) {
-                                for (Player player : world.getPlayers()) {
-                                    player.saveData();
-                                }
+                        Delay2 += 1;
+                        Bukkit.getWorld(worldname).save();
+                        // Getting All The Players, and Saving Them, only in the Configured Worlds.
+                        if (!SaveItConfig.SavePlayersFully) {
+                            for (Player player : Bukkit.getWorld(worldname).getPlayers()) {
+                                player.saveData();
                             }
+                        }
                         }
                     }
                     , 20L * Delay2);
