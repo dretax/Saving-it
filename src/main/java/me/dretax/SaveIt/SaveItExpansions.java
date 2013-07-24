@@ -27,7 +27,7 @@ public class SaveItExpansions implements Listener {
 	}
 
     @EventHandler(priority = EventPriority.LOW)
-	public void onPlayerLoginEvent(PlayerLoginEvent e) {
+	private void onPlayerLoginEvent(PlayerLoginEvent e) {
 		if (SaveItConfig.SaveOnLogin) {
 			this.logins += 1;
 			if (this.logins == (SaveItConfig.SaveOnLoginCount)) {
@@ -41,7 +41,7 @@ public class SaveItExpansions implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
-	public void onPlayerQuitEvent(PlayerQuitEvent e) {
+    private void onPlayerQuitEvent(PlayerQuitEvent e) {
 		if (SaveItConfig.SaveOnQuit) {
 			this.quits += 1;
 			if (this.quits == (SaveItConfig.SaveOnQuitCount)) {
@@ -55,7 +55,7 @@ public class SaveItExpansions implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
-	public void onBlockPlace(BlockPlaceEvent event) {
+    private void onBlockPlace(BlockPlaceEvent event) {
 		if (SaveItConfig.SaveOnBlockPlace) {
 			this.places += 1;
 			if (this.places == (SaveItConfig.SaveOnBlockPlacecount)) {
@@ -69,7 +69,7 @@ public class SaveItExpansions implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	public void onBlockBreak(BlockBreakEvent event) {
+    private void onBlockBreak(BlockBreakEvent event) {
 		if(SaveItConfig.SaveOnBlockBreak) {
 			this.breaks += 1;
 			if (this.breaks == (SaveItConfig.SaveOnBlockBreakcount)) {
@@ -81,8 +81,8 @@ public class SaveItExpansions implements Listener {
 			}
 		}
 	}
-	
-	public void sendConsoleMessage(String msg) {
+
+    private void sendConsoleMessage(String msg) {
 		// My Nice Colored Console Message Prefix.
 		plugin._cs.sendMessage(plugin._prefix + ChatColor.AQUA + msg);
 	}

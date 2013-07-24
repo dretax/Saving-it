@@ -26,7 +26,6 @@ public class Main extends JavaPlugin
     protected Boolean isLatest;
 	protected String latestVersion;
     protected SaveItExpansions expansions= new SaveItExpansions(this);
-    //private List<Player> playerList = Arrays.asList(Bukkit.getServer().getOnlinePlayers());
 
     public void onDisable() {
         if (SaveItConfig.SaveOnDisable) {
@@ -41,24 +40,26 @@ public class Main extends JavaPlugin
   
 	public void onEnable() {
         SaveItConfig.create();
+        BackUp.check();
+        Checkv();
 		this._pm = getServer().getPluginManager();
 		_cs = getServer().getConsoleSender();
 		/*
 		 * Metrics
 		 */
-        try {
+         try {
             Metrics metrics = new Metrics(this);
             metrics.start();
             if(SaveItConfig.Debug) {
                 sendConsoleMessage(ChatColor.GREEN + "SaveIt Metrics Successfully Enabled!");
             }
-        }
-        // Couldn't Connect.
-        catch (IOException localIOException) {
+         }
+         // Couldn't Connect.
+         catch (IOException localIOException) {
             if(SaveItConfig.Debug) {
                 sendConsoleMessage(ChatColor.RED + "SaveIt Metrics Failed to boot! Notify DreTaX!");
             }
-        }
+         }
 		getCommand("saveit").setExecutor(this);
 
 		/*
@@ -100,8 +101,6 @@ public class Main extends JavaPlugin
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("save")) {
 				if (sender.hasPermission("saveit.save")) {
-                    SaveItConfig.config = getConfig();
-                    SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
 					WorldSaveDelayed();
 				}
 				else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
@@ -133,9 +132,9 @@ public class Main extends JavaPlugin
                 if (sender.hasPermission("saveit.manage")) {
                     if (args.length == 2) {
                         SaveItConfig.config = getConfig();
+                        SaveItConfig.load();
+                        SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
                         if(!SaveItConfig.ExWorlds.contains(args[1])) {
-                            SaveItConfig.load();
-                            SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
                             SaveItConfig.ExWorlds.add(args[1]);
                             SaveItConfig.config.set("Worlds", SaveItConfig.ExWorlds);
                             try {
@@ -158,9 +157,9 @@ public class Main extends JavaPlugin
                 if (sender.hasPermission("saveit.manage"))  {
                     if (args.length == 2) {
                         SaveItConfig.config = getConfig();
+                        SaveItConfig.load();
+                        SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
                         if(SaveItConfig.ExWorlds.contains(args[1])) {
-                            SaveItConfig.load();
-                            SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
                             SaveItConfig.ExWorlds.remove(args[1]);
                             SaveItConfig.config.set("Worlds", SaveItConfig.ExWorlds);
                             try {
@@ -194,30 +193,40 @@ public class Main extends JavaPlugin
                 }
                 else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
             }
+            if (args[0].equalsIgnoreCase("backup"))  {
+                if( sender.hasPermission("saveit.backup")) {
+                    if (SaveItConfig.EnableBackup) {
+                        sender.sendMessage(_prefix + ChatColor.GREEN + "StandBy");
+                        if (SaveItConfig.config.getBoolean("BackUp.EnableBackupMSG")) {
+                            Bukkit.getServer().broadcastMessage(colorize(SaveItConfig.config.getString("BackUp.WarningMSG")));
+                        }
+                        BackUp.backupdir();
+                    }
+                    else sender.sendMessage(_prefix + ChatColor.RED + "Backup Mode isn't Enabled!");
+
+                }
+                else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
+            }
 		}
 		else 
 		{
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.7.1 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.7.2 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW +  "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
             sender.sendMessage(ChatColor.BLUE + "/saveit add " + ChatColor.YELLOW + "WORLDNAME (Case Sensitive)" + ChatColor.GREEN + " - Adds a Given World to Config");
             sender.sendMessage(ChatColor.BLUE + "/saveit remove " + ChatColor.YELLOW + "WORLDNAME (Case Sensitive)" + ChatColor.GREEN + " - Removes a Given World from Config");
             sender.sendMessage(ChatColor.BLUE + "/saveit list" + ChatColor.GREEN + " - Lists Current Worlds in Config");
+            sender.sendMessage(ChatColor.BLUE + "/saveit backup" + ChatColor.GREEN + " - Creates a Zip of all your Server Folders (BETA)");
 		}
 		return false;
 
 	}
 	
-	public void WorldSaveDelayed() {
+	protected void WorldSaveDelayed() {
 		// Getting Variables
         SaveItConfig.config = getConfig();
-        SaveItConfig.EnableMsg = SaveItConfig.config.getBoolean("EnableSaveMSG");
-        SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
-        SaveItConfig.SavePlayersFully = SaveItConfig.config.getBoolean("SavePlayersEverywhere");
-        SaveItConfig.SaveAllWorlds = SaveItConfig.config.getBoolean("SaveAllWorlds");
-        SaveItConfig.BroadCastErrorIg = SaveItConfig.config.getBoolean("BroadCastWorldErrorIg");
-        SaveItConfig.PowerSave = SaveItConfig.config.getBoolean("EnablePowerSave");
+        SaveItConfig.load();
 
         if (SaveItConfig.PowerSave) {
             int players = this.getServer().getOnlinePlayers().length;
@@ -302,10 +311,8 @@ public class Main extends JavaPlugin
 	    }
 	}
 	
-	public void WorldSaveOnStop() {
-        SaveItConfig.config = getConfig();
-        SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
-        SaveItConfig.SavePlayersFully = SaveItConfig.config.getBoolean("SavePlayersEverywhere");
+	protected void WorldSaveOnStop() {
+        SaveItConfig.load();
 		
 		if (SaveItConfig.SavePlayersFully) {
 			Bukkit.savePlayers();
@@ -333,12 +340,47 @@ public class Main extends JavaPlugin
 	    }
 	}
 
-	public void sendConsoleMessage(String msg) {
+    protected void Checkv() {
+        if (!SaveItConfig.config.contains("BroadCastWorldErrorIg")) {
+            SaveItConfig.config.set("BroadCastWorldErrorIg", false);
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!SaveItConfig.config.contains("BackUp.EnableBackup")) {
+            SaveItConfig.config.set("BackUp.EnableBackup", false);
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!SaveItConfig.config.contains("BackUp.EnableBackupMSG")) {
+            SaveItConfig.config.set("BackUp.EnableBackupMSG", true);
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!SaveItConfig.config.contains("BackUp.WarningMSG")) {
+            SaveItConfig.config.set("BackUp.WarningMSG", "&2Warning! Backup has been executed!");
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+	private void sendConsoleMessage(String msg) {
 		// My Nice Colored Console Message Prefix.
 		_cs.sendMessage(_prefix + ChatColor.AQUA + msg);
 	}
 
-	public String colorize(String s) {
+	private String colorize(String s) {
 		// This little code supports coloring.
 		// If String is null it will return null
 		if(s == null) return null;
@@ -352,7 +394,7 @@ public class Main extends JavaPlugin
 		return s.replaceAll("&([0-9a-f])", "\u00A7$1");
 	}
 	
-	public void ConfigReload() {
+	protected void ConfigReload() {
         SaveItConfig.config = getConfig();
         SaveItConfig.load();
         Delay = SaveItConfig.config.getInt("DelayInMinutes");

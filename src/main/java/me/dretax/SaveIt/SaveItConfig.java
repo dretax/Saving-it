@@ -14,13 +14,13 @@ import java.util.List;
  * Time: 19:41
  */
 public class SaveItConfig {
-    protected static boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable;
+    protected static boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable, EnableBackup, EnableBackupMSG;
     protected static int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount;
     protected static FileConfiguration config;
     protected static File configFile;
     protected static List<String> ExWorlds = Arrays.asList(new String[] { "world"});
 
-    public static void create() {
+    protected static void create() {
         if(!Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder().exists()) Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder().mkdir();
         configFile = new File(Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder(), "config.yml");
         if ((configFile.exists())) {
@@ -56,6 +56,10 @@ public class SaveItConfig {
             config.addDefault("EnablePowerSave", false);
             config.addDefault("SaveAllWorlds", false);
             config.addDefault("BroadCastWorldErrorIg", false);
+            config.addDefault("BackUp.EnableBackup", false);
+            config.addDefault("BackUp.EnableBackupMSG", true);
+            config.addDefault("BackUp.WarningMSG", "&aWarning! Backup has been executed!");
+            config.addDefault("BackUp.WarningMSG2", "&aBackup Finished!");
             config.options().copyDefaults(true);
             try {
                 config.save(configFile);
@@ -63,12 +67,11 @@ public class SaveItConfig {
                 e.printStackTrace();
             }
             load();
-
         }
 
     }
 
-    public static void load() {
+    protected static void load() {
         config = new YamlConfiguration();
         configFile = new File(Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder(), "config.yml");
         try {
@@ -103,6 +106,10 @@ public class SaveItConfig {
         SaveOnDisable = config.getBoolean("ExtraOptions.SaveOnDisable");
         SelfInventorySave = config.getBoolean("ExtraOptions.EnableSelfInventorySave");
         Debug = config.getBoolean("ExtraOptions.EnableDebugMSGs");
+        EnableBackup = config.getBoolean("BackUp.EnableBackup");
+        EnableBackupMSG = config.getBoolean("BackUp.EnableBackupMSG");
+        config.getString("BackUp.WarningMSG");
+        config.getString("BackUp.WarningMSG2");
 
 
     }

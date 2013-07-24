@@ -18,12 +18,12 @@ public class SaveItUpdate
 	protected int curVer;
 	protected int updateVer;
 
-	public SaveItUpdate(Main instance)
+    protected SaveItUpdate(Main instance)
 	{
 		this.plugin = instance;
 	}
 
-	public Boolean isLatest() {
+    protected Boolean isLatest() {
 		sendConsoleMessage(ChatColor.GREEN + "Checking for updates. Please wait.");
 		try {
 			updateVer = 0;
@@ -51,11 +51,11 @@ public class SaveItUpdate
 		}return true;
 	}
 
-	public String getUpdateVersion() {
+    protected String getUpdateVersion() {
 		return this.updateVersion;
 	}
-  
-	public void sendConsoleMessage(String msg) {
+
+    protected void sendConsoleMessage(String msg) {
 		plugin._cs.sendMessage(plugin._prefix + ChatColor.AQUA + msg);
 	}
   
