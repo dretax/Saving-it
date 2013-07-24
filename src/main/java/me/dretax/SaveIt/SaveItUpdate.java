@@ -55,7 +55,7 @@ public class SaveItUpdate
 		return this.updateVersion;
 	}
 
-    protected void sendConsoleMessage(String msg) {
+    private void sendConsoleMessage(String msg) {
 		plugin._cs.sendMessage(plugin._prefix + ChatColor.AQUA + msg);
 	}
   

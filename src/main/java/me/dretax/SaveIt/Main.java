@@ -311,7 +311,7 @@ public class Main extends JavaPlugin
 	    }
 	}
 	
-	protected void WorldSaveOnStop() {
+	private void WorldSaveOnStop() {
         SaveItConfig.load();
 		
 		if (SaveItConfig.SavePlayersFully) {
@@ -340,7 +340,7 @@ public class Main extends JavaPlugin
 	    }
 	}
 
-    protected void Checkv() {
+    private void Checkv() {
         if (!SaveItConfig.config.contains("BroadCastWorldErrorIg")) {
             SaveItConfig.config.set("BroadCastWorldErrorIg", false);
             try {
@@ -367,6 +367,14 @@ public class Main extends JavaPlugin
         }
         if (!SaveItConfig.config.contains("BackUp.WarningMSG")) {
             SaveItConfig.config.set("BackUp.WarningMSG", "&2Warning! Backup has been executed!");
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!SaveItConfig.config.contains("BackUp.WarningMSG2")) {
+            SaveItConfig.config.set("BackUp.WarningMSG2", "&aBackup Finished!");
             try {
                 SaveItConfig.config.save(SaveItConfig.configFile);
             } catch (Exception e) {
