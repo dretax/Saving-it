@@ -79,9 +79,6 @@ public class SaveItConfig {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        /*
-		 * Configuration and Command Definitions
-		 */
 		/*
 		 * Regural Variables
 		 */
@@ -92,6 +89,7 @@ public class SaveItConfig {
         PowerSave = config.getBoolean("EnablePowerSave");
         SaveAllWorlds = config.getBoolean("SaveAllWorlds");
         BroadCastErrorIg = config.getBoolean("BroadCastWorldErrorIg");
+        ExWorlds = config.getStringList("Worlds");
 		/*
 		 * Special Savings
 		 */

@@ -19,7 +19,7 @@ public class Main extends JavaPlugin
 	 * @Author: DreTaX
 	 * 
 	 */
-	protected int Delay, Delay2;
+	private int Delay, Delay2;
 	protected PluginManager _pm;
 	protected ConsoleCommandSender _cs;
 	protected String _prefix = ChatColor.AQUA + "[SaveIt] ";
@@ -133,7 +133,6 @@ public class Main extends JavaPlugin
                     if (args.length == 2) {
                         SaveItConfig.config = getConfig();
                         SaveItConfig.load();
-                        SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
                         if(!SaveItConfig.ExWorlds.contains(args[1])) {
                             SaveItConfig.ExWorlds.add(args[1]);
                             SaveItConfig.config.set("Worlds", SaveItConfig.ExWorlds);
@@ -158,7 +157,6 @@ public class Main extends JavaPlugin
                     if (args.length == 2) {
                         SaveItConfig.config = getConfig();
                         SaveItConfig.load();
-                        SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
                         if(SaveItConfig.ExWorlds.contains(args[1])) {
                             SaveItConfig.ExWorlds.remove(args[1]);
                             SaveItConfig.config.set("Worlds", SaveItConfig.ExWorlds);
@@ -180,10 +178,9 @@ public class Main extends JavaPlugin
             }
             if (args[0].equalsIgnoreCase("list")) {
                 if (sender.hasPermission("saveit.manage"))  {
-                    SaveItConfig.config = getConfig();
                     if (!SaveItConfig.SaveAllWorlds) {
+                        SaveItConfig.config = getConfig();
                         SaveItConfig.load();
-                        SaveItConfig.ExWorlds = SaveItConfig.config.getStringList("Worlds");
                         sender.sendMessage(_prefix + ChatColor.GREEN + SaveItConfig.ExWorlds);
                     }
                     else {
@@ -196,7 +193,7 @@ public class Main extends JavaPlugin
             if (args[0].equalsIgnoreCase("backup"))  {
                 if( sender.hasPermission("saveit.backup")) {
                     if (SaveItConfig.EnableBackup) {
-                        sender.sendMessage(_prefix + ChatColor.GREEN + "StandBy");
+                        sender.sendMessage(_prefix + ChatColor.GREEN + "StandBy...");
                         if (SaveItConfig.config.getBoolean("BackUp.EnableBackupMSG")) {
                             Bukkit.getServer().broadcastMessage(colorize(SaveItConfig.config.getString("BackUp.WarningMSG")));
                         }
@@ -210,7 +207,7 @@ public class Main extends JavaPlugin
 		}
 		else 
 		{
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.7.2 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.7.3 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW +  "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
@@ -226,7 +223,11 @@ public class Main extends JavaPlugin
 	protected void WorldSaveDelayed() {
 		// Getting Variables
         SaveItConfig.config = getConfig();
-        SaveItConfig.load();
+        SaveItConfig.EnableMsg = SaveItConfig.config.getBoolean("EnableSaveMSG");
+        SaveItConfig.SavePlayersFully = SaveItConfig.config.getBoolean("SavePlayersEverywhere");
+        SaveItConfig.PowerSave = SaveItConfig.config.getBoolean("EnablePowerSave");
+        SaveItConfig.SaveAllWorlds = SaveItConfig.config.getBoolean("SaveAllWorlds");
+        SaveItConfig.BroadCastErrorIg = SaveItConfig.config.getBoolean("BroadCastWorldErrorIg");
 
         if (SaveItConfig.PowerSave) {
             int players = this.getServer().getOnlinePlayers().length;
@@ -402,7 +403,7 @@ public class Main extends JavaPlugin
 		return s.replaceAll("&([0-9a-f])", "\u00A7$1");
 	}
 	
-	protected void ConfigReload() {
+	private void ConfigReload() {
         SaveItConfig.config = getConfig();
         SaveItConfig.load();
         Delay = SaveItConfig.config.getInt("DelayInMinutes");

@@ -14,10 +14,10 @@ public class SaveItExpansions implements Listener {
 	/*
 	 * @Author: DreTaX
 	 */
-	protected int places = 0;
-	protected int breaks = 0;
-	protected int logins = 0;
-	protected int quits = 0;
+	private int places = 0;
+    private int breaks = 0;
+    private int logins = 0;
+    private int quits = 0;
 	protected Main plugin;
 
 	
