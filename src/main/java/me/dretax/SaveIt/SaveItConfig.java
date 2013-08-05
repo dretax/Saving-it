@@ -4,7 +4,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,13 +17,20 @@ import java.util.List;
  * Time: 19:41
  */
 public class SaveItConfig {
-    protected static boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable, EnableBackup, EnableBackupMSG;
-    protected static int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount;
-    protected static FileConfiguration config;
-    protected static File configFile;
-    protected static List<String> ExWorlds = Arrays.asList(new String[] { "world"});
+    protected boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable, EnableBackup, EnableBackupMSG;
+    protected int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount;
+    protected FileConfiguration config;
+    protected File configFile;
+    protected double intv;
+    protected Double StartOnAGivenHour;
+    protected List<String> ExWorlds = Arrays.asList(new String[] { "world"});
+    Main p;
 
-    protected static void create() {
+    protected SaveItConfig(Main i) {
+        this.p = i;
+    }
+
+    protected void create() {
         if(!Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder().exists()) Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder().mkdir();
         configFile = new File(Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder(), "config.yml");
         if ((configFile.exists())) {
@@ -58,6 +68,7 @@ public class SaveItConfig {
             config.addDefault("BroadCastWorldErrorIg", false);
             config.addDefault("BackUp.EnableBackup", false);
             config.addDefault("BackUp.EnableBackupMSG", true);
+            config.addDefault("BackUp.BackupHoursInterval", 1.0);
             config.addDefault("BackUp.WarningMSG", "&aWarning! Backup has been executed!");
             config.addDefault("BackUp.WarningMSG2", "&aBackup Finished!");
             config.options().copyDefaults(true);
@@ -71,7 +82,7 @@ public class SaveItConfig {
 
     }
 
-    protected static void load() {
+    protected void load() {
         config = new YamlConfiguration();
         configFile = new File(Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder(), "config.yml");
         try {
@@ -106,10 +117,15 @@ public class SaveItConfig {
         Debug = config.getBoolean("ExtraOptions.EnableDebugMSGs");
         EnableBackup = config.getBoolean("BackUp.EnableBackup");
         EnableBackupMSG = config.getBoolean("BackUp.EnableBackupMSG");
+        intv = config.getDouble("BackUp.BackupHoursInterval");
         config.getString("BackUp.WarningMSG");
         config.getString("BackUp.WarningMSG2");
-
-
+        String startTime = config.getString("BackUp.time");
+        if (startTime != null) {
+            try {
+                Date parsedTime = new SimpleDateFormat("HH:mm").parse(startTime);
+                StartOnAGivenHour = p.h(parsedTime);
+            } catch (ParseException ignored) {}
+        }
     }
-
 }

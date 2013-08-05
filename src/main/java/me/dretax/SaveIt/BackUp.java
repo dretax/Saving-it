@@ -17,8 +17,14 @@ import java.util.zip.ZipOutputStream;
  */
 public class BackUp {
     private static String rootdir = Bukkit.getServer().getWorldContainer().getPath();
+    Main p;
+    private SaveItConfig SaveItConfig = new SaveItConfig(p);
 
-    protected static void check()
+    protected BackUp(Main i) {
+        this.p = i;
+    }
+
+    protected void check()
     {
         File ff;
         ff = new File(rootdir, "SaveItBackups");
@@ -27,10 +33,20 @@ public class BackUp {
         }
     }
 
-    protected static void backupdir()
+    protected void backupdir()
     {
+        SaveItConfig.load();
+        if (SaveItConfig.EnableBackupMSG) {
+            String n = SaveItConfig.config.getString("BackUp.WarningMSG");
+            Bukkit.getServer().broadcastMessage(colorize(n));
+        }
+        if(!SaveItConfig.DisableDefaultWorldSave) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-off");
+        }
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "saveit save");
-        System.out.println("Starting Backup.....");
+        if(SaveItConfig.Debug) {
+            sendConsoleMessage(ChatColor.GREEN + "Starting Backup.....");
+        }
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
         try {
             ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(rootdir + "/SaveItBackups/SaveItBackup" + timeStamp + ".zip"));
@@ -50,10 +66,11 @@ public class BackUp {
             zos.closeEntry();
             //remember close it
             zos.close();
-
-            System.out.println("Done!");
+            if(SaveItConfig.Debug) {
+                sendConsoleMessage(ChatColor.GREEN + "Done!");
+            }
             if (SaveItConfig.EnableBackupMSG) {
-                String n = Bukkit.getServer().getPluginManager().getPlugin("SaveIt").getConfig().getString("BackUp.WarningMSG2");
+                String n = SaveItConfig.config.getString("BackUp.WarningMSG2");
                 Bukkit.getServer().broadcastMessage(colorize(n));
             }
 
@@ -61,9 +78,12 @@ public class BackUp {
         }catch(IOException ex){
             ex.printStackTrace();
         }
+        if(!SaveItConfig.DisableDefaultWorldSave) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-on");
+        }
     }
 
-    private static void zipDir(String dir2zip, ZipOutputStream zos)
+    private void zipDir(String dir2zip, ZipOutputStream zos)
     {
         try
         {
@@ -121,5 +141,10 @@ public class BackUp {
         s = s.replaceAll("&n", ChatColor.UNDERLINE + "");
         //This one Supports all the Default Colors
         return s.replaceAll("&([0-9a-f])", "\u00A7$1");
+    }
+
+    private void sendConsoleMessage(String msg) {
+        // My Nice Colored Console Message Prefix.
+        p._cs.sendMessage(p._prefix + ChatColor.AQUA + msg);
     }
 }

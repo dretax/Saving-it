@@ -12,7 +12,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="craftbukkit-1.6.2-R0.1-20130711.012506-5" level="project" />
-    <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.6.2-R0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.6.2-R0.1" level="project" />
   </component>
 </module>
 

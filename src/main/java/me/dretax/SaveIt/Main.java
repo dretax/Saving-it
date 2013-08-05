@@ -1,6 +1,8 @@
 package me.dretax.SaveIt;
 
 import java.io.IOException;
+import java.util.Date;
+
 import me.dretax.SaveIt.metrics.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,7 +27,9 @@ public class Main extends JavaPlugin
 	protected String _prefix = ChatColor.AQUA + "[SaveIt] ";
     protected Boolean isLatest;
 	protected String latestVersion;
-    protected SaveItExpansions expansions= new SaveItExpansions(this);
+    private SaveItConfig SaveItConfig = new SaveItConfig(this);
+    private SaveItExpansions expansions = new SaveItExpansions(this, SaveItConfig);
+    private BackUp backup = new BackUp(this);
 
     public void onDisable() {
         if (SaveItConfig.SaveOnDisable) {
@@ -40,10 +44,32 @@ public class Main extends JavaPlugin
   
 	public void onEnable() {
         SaveItConfig.create();
-        BackUp.check();
+        backup.check();
         Checkv();
 		this._pm = getServer().getPluginManager();
 		_cs = getServer().getConsoleSender();
+        if (SaveItConfig.EnableBackup) {
+            long t = (long) (72000 * SaveItConfig.intv);
+            if (t > 0) {
+                long delay = SaveItConfig.StartOnAGivenHour != null ? s(SaveItConfig.StartOnAGivenHour) : t;
+                this.getServer().getScheduler().runTaskTimer(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        if (SaveItConfig.PowerSave) {
+                            int players = Bukkit.getServer().getOnlinePlayers().length;
+                            if (players != 0)  {
+                                backup.backupdir();
+                            }
+
+                        }
+                        else {
+                            backup.backupdir();
+                        }
+                    }
+                }, delay, t);
+            }
+        }
+        SaveItConfig.load();
 		/*
 		 * Metrics
 		 */
@@ -75,8 +101,6 @@ public class Main extends JavaPlugin
 			}
 		}
 		, 1200L * Delay, 1200L * Delay);
-		
-		
 		/*
 		 * Others
 		 */
@@ -92,7 +116,7 @@ public class Main extends JavaPlugin
 			isLatest = updateChecker.isLatest();
 			latestVersion = updateChecker.getUpdateVersion();
 		}
-		
+
 		_pm.registerEvents(this.expansions, this);
 		sendConsoleMessage(ChatColor.GREEN + "Successfully Enabled!");
 	}
@@ -194,10 +218,7 @@ public class Main extends JavaPlugin
                 if( sender.hasPermission("saveit.backup")) {
                     if (SaveItConfig.EnableBackup) {
                         sender.sendMessage(_prefix + ChatColor.GREEN + "StandBy...");
-                        if (SaveItConfig.config.getBoolean("BackUp.EnableBackupMSG")) {
-                            Bukkit.getServer().broadcastMessage(colorize(SaveItConfig.config.getString("BackUp.WarningMSG")));
-                        }
-                        BackUp.backupdir();
+                        backup.backupdir();
                     }
                     else sender.sendMessage(_prefix + ChatColor.RED + "Backup Mode isn't Enabled!");
 
@@ -207,7 +228,7 @@ public class Main extends JavaPlugin
 		}
 		else 
 		{
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.7.3 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.7.4 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW +  "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
@@ -314,7 +335,7 @@ public class Main extends JavaPlugin
 	
 	private void WorldSaveOnStop() {
         SaveItConfig.load();
-		
+
 		if (SaveItConfig.SavePlayersFully) {
 			Bukkit.savePlayers();
 		}
@@ -382,6 +403,15 @@ public class Main extends JavaPlugin
                 e.printStackTrace();
             }
         }
+        if (!SaveItConfig.config.contains("BackUp.BackupHoursInterval")) {
+            SaveItConfig.config.set("BackUp.BackupHoursInterval", 1.0);
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
 	private void sendConsoleMessage(String msg) {
@@ -412,4 +442,20 @@ public class Main extends JavaPlugin
 		}
 	}
 
+    @SuppressWarnings("unused")
+    private long s(double s) {
+        double n = h(new Date());
+        double d = n - SaveItConfig.StartOnAGivenHour;
+        if (d < 0) {
+            d += 24;
+        }
+        double ip = d - Math.floor(d / SaveItConfig.intv) * SaveItConfig.intv;
+        double r = SaveItConfig.intv - ip;
+        return (long) (r * 72000);
+    }
+
+    @SuppressWarnings("deprecation")
+    protected double h(Date t) {
+        return t.getHours() + t.getMinutes() / 60. + t.getSeconds() / 3600.;
+    }
 }

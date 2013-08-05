@@ -18,12 +18,15 @@ public class SaveItExpansions implements Listener {
     private int breaks = 0;
     private int logins = 0;
     private int quits = 0;
-	protected Main plugin;
+    Main plugin;
+    SaveItConfig SaveItConfig;
+
 
 	
-	public SaveItExpansions(Main instance)
+	protected SaveItExpansions(Main i, SaveItConfig i2)
 	{
-		this.plugin = instance;
+		this.plugin = i;
+        this.SaveItConfig = i2;
 	}
 
     @EventHandler(priority = EventPriority.LOW)

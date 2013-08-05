@@ -13,10 +13,10 @@ public class SaveItUpdate
 	 * @Author: DreTaX | SaveIt Update Checker File, rewritten from scratch.
 	 */
 	
-	protected Main plugin;
-	protected String updateVersion;
-	protected int curVer;
-	protected int updateVer;
+	private Main plugin;
+	String updateVersion;
+	int curVer;
+	int updateVer;
 
     protected SaveItUpdate(Main instance)
 	{
