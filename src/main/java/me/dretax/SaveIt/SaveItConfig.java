@@ -17,9 +17,11 @@ import java.util.List;
  * Time: 19:41
  */
 public class SaveItConfig {
-    protected boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable, EnableBackup, EnableBackupMSG;
-    protected int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount;
+    protected boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup;
+    protected int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv;
+    protected long Date;
     protected FileConfiguration config;
+    protected String KickBackupMSG, Decide;
     protected File configFile;
     protected double intv;
     protected Double StartOnAGivenHour;
@@ -37,7 +39,6 @@ public class SaveItConfig {
             load();
         }
         else {
-            configFile = new File(Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder(), "config.yml");
             try {
                 configFile.createNewFile();
             } catch (Exception e) {
@@ -68,7 +69,13 @@ public class SaveItConfig {
             config.addDefault("BroadCastWorldErrorIg", false);
             config.addDefault("BackUp.EnableBackup", false);
             config.addDefault("BackUp.EnableBackupMSG", true);
-            config.addDefault("BackUp.BackupHoursInterval", 1.0);
+            config.addDefault("BackUp.EnableAutoBackup", false);
+            config.addDefault("BackUp.EnablePlayerKickWhileBackup", false);
+            config.addDefault("BackUp.IntervalOrDay", "DAY");
+            config.addDefault("BackUp.KickBackupMSG", "Server Is maing a Backup file..");
+            config.addDefault("BackUp.BackupHoursInterval", 4.0);
+            config.addDefault("BackUp.Date", 0);
+            config.addDefault("BackUp.DateDayDelay", 7);
             config.addDefault("BackUp.WarningMSG", "&aWarning! Backup has been executed!");
             config.addDefault("BackUp.WarningMSG2", "&aBackup Finished!");
             config.options().copyDefaults(true);
@@ -77,9 +84,7 @@ public class SaveItConfig {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            load();
         }
-
     }
 
     protected void load() {
@@ -118,6 +123,11 @@ public class SaveItConfig {
         EnableBackup = config.getBoolean("BackUp.EnableBackup");
         EnableBackupMSG = config.getBoolean("BackUp.EnableBackupMSG");
         intv = config.getDouble("BackUp.BackupHoursInterval");
+        AutoBackup = config.getBoolean("BackUp.EnableAutoBackup");
+        KickBackup = config.getBoolean("BackUp.EnablePlayerKickWhileBackup");
+        Date = config.getInt("BackUp.Date");
+        DateIntv = config.getInt("BackUp.DateDayDelay");
+        Decide = config.getString("BackUp.IntervalOrDay");
         config.getString("BackUp.WarningMSG");
         config.getString("BackUp.WarningMSG2");
         String startTime = config.getString("BackUp.time");
@@ -125,7 +135,7 @@ public class SaveItConfig {
             try {
                 Date parsedTime = new SimpleDateFormat("HH:mm").parse(startTime);
                 StartOnAGivenHour = p.h(parsedTime);
-            } catch (ParseException ignored) {}
+            }  catch (ParseException ignored) {}
         }
     }
 }

@@ -45,31 +45,43 @@ public class Main extends JavaPlugin
 	public void onEnable() {
         SaveItConfig.create();
         backup.check();
-        Checkv();
+        backup.kcheck();
 		this._pm = getServer().getPluginManager();
 		_cs = getServer().getConsoleSender();
+        SaveItConfig.load();
         if (SaveItConfig.EnableBackup) {
-            long t = (long) (72000 * SaveItConfig.intv);
-            if (t > 0) {
-                long delay = SaveItConfig.StartOnAGivenHour != null ? s(SaveItConfig.StartOnAGivenHour) : t;
-                this.getServer().getScheduler().runTaskTimer(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        if (SaveItConfig.PowerSave) {
-                            int players = Bukkit.getServer().getOnlinePlayers().length;
-                            if (players != 0)  {
-                                backup.backupdir();
+            if (SaveItConfig.AutoBackup) {
+                if ((SaveItConfig.Decide).equalsIgnoreCase("INTERVAL")) {
+                    long t = (long) (72000 * SaveItConfig.intv);
+                    if (t > 0) {
+                        long delay = SaveItConfig.StartOnAGivenHour != null ? s(SaveItConfig.StartOnAGivenHour) : t;
+                        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+                            @Override
+                            public void run() {
+                                if (SaveItConfig.PowerSave) {
+                                    int players = Bukkit.getServer().getOnlinePlayers().length;
+                                    if (players != 0)  {
+                                        backup.backupdir();
+                                    }
+                                }
+                                else {
+                                    backup.backupdir();
+                                }
                             }
-
-                        }
-                        else {
-                            backup.backupdir();
+                        }, delay, t);
+                    }
+                }
+                if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
+                    Bukkit.getScheduler().runTaskTimer(this, new Runnable()
+                    {
+                        public void run() {
+                            backup.kcheck();
                         }
                     }
-                }, delay, t);
+                    , 1200L * 6, 1200L * 6);
+                }
             }
         }
-        SaveItConfig.load();
 		/*
 		 * Metrics
 		 */
@@ -228,7 +240,7 @@ public class Main extends JavaPlugin
 		}
 		else 
 		{
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.7.4 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.7.6 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW +  "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");

@@ -2,6 +2,8 @@ package me.dretax.SaveIt;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -16,7 +18,7 @@ import java.util.zip.ZipOutputStream;
  * Backup System BETA
  */
 public class BackUp {
-    private static String rootdir = Bukkit.getServer().getWorldContainer().getPath();
+    private String rootdir = Bukkit.getServer().getWorldContainer().getPath();
     Main p;
     private SaveItConfig SaveItConfig = new SaveItConfig(p);
 
@@ -33,9 +35,40 @@ public class BackUp {
         }
     }
 
+    protected void kcheck() {
+        System.out.println("sss");
+        SaveItConfig.load();
+        if (SaveItConfig.EnableBackup) {
+            System.out.println("s");
+            //String timeStamp = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+            long timeStamp = System.currentTimeMillis()/1000;
+            long date = timeStamp + SaveItConfig.DateIntv*24*60*60;
+            if (SaveItConfig.AutoBackup) {
+                System.out.println("s2");
+                if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
+                    System.out.println("s3");
+                    if (SaveItConfig.Date == 0) {
+                        SaveItConfig.config.set(String.valueOf(SaveItConfig.Date), date);
+                        System.out.println("s4");
+                    }
+                    else {
+                        if (SaveItConfig.Date < date) {
+                            SaveItConfig.config.set(String.valueOf(SaveItConfig.Date), date);
+                            backupdir();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     protected void backupdir()
     {
+        if(SaveItConfig.Debug) {
+            sendConsoleMessage(ChatColor.GREEN + "Starting Backup.....");
+        }
         SaveItConfig.load();
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "saveit save");
         if (SaveItConfig.EnableBackupMSG) {
             String n = SaveItConfig.config.getString("BackUp.WarningMSG");
             Bukkit.getServer().broadcastMessage(colorize(n));
@@ -43,9 +76,10 @@ public class BackUp {
         if(!SaveItConfig.DisableDefaultWorldSave) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-off");
         }
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "saveit save");
-        if(SaveItConfig.Debug) {
-            sendConsoleMessage(ChatColor.GREEN + "Starting Backup.....");
+        if (SaveItConfig.KickBackup) {
+            for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+                p.kickPlayer(SaveItConfig.KickBackupMSG);
+            }
         }
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
         try {
@@ -66,20 +100,20 @@ public class BackUp {
             zos.closeEntry();
             //remember close it
             zos.close();
-            if(SaveItConfig.Debug) {
-                sendConsoleMessage(ChatColor.GREEN + "Done!");
-            }
             if (SaveItConfig.EnableBackupMSG) {
                 String n = SaveItConfig.config.getString("BackUp.WarningMSG2");
                 Bukkit.getServer().broadcastMessage(colorize(n));
             }
-
-
+            kcheck();
+            //TODDO: Ellenőrizd, hogy beírja az új dátumot ha az kisebb mint a mostani
         }catch(IOException ex){
             ex.printStackTrace();
         }
         if(!SaveItConfig.DisableDefaultWorldSave) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-on");
+        }
+        if(SaveItConfig.Debug) {
+            sendConsoleMessage(ChatColor.GREEN + "Done!");
         }
     }
 
@@ -129,7 +163,7 @@ public class BackUp {
             //handle exception
         }
     }
-    private static String colorize(String s) {
+    private String colorize(String s) {
         // This little code supports coloring.
         // If String is null it will return null
         if(s == null) return null;
