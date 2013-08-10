@@ -17,8 +17,8 @@ import java.util.List;
  * Time: 19:41
  */
 public class SaveItConfig {
-    protected boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup;
-    protected int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv;
+    protected boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup, PurgeBackups;
+    protected int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv, daysBack;
     protected long Date;
     protected FileConfiguration config;
     protected String Decide;
@@ -75,6 +75,8 @@ public class SaveItConfig {
             config.addDefault("BackUp.BackupHoursInterval", 4.0);
             config.addDefault("BackUp.Date", 0);
             config.addDefault("BackUp.DateDayDelay", 7);
+            config.addDefault("BackUp.EnableBackupPurge", false);
+            config.addDefault("BackUp.RemoveBackupXAfterDay", 4);
             config.addDefault("BackUp.WarningMSG", "&aWarning! Backup has been executed!");
             config.addDefault("BackUp.WarningMSG2", "&aBackup Finished!");
             config.options().copyDefaults(true);
@@ -127,6 +129,8 @@ public class SaveItConfig {
         Date = config.getInt("BackUp.Date");
         DateIntv = config.getInt("BackUp.DateDayDelay");
         Decide = config.getString("BackUp.IntervalOrDay");
+        PurgeBackups = config.getBoolean("BackUp.EnableBackupPurge");
+        daysBack = config.getInt("BackUp.RemoveBackupXAfterDay");
         config.getString("BackUp.WarningMSG");
         config.getString("BackUp.WarningMSG2");
         String startTime = config.getString("BackUp.time");

@@ -48,6 +48,7 @@ public class Main extends JavaPlugin
         Checkv();
         backup.check();
         backup.kcheck();
+        backup.delZip();
 		this._pm = getServer().getPluginManager();
 		_cs = getServer().getConsoleSender();
         if (SaveItConfig.EnableBackup) {
@@ -79,8 +80,17 @@ public class Main extends JavaPlugin
                             backup.kcheck();
                         }
                     }
-                    , 1200L * 30, 1200L * 30);
+                    , 1200L * 40, 1200L * 40);
                 }
+            }
+            if (SaveItConfig.PurgeBackups) {
+                Bukkit.getScheduler().runTaskTimer(this, new Runnable()
+                {
+                    public void run() {
+                        backup.delZip();
+                    }
+                }
+                , 1200L * 40, 1200L * 40);
             }
         }
 		/*
@@ -241,14 +251,14 @@ public class Main extends JavaPlugin
 		}
 		else 
 		{
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.7.5 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.0.8 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW +  "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
             sender.sendMessage(ChatColor.BLUE + "/saveit add " + ChatColor.YELLOW + "WORLDNAME (Case Sensitive)" + ChatColor.GREEN + " - Adds a Given World to Config");
             sender.sendMessage(ChatColor.BLUE + "/saveit remove " + ChatColor.YELLOW + "WORLDNAME (Case Sensitive)" + ChatColor.GREEN + " - Removes a Given World from Config");
             sender.sendMessage(ChatColor.BLUE + "/saveit list" + ChatColor.GREEN + " - Lists Current Worlds in Config");
-            sender.sendMessage(ChatColor.BLUE + "/saveit backup" + ChatColor.GREEN + " - Creates a Zip of all your Server Folders (BETA)");
+            sender.sendMessage(ChatColor.BLUE + "/saveit backup" + ChatColor.GREEN + " - Creates a Zip of all your Server Folders");
 		}
 		return false;
 

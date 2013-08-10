@@ -173,6 +173,19 @@ public class BackUp {
             //handle exception
         }
     }
+
+    protected void delZip() {
+        File folder = new File(rootdir + "/SaveItBackups/");
+        File[] fileList = folder.listFiles();
+        assert fileList != null;
+        long purgeTime = System.currentTimeMillis() - (SaveItConfig.daysBack * 24 * 60 * 60 * 1000);
+        for(File listFile : fileList) {
+            if(listFile.lastModified() < purgeTime) {
+                listFile.delete();
+            }
+        }
+    }
+
     private String colorize(String s) {
         // This little code supports coloring.
         // If String is null it will return null
