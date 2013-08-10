@@ -2,6 +2,7 @@ package me.dretax.SaveIt;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.*;
@@ -22,8 +23,10 @@ public class BackUp {
     Main p;
     private SaveItConfig SaveItConfig = new SaveItConfig(p);
 
-    protected BackUp(Main i) {
+    protected BackUp(Main i, SaveItConfig i2) {
         this.p = i;
+        this.SaveItConfig = i2;
+        p._cs = Bukkit.getServer().getConsoleSender();
     }
 
     protected void check()
@@ -36,24 +39,32 @@ public class BackUp {
     }
 
     protected void kcheck() {
-        System.out.println("sss");
         SaveItConfig.load();
         if (SaveItConfig.EnableBackup) {
-            System.out.println("s");
             //String timeStamp = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-            long timeStamp = System.currentTimeMillis()/1000;
+            long timeStamp = System.currentTimeMillis() / 1000L;
             long date = timeStamp + SaveItConfig.DateIntv*24*60*60;
             if (SaveItConfig.AutoBackup) {
-                System.out.println("s2");
+                // Check if we are using the Given Daily Backup
                 if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
-                    System.out.println("s3");
+                    // If we didn't put the time to the Date yet.
                     if (SaveItConfig.Date == 0) {
-                        SaveItConfig.config.set(String.valueOf(SaveItConfig.Date), date);
-                        System.out.println("s4");
+                        SaveItConfig.config.set(String.valueOf("BackUp.Date"), date);
+                        try {
+                            SaveItConfig.config.save(SaveItConfig.configFile);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
+                    // If we already put the Date there
                     else {
-                        if (SaveItConfig.Date < date) {
-                            SaveItConfig.config.set(String.valueOf(SaveItConfig.Date), date);
+                        if (SaveItConfig.Date <= timeStamp) {
+                            SaveItConfig.config.set(String.valueOf("BackUp.Date"), date);
+                            try {
+                                SaveItConfig.config.save(SaveItConfig.configFile);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             backupdir();
                         }
                     }
@@ -64,10 +75,10 @@ public class BackUp {
 
     protected void backupdir()
     {
+        SaveItConfig.load();
         if(SaveItConfig.Debug) {
             sendConsoleMessage(ChatColor.GREEN + "Starting Backup.....");
         }
-        SaveItConfig.load();
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "saveit save");
         if (SaveItConfig.EnableBackupMSG) {
             String n = SaveItConfig.config.getString("BackUp.WarningMSG");
@@ -105,7 +116,6 @@ public class BackUp {
                 Bukkit.getServer().broadcastMessage(colorize(n));
             }
             kcheck();
-            //TODDO: Ellenőrizd, hogy beírja az új dátumot ha az kisebb mint a mostani
         }catch(IOException ex){
             ex.printStackTrace();
         }
@@ -178,6 +188,7 @@ public class BackUp {
     }
 
     private void sendConsoleMessage(String msg) {
+        //_cs = Bukkit.getServer().getConsoleSender();
         // My Nice Colored Console Message Prefix.
         p._cs.sendMessage(p._prefix + ChatColor.AQUA + msg);
     }

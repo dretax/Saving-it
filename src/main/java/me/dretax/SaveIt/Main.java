@@ -29,7 +29,7 @@ public class Main extends JavaPlugin
 	protected String latestVersion;
     private SaveItConfig SaveItConfig = new SaveItConfig(this);
     private SaveItExpansions expansions = new SaveItExpansions(this, SaveItConfig);
-    private BackUp backup = new BackUp(this);
+    private BackUp backup = new BackUp(this, SaveItConfig);
 
     public void onDisable() {
         if (SaveItConfig.SaveOnDisable) {
@@ -44,11 +44,11 @@ public class Main extends JavaPlugin
   
 	public void onEnable() {
         SaveItConfig.create();
+        SaveItConfig.load();
         backup.check();
         backup.kcheck();
 		this._pm = getServer().getPluginManager();
 		_cs = getServer().getConsoleSender();
-        SaveItConfig.load();
         if (SaveItConfig.EnableBackup) {
             if (SaveItConfig.AutoBackup) {
                 if ((SaveItConfig.Decide).equalsIgnoreCase("INTERVAL")) {
@@ -71,7 +71,7 @@ public class Main extends JavaPlugin
                         }, delay, t);
                     }
                 }
-                if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
+                /*if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
                     Bukkit.getScheduler().runTaskTimer(this, new Runnable()
                     {
                         public void run() {
@@ -79,7 +79,7 @@ public class Main extends JavaPlugin
                         }
                     }
                     , 1200L * 6, 1200L * 6);
-                }
+                }*/
             }
         }
 		/*

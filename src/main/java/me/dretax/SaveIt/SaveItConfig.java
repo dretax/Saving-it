@@ -71,7 +71,7 @@ public class SaveItConfig {
             config.addDefault("BackUp.EnableBackupMSG", true);
             config.addDefault("BackUp.EnableAutoBackup", false);
             config.addDefault("BackUp.EnablePlayerKickWhileBackup", false);
-            config.addDefault("BackUp.IntervalOrDay", "DAY");
+            config.addDefault("BackUp.IntervalOrDay", "INTERVAL");
             config.addDefault("BackUp.KickBackupMSG", "Server Is maing a Backup file..");
             config.addDefault("BackUp.BackupHoursInterval", 4.0);
             config.addDefault("BackUp.Date", 0);
