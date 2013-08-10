@@ -448,14 +448,6 @@ public class Main extends JavaPlugin
                 e.printStackTrace();
             }
         }
-        if (!SaveItConfig.config.contains("BackUp.KickBackupMSG")) {
-            SaveItConfig.config.set("BackUp.KickBackupMSG", "Server Is maing a Backup file..");
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
         if (!SaveItConfig.config.contains("BackUp.Date")) {
             SaveItConfig.config.set("BackUp.Date", 0);
             try {

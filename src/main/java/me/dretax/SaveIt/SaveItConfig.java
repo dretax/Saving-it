@@ -21,7 +21,7 @@ public class SaveItConfig {
     protected int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv;
     protected long Date;
     protected FileConfiguration config;
-    protected String KickBackupMSG, Decide;
+    protected String Decide;
     protected File configFile;
     protected double intv;
     protected Double StartOnAGivenHour;
@@ -72,7 +72,6 @@ public class SaveItConfig {
             config.addDefault("BackUp.EnableAutoBackup", false);
             config.addDefault("BackUp.EnablePlayerKickWhileBackup", false);
             config.addDefault("BackUp.IntervalOrDay", "INTERVAL");
-            config.addDefault("BackUp.KickBackupMSG", "Server Is maing a Backup file..");
             config.addDefault("BackUp.BackupHoursInterval", 4.0);
             config.addDefault("BackUp.Date", 0);
             config.addDefault("BackUp.DateDayDelay", 7);
