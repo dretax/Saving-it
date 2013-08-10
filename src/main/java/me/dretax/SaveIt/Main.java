@@ -80,7 +80,7 @@ public class Main extends JavaPlugin
                             backup.kcheck();
                         }
                     }
-                    , 1200L * 40, 1200L * 40);
+                    , 1200L * 60, 1200L * 60);
                 }
             }
             if (SaveItConfig.PurgeBackups) {
@@ -90,7 +90,7 @@ public class Main extends JavaPlugin
                         backup.delZip();
                     }
                 }
-                , 1200L * 40, 1200L * 40);
+                , 1200L * 60, 1200L * 60);
             }
         }
 		/*
@@ -468,6 +468,22 @@ public class Main extends JavaPlugin
         }
         if (!SaveItConfig.config.contains("BackUp.DateDayDelay")) {
             SaveItConfig.config.set("BackUp.DateDayDelay", 7);
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!SaveItConfig.config.contains("BackUp.EnableBackupPurge")) {
+            SaveItConfig.config.set("BackUp.EnableBackupPurge", false);
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!SaveItConfig.config.contains("BackUp.RemoveBackupXAfterDay")) {
+            SaveItConfig.config.set("BackUp.RemoveBackupXAfterDay", 4);
             try {
                 SaveItConfig.config.save(SaveItConfig.configFile);
             } catch (Exception e) {
