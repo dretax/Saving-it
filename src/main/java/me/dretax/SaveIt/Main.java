@@ -45,6 +45,7 @@ public class Main extends JavaPlugin
 	public void onEnable() {
         SaveItConfig.create();
         SaveItConfig.load();
+        Checkv();
         backup.check();
         backup.kcheck();
 		this._pm = getServer().getPluginManager();
@@ -71,15 +72,15 @@ public class Main extends JavaPlugin
                         }, delay, t);
                     }
                 }
-                /*if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
+                if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
                     Bukkit.getScheduler().runTaskTimer(this, new Runnable()
                     {
                         public void run() {
                             backup.kcheck();
                         }
                     }
-                    , 1200L * 6, 1200L * 6);
-                }*/
+                    , 1200L * 30, 1200L * 30);
+                }
             }
         }
 		/*
@@ -423,7 +424,54 @@ public class Main extends JavaPlugin
                 e.printStackTrace();
             }
         }
-
+        if (!SaveItConfig.config.contains("BackUp.EnableAutoBackup")) {
+            SaveItConfig.config.set("BackUp.EnableAutoBackup", false);
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!SaveItConfig.config.contains("BackUp.EnablePlayerKickWhileBackup")) {
+            SaveItConfig.config.set("BackUp.EnablePlayerKickWhileBackup", false);
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!SaveItConfig.config.contains("BackUp.IntervalOrDay")) {
+            SaveItConfig.config.set("BackUp.IntervalOrDay", "INTERVAL");
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!SaveItConfig.config.contains("BackUp.KickBackupMSG")) {
+            SaveItConfig.config.set("BackUp.KickBackupMSG", "Server Is maing a Backup file..");
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!SaveItConfig.config.contains("BackUp.Date")) {
+            SaveItConfig.config.set("BackUp.Date", 0);
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (!SaveItConfig.config.contains("BackUp.DateDayDelay")) {
+            SaveItConfig.config.set("BackUp.DateDayDelay", 7);
+            try {
+                SaveItConfig.config.save(SaveItConfig.configFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 	private void sendConsoleMessage(String msg) {
