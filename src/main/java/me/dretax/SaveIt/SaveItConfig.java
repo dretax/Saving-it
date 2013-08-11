@@ -96,9 +96,9 @@ public class SaveItConfig {
         } catch (Exception e) {
             e.printStackTrace();
         }
-		/*
-		 * Regural Variables
-		 */
+        /*
+         * Regural Variables
+         */
         EnableMsg = config.getBoolean("EnableSaveMSG");
         CheckForUpdates = config.getBoolean("CheckForUpdates");
         SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
@@ -107,9 +107,9 @@ public class SaveItConfig {
         SaveAllWorlds = config.getBoolean("SaveAllWorlds");
         BroadCastErrorIg = config.getBoolean("BroadCastWorldErrorIg");
         ExWorlds = config.getStringList("Worlds");
-		/*
-		 * Special Savings
-		 */
+        /*
+        * Special Savings
+         */
         SaveOnLogin = config.getBoolean("ExtraOptions.SaveOnLogin");
         SaveOnLoginCount = config.getInt("ExtraOptions.SaveOnLoginCount");
         SaveOnQuit = config.getBoolean("ExtraOptions.SaveOnQuit");

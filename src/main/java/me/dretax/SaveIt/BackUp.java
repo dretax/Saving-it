@@ -31,6 +31,7 @@ public class BackUp {
 
     protected void check()
     {
+        // Check if SaveItBackups folder doesn't exist, and create it.
         File ff;
         ff = new File(rootdir, "SaveItBackups");
         if(!ff.exists()) {
@@ -58,13 +59,16 @@ public class BackUp {
                     }
                     // If we already put the Date there
                     else {
+                        // If the Date is in the YML older than the current Date
                         if (SaveItConfig.Date <= timeStamp) {
+                            // Set the newest Date
                             SaveItConfig.config.set(String.valueOf("BackUp.Date"), date);
                             try {
                                 SaveItConfig.config.save(SaveItConfig.configFile);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                            // Backup
                             backupdir();
                         }
                     }
@@ -176,10 +180,14 @@ public class BackUp {
 
     protected void delZip() {
         File folder = new File(rootdir + "/SaveItBackups/");
+        // List files
         File[] fileList = folder.listFiles();
+        // Assert it
         assert fileList != null;
+        // Make the purgetime. Basically defines that how old should the file be, to get deleted
         long purgeTime = System.currentTimeMillis() - (SaveItConfig.daysBack * 24 * 60 * 60 * 1000);
         for(File listFile : fileList) {
+            // If It's older, delete it.
             if(listFile.lastModified() < purgeTime) {
                 listFile.delete();
             }
@@ -201,7 +209,6 @@ public class BackUp {
     }
 
     private void sendConsoleMessage(String msg) {
-        //_cs = Bukkit.getServer().getConsoleSender();
         // My Nice Colored Console Message Prefix.
         p._cs.sendMessage(p._prefix + ChatColor.AQUA + msg);
     }
