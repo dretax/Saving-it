@@ -118,7 +118,7 @@ public class Main extends JavaPlugin {
                 WorldSaveDelayed();
             }
         }
-                , 1200L * Delay, 1200L * Delay);
+        , 1200L * Delay, 1200L * Delay);
 		/*
 		 * Others
 		 */
@@ -275,7 +275,7 @@ public class Main extends JavaPlugin {
                     Bukkit.savePlayers();
                 }
             }
-                    , 20L * Delay2);
+            , 20L * Delay2);
         }
         if (!SaveItConfig.SaveAllWorlds) {
             // Checking if an Existing World is written in the Config
