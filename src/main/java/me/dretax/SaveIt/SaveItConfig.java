@@ -3,6 +3,7 @@ package me.dretax.SaveIt;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,7 +26,7 @@ public class SaveItConfig {
     protected File configFile;
     protected double intv;
     protected Double StartOnAGivenHour;
-    protected List<String> ExWorlds = Arrays.asList(new String[] { "world"});
+    protected List<String> ExWorlds = Arrays.asList(new String[]{"world"});
     Main p;
 
     protected SaveItConfig(Main i) {
@@ -33,12 +34,12 @@ public class SaveItConfig {
     }
 
     protected void create() {
-        if(!Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder().exists()) Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder().mkdir();
+        if (!Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder().exists())
+            Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder().mkdir();
         configFile = new File(Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder(), "config.yml");
         if ((configFile.exists())) {
             load();
-        }
-        else {
+        } else {
             try {
                 configFile.createNewFile();
             } catch (Exception e) {
@@ -138,7 +139,8 @@ public class SaveItConfig {
             try {
                 Date parsedTime = new SimpleDateFormat("HH:mm").parse(startTime);
                 StartOnAGivenHour = p.h(parsedTime);
-            }  catch (ParseException ignored) {}
+            } catch (ParseException ignored) {
+            }
         }
     }
 }

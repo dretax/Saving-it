@@ -29,12 +29,11 @@ public class BackUp {
         p._cs = Bukkit.getServer().getConsoleSender();
     }
 
-    protected void check()
-    {
+    protected void check() {
         // Check if SaveItBackups folder doesn't exist, and create it.
         File ff;
         ff = new File(rootdir, "SaveItBackups");
-        if(!ff.exists()) {
+        if (!ff.exists()) {
             ff.mkdirs();
         }
     }
@@ -44,7 +43,7 @@ public class BackUp {
         if (SaveItConfig.EnableBackup) {
             //String timeStamp = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
             long timeStamp = System.currentTimeMillis() / 1000L;
-            long date = timeStamp + SaveItConfig.DateIntv*24*60*60;
+            long date = timeStamp + SaveItConfig.DateIntv * 24 * 60 * 60;
             if (SaveItConfig.AutoBackup) {
                 // Check if we are using the Given Daily Backup
                 if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
@@ -77,10 +76,9 @@ public class BackUp {
         }
     }
 
-    protected void backupdir()
-    {
+    protected void backupdir() {
         SaveItConfig.load();
-        if(SaveItConfig.Debug) {
+        if (SaveItConfig.Debug) {
             sendConsoleMessage(ChatColor.GREEN + "Starting Backup.....");
         }
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "saveit save");
@@ -88,7 +86,7 @@ public class BackUp {
             String n = SaveItConfig.config.getString("BackUp.WarningMSG");
             Bukkit.getServer().broadcastMessage(colorize(n));
         }
-        if(!SaveItConfig.DisableDefaultWorldSave) {
+        if (!SaveItConfig.DisableDefaultWorldSave) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-off");
         }
         if (SaveItConfig.KickBackup) {
@@ -103,12 +101,11 @@ public class BackUp {
             File[] fileList = folder.listFiles();
             assert fileList != null;
             for (File file : fileList) {
-                if(file.isDirectory()) {
-                    if(!file.getName().equalsIgnoreCase("SaveItBackups")) {
+                if (file.isDirectory()) {
+                    if (!file.getName().equalsIgnoreCase("SaveItBackups")) {
                         zipDir(file.getAbsolutePath(), zos);
                     }
-                }
-                else {
+                } else {
                     zipDir(file.getAbsolutePath(), zos);
                 }
             }
@@ -120,21 +117,19 @@ public class BackUp {
                 Bukkit.getServer().broadcastMessage(colorize(n));
             }
             kcheck();
-        }catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
-        if(!SaveItConfig.DisableDefaultWorldSave) {
+        if (!SaveItConfig.DisableDefaultWorldSave) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-on");
         }
-        if(SaveItConfig.Debug) {
+        if (SaveItConfig.Debug) {
             sendConsoleMessage(ChatColor.GREEN + "Done!");
         }
     }
 
-    private void zipDir(String dir2zip, ZipOutputStream zos)
-    {
-        try
-        {
+    private void zipDir(String dir2zip, ZipOutputStream zos) {
+        try {
             //create a new File object based on the directory we
             //have to zip File
             File zipDir = new File(dir2zip);
@@ -143,11 +138,9 @@ public class BackUp {
             byte[] readBuffer = new byte[2156];
             int bytesIn = 0;
             //loop through dirList, and zip the files
-            for(int i=0; i<dirList.length; i++)
-            {
+            for (int i = 0; i < dirList.length; i++) {
                 File f = new File(zipDir, dirList[i]);
-                if(f.isDirectory())
-                {
+                if (f.isDirectory()) {
                     //if the File object is a directory, call this
                     //function again to add its content recursively
                     String filePath = f.getPath();
@@ -164,16 +157,13 @@ public class BackUp {
                 //place the zip entry in the ZipOutputStream object
                 zos.putNextEntry(anEntry);
                 //now write the content of the file to the ZipOutputStream
-                while((bytesIn = fis.read(readBuffer)) != -1)
-                {
+                while ((bytesIn = fis.read(readBuffer)) != -1) {
                     zos.write(readBuffer, 0, bytesIn);
                 }
                 //close the Stream
                 fis.close();
             }
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             //handle exception
         }
     }
@@ -186,9 +176,9 @@ public class BackUp {
         assert fileList != null;
         // Make the purgetime. Basically defines that how old should the file be, to get deleted
         long purgeTime = System.currentTimeMillis() - (SaveItConfig.daysBack * 24 * 60 * 60 * 1000);
-        for(File listFile : fileList) {
+        for (File listFile : fileList) {
             // If It's older, delete it.
-            if(listFile.lastModified() < purgeTime) {
+            if (listFile.lastModified() < purgeTime) {
                 listFile.delete();
             }
         }
@@ -197,7 +187,7 @@ public class BackUp {
     private String colorize(String s) {
         // This little code supports coloring.
         // If String is null it will return null
-        if(s == null) return null;
+        if (s == null) return null;
         // Extra Stuff, taken from My SimpleNames Plugin
         s = s.replaceAll("&r", ChatColor.RESET + "");
         s = s.replaceAll("&l", ChatColor.BOLD + "");
