@@ -27,7 +27,7 @@ public class SaveItExpansions implements Listener {
         this.SaveItConfig = i2;
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler
     private void onPlayerLoginEvent(PlayerLoginEvent e) {
         if (SaveItConfig.SaveOnLogin) {
             this.logins += 1;

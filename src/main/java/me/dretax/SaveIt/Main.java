@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,12 +24,13 @@ public class Main extends JavaPlugin {
     private int Delay, Delay2;
     protected PluginManager _pm;
     protected ConsoleCommandSender _cs;
-    protected String _prefix = ChatColor.AQUA + "[SaveIt] ";
+    protected final String _prefix = ChatColor.AQUA + "[SaveIt] ";
     protected Boolean isLatest;
     protected String latestVersion;
     private SaveItConfig SaveItConfig = new SaveItConfig(this);
     private SaveItExpansions expansions = new SaveItExpansions(this, SaveItConfig);
     private BackUp backup = new BackUp(this, SaveItConfig);
+	protected FileConfiguration config;
 
     public void onDisable() {
         if (SaveItConfig.SaveOnDisable) {
@@ -41,9 +43,8 @@ public class Main extends JavaPlugin {
     }
 
     public void onEnable() {
+		config = getConfig();
         SaveItConfig.create();
-        SaveItConfig.load();
-        Checkv();
         backup.check();
         backup.kcheck();
         backup.delZip();
@@ -111,7 +112,7 @@ public class Main extends JavaPlugin {
 		 * Delay
 		 */
 
-        Delay = SaveItConfig.config.getInt("DelayInMinutes");
+        Delay = config.getInt("DelayInMinutes");
 
         Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
             public void run() {
@@ -168,13 +169,13 @@ public class Main extends JavaPlugin {
             if (args[0].equalsIgnoreCase("add")) {
                 if (sender.hasPermission("saveit.manage")) {
                     if (args.length == 2) {
-                        SaveItConfig.config = getConfig();
+                        config = getConfig();
                         SaveItConfig.load();
                         if (!SaveItConfig.ExWorlds.contains(args[1])) {
                             SaveItConfig.ExWorlds.add(args[1]);
-                            SaveItConfig.config.set("Worlds", SaveItConfig.ExWorlds);
+                            config.set("Worlds", SaveItConfig.ExWorlds);
                             try {
-                                SaveItConfig.config.save(SaveItConfig.configFile);
+                                config.save(SaveItConfig.configFile);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -189,13 +190,13 @@ public class Main extends JavaPlugin {
             if (args[0].equalsIgnoreCase("remove")) {
                 if (sender.hasPermission("saveit.manage")) {
                     if (args.length == 2) {
-                        SaveItConfig.config = getConfig();
+                        config = getConfig();
                         SaveItConfig.load();
                         if (SaveItConfig.ExWorlds.contains(args[1])) {
                             SaveItConfig.ExWorlds.remove(args[1]);
-                            SaveItConfig.config.set("Worlds", SaveItConfig.ExWorlds);
+                            config.set("Worlds", SaveItConfig.ExWorlds);
                             try {
-                                SaveItConfig.config.save(SaveItConfig.configFile);
+                                config.save(SaveItConfig.configFile);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -210,7 +211,7 @@ public class Main extends JavaPlugin {
             if (args[0].equalsIgnoreCase("list")) {
                 if (sender.hasPermission("saveit.manage")) {
                     if (!SaveItConfig.SaveAllWorlds) {
-                        SaveItConfig.config = getConfig();
+                        config = getConfig();
                         SaveItConfig.load();
                         sender.sendMessage(_prefix + ChatColor.GREEN + SaveItConfig.ExWorlds);
                     } else {
@@ -244,12 +245,12 @@ public class Main extends JavaPlugin {
 
     protected void WorldSaveDelayed() {
         // Getting Variables
-        SaveItConfig.config = getConfig();
-        SaveItConfig.EnableMsg = SaveItConfig.config.getBoolean("EnableSaveMSG");
-        SaveItConfig.SavePlayersFully = SaveItConfig.config.getBoolean("SavePlayersEverywhere");
-        SaveItConfig.PowerSave = SaveItConfig.config.getBoolean("EnablePowerSave");
-        SaveItConfig.SaveAllWorlds = SaveItConfig.config.getBoolean("SaveAllWorlds");
-        SaveItConfig.BroadCastErrorIg = SaveItConfig.config.getBoolean("BroadCastWorldErrorIg");
+        config = getConfig();
+        SaveItConfig.EnableMsg = config.getBoolean("EnableSaveMSG");
+        SaveItConfig.SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
+        SaveItConfig.PowerSave = config.getBoolean("EnablePowerSave");
+        SaveItConfig.SaveAllWorlds = config.getBoolean("SaveAllWorlds");
+        SaveItConfig.BroadCastErrorIg = config.getBoolean("BroadCastWorldErrorIg");
 
         if (SaveItConfig.PowerSave) {
             int players = this.getServer().getOnlinePlayers().length;
@@ -260,7 +261,7 @@ public class Main extends JavaPlugin {
         Delay2 = 1;
         // Checking on "EnableSaveMSG".
         if (SaveItConfig.EnableMsg) {
-            Bukkit.getServer().broadcastMessage(colorize(SaveItConfig.config.getString("SaveMSG")));
+            Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG")));
         }
 		
 		
@@ -328,7 +329,7 @@ public class Main extends JavaPlugin {
         }
 
         if (SaveItConfig.EnableMsg) {
-            Bukkit.getServer().broadcastMessage(colorize(SaveItConfig.config.getString("SaveMSG2")));
+            Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG2")));
         }
     }
 
@@ -360,113 +361,6 @@ public class Main extends JavaPlugin {
         }
     }
 
-    private void Checkv() {
-        if (!SaveItConfig.config.contains("BroadCastWorldErrorIg")) {
-            SaveItConfig.config.set("BroadCastWorldErrorIg", false);
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.EnableBackup")) {
-            SaveItConfig.config.set("BackUp.EnableBackup", false);
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.EnableBackupMSG")) {
-            SaveItConfig.config.set("BackUp.EnableBackupMSG", true);
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.WarningMSG")) {
-            SaveItConfig.config.set("BackUp.WarningMSG", "&2Warning! Backup has been executed!");
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.WarningMSG2")) {
-            SaveItConfig.config.set("BackUp.WarningMSG2", "&aBackup Finished!");
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.BackupHoursInterval")) {
-            SaveItConfig.config.set("BackUp.BackupHoursInterval", 1.0);
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.EnableAutoBackup")) {
-            SaveItConfig.config.set("BackUp.EnableAutoBackup", false);
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.EnablePlayerKickWhileBackup")) {
-            SaveItConfig.config.set("BackUp.EnablePlayerKickWhileBackup", false);
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.IntervalOrDay")) {
-            SaveItConfig.config.set("BackUp.IntervalOrDay", "INTERVAL");
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.Date")) {
-            SaveItConfig.config.set("BackUp.Date", 0);
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.DateDayDelay")) {
-            SaveItConfig.config.set("BackUp.DateDayDelay", 7);
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.EnableBackupPurge")) {
-            SaveItConfig.config.set("BackUp.EnableBackupPurge", false);
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (!SaveItConfig.config.contains("BackUp.RemoveBackupXAfterDay")) {
-            SaveItConfig.config.set("BackUp.RemoveBackupXAfterDay", 4);
-            try {
-                SaveItConfig.config.save(SaveItConfig.configFile);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private void sendConsoleMessage(String msg) {
         // My Nice Colored Console Message Prefix.
         _cs.sendMessage(_prefix + ChatColor.AQUA + msg);
@@ -487,9 +381,9 @@ public class Main extends JavaPlugin {
     }
 
     private void ConfigReload() {
-        SaveItConfig.config = getConfig();
+        config = getConfig();
         SaveItConfig.load();
-        Delay = SaveItConfig.config.getInt("DelayInMinutes");
+        Delay = config.getInt("DelayInMinutes");
         if (SaveItConfig.Debug) {
             sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
         }
@@ -511,4 +405,5 @@ public class Main extends JavaPlugin {
     protected double h(Date t) {
         return t.getHours() + t.getMinutes() / 60. + t.getSeconds() / 3600.;
     }
+
 }
