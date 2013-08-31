@@ -4,26 +4,25 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-public class SaveItUpdate
-{
+public class SaveItUpdate {
 	/*
 	 * @Author: DreTaX | SaveIt Update Checker File, rewritten from scratch.
 	 */
-	
+
 	private Main plugin;
 	String updateVersion;
 	int curVer;
 	int updateVer;
 
-    protected SaveItUpdate(Main instance)
-	{
+	protected SaveItUpdate(Main instance) {
 		this.plugin = instance;
 	}
 
-    protected Boolean isLatest() {
+	protected Boolean isLatest() {
 		sendConsoleMessage(ChatColor.GREEN + "Checking for updates. Please wait.");
 		try {
 			updateVer = 0;
@@ -44,19 +43,19 @@ public class SaveItUpdate
 			sendConsoleMessage(ChatColor.GREEN + "No Updates Found...You are cool! :D");
 			in.close();
 			return true;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			sendConsoleMessage(ChatColor.GREEN + "Error Occured while check, notify DreTaX!");
-		}return true;
+		}
+		return true;
 	}
 
-    protected String getUpdateVersion() {
+	protected String getUpdateVersion() {
 		return this.updateVersion;
 	}
 
-    private void sendConsoleMessage(String msg) {
+	private void sendConsoleMessage(String msg) {
 		plugin._cs.sendMessage(plugin._prefix + ChatColor.AQUA + msg);
 	}
-  
+
 }
