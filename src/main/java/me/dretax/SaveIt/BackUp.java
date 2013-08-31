@@ -175,10 +175,14 @@ public class BackUp {
 		// Make the purgetime. Basically defines that how old should the file be, to get deleted
 		long purgeTime = System.currentTimeMillis() - (SaveItConfig.daysBack * 24 * 60 * 60 * 1000);
 		long lastModifiedTime = 0;
+		// Yeah has to be null...
 		File lastModifiedFile = null;
+		// We don't want to cache nullpoints so lets assert it
 		assert lastModifiedFile != null;
+		// Find the files
 		for (File listFile : fileList) {
 			long last = listFile.lastModified();
+			// Catch the lastmodified file
 			if (last > lastModifiedTime) {
 				lastModifiedTime = last;
 				lastModifiedFile = listFile;
@@ -189,9 +193,13 @@ public class BackUp {
 			}
 			// If maxbackup is enabled
 			if (SaveItConfig.MaxBackups) {
+				// If the size is bigger than X
 				if (fileList.length > SaveItConfig.maxbackups) {
+					// Get the lastmodified file's size
 					double bytes = lastModifiedFile.length();
+					// Check if It's not 0
 					if (bytes > 0) {
+						// Delete it
 						lastModifiedFile.delete();
 					}
 				}
