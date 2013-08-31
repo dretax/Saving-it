@@ -404,5 +404,4 @@ public class Main extends JavaPlugin {
 	protected double h(Date t) {
 		return t.getHours() + t.getMinutes() / 60. + t.getSeconds() / 3600.;
 	}
-
 }

@@ -15,7 +15,7 @@ import java.util.zip.ZipOutputStream;
  * User: DreTaX
  * Date: 2013.07.22.
  * Time: 21:28
- * Backup System BETA
+ * Backup System
  */
 public class BackUp {
 	private String rootdir = Bukkit.getServer().getWorldContainer().getPath();
@@ -175,7 +175,7 @@ public class BackUp {
 		// Make the purgetime. Basically defines that how old should the file be, to get deleted
 		long purgeTime = System.currentTimeMillis() - (SaveItConfig.daysBack * 24 * 60 * 60 * 1000);
 		long lastModifiedTime = 0;
-		// Yeah has to be null...
+		// Yeah has to be null, because of the size...
 		File lastModifiedFile = null;
 		// We don't want to cache nullpoints so lets assert it
 		assert lastModifiedFile != null;
