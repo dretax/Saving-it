@@ -1,0 +1,17 @@
+name: SaveItP
+main: me.dretax.SaveIt.MainP
+version: 1.0
+authors: [DreTaX]
+commands:
+  saveit:
+    description: Main Command Lister.
+permissions:
+    saveit.save:
+        description: For the /saveit save command
+        default: op
+    saveit.reload:
+        description: For the /saveit reload command
+        default: op
+    saveit.manage:
+        description: For the /saveit [add/remove/list] command
+        default: op
