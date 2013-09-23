@@ -26,7 +26,7 @@ public class SaveItConfig {
 	protected List<String> ExWorlds = Arrays.asList(new String[]{"world"}), Directory = Arrays.asList(new String[]{"thisisntgoingtobebackuped"});
 	Main p;
 
-	public SaveItConfig(Main i) {
+	protected SaveItConfig(Main i) {
 		this.p = i;
 	}
 
@@ -72,6 +72,7 @@ public class SaveItConfig {
 		p.config.addDefault("BackUp.DirectoryNotToBackup", Directory);
 		p.config.options().copyDefaults(true);
 		p.saveConfig();
+		load();
 	}
 
 	protected void load() {
