@@ -16,8 +16,8 @@ import java.util.List;
  * Time: 19:41
  */
 public class SaveItConfig {
-	protected boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup, PurgeBackups, MaxBackups;
-	protected int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv, maxbackups, daysBack;
+	protected boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup, PurgeBackups, MaxBackups, Ch;
+	protected int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv, maxbackups, daysBack, chtime;
 	protected long Date;
 	protected String Decide;
 	protected File configFile;
@@ -54,6 +54,8 @@ public class SaveItConfig {
 		p.config.addDefault("EnablePowerSave", false);
 		p.config.addDefault("SaveAllWorlds", false);
 		p.config.addDefault("BroadCastWorldErrorIg", false);
+		p.config.addDefault("EnableChunkUnloading", false);
+		p.config.addDefault("ChTime", 30);
 		p.config.addDefault("BackUp.EnableBackup", false);
 		p.config.addDefault("BackUp.EnableBackupMSG", true);
 		p.config.addDefault("BackUp.EnableAutoBackup", false);
@@ -121,6 +123,8 @@ public class SaveItConfig {
 		daysBack = p.config.getInt("BackUp.RemoveBackupXAfterDay");
 		maxbackups = p.config.getInt("BackUp.MaxBackups");
 		MaxBackups = p.config.getBoolean("BackUp.EnableMaxBackups");
+		Ch = p.config.getBoolean("EnableChunkUnloading");
+		chtime = p.config.getInt("ChTime");
 		p.config.getString("BackUp.WarningMSG");
 		p.config.getString("BackUp.WarningMSG2");
 		String startTime = p.config.getString("BackUp.time");

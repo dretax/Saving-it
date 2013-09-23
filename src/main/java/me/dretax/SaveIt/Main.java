@@ -6,6 +6,7 @@ import java.util.Date;
 import me.dretax.SaveIt.metrics.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -134,6 +135,19 @@ public class Main extends JavaPlugin {
 			SaveItUpdate updateChecker = new SaveItUpdate(this);
 			isLatest = updateChecker.isLatest();
 			latestVersion = updateChecker.getUpdateVersion();
+		}
+
+		if (SaveItConfig.Ch) {
+			Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+				public void run() {
+					for (World w : Bukkit.getWorlds()) {
+						for (Chunk c : w.getLoadedChunks()) {
+							c.unload();
+						}
+					}
+				}
+			}
+			, 1200L * SaveItConfig.chtime, 1200L * SaveItConfig.chtime);
 		}
 
 		_pm.registerEvents(this.expansions, this);
