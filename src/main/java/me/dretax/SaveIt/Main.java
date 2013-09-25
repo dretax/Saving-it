@@ -284,6 +284,7 @@ public class Main extends JavaPlugin {
 			sender.sendMessage(ChatColor.BLUE + "/saveit remove " + ChatColor.YELLOW + "WORLDNAME (Case Sensitive)" + ChatColor.GREEN + " - Removes a Given World from Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit list" + ChatColor.GREEN + " - Lists Current Worlds in Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit backup" + ChatColor.GREEN + " - Creates a Zip of all your Server Folders");
+			sender.sendMessage(ChatColor.BLUE + "/saveit update" + ChatColor.GREEN + " - Download the Latest Update");
 		}
 		return false;
 
