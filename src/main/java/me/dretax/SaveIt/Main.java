@@ -121,7 +121,7 @@ public class Main extends JavaPlugin {
 				WorldSaveDelayed();
 			}
 		}
-				, 1200L * Delay, 1200L * Delay);
+		, 1200L * Delay, 1200L * Delay);
 		/*
 		 * Others
 		 */
@@ -155,7 +155,7 @@ public class Main extends JavaPlugin {
 					}
 				}
 			}
-					, 1200L * SaveItConfig.chtime, 1200L * SaveItConfig.chtime);
+			, 1200L * SaveItConfig.chtime, 1200L * SaveItConfig.chtime);
 		}
 
 		_pm.registerEvents(this.expansions, this);
@@ -253,12 +253,19 @@ public class Main extends JavaPlugin {
 			if (args[0].equalsIgnoreCase("update")) {
 				if (sender.hasPermission("saveit.manage")) {
 					sender.sendMessage(_prefix + ChatColor.GREEN + "Updating...");
-					SaveItUpdate saveItUpdate = new SaveItUpdate(this, "automatically-world-saving", this.getFile(), SaveItUpdate.UpdateType.NO_VERSION_CHECK, true);
-					update = saveItUpdate.getResult() == SaveItUpdate.UpdateResult.SUCCESS;
+					SaveItUpdate saveItUpdate = new SaveItUpdate(this, "automatically-world-saving", this.getFile(), SaveItUpdate.UpdateType.NO_DOWNLOAD, false);
+					update = saveItUpdate.getResult() == SaveItUpdate.UpdateResult.UPDATE_AVAILABLE;
 					if (update) {
-						sender.sendMessage(_prefix + ChatColor.GREEN + "Success! Restart or Reload to make changes!");
-					} else {
-						sender.sendMessage(_prefix + ChatColor.RED + "Update failed, check console!");
+						SaveItUpdate saveItUpdate2 = new SaveItUpdate(this, "automatically-world-saving", this.getFile(), SaveItUpdate.UpdateType.NO_VERSION_CHECK, true);
+						update = saveItUpdate2.getResult() == SaveItUpdate.UpdateResult.SUCCESS;
+						if (update) {
+							sender.sendMessage(_prefix + ChatColor.GREEN + "Success! Restart or Reload to make changes!");
+						} else {
+							sender.sendMessage(_prefix + ChatColor.RED + "Update failed, check console!");
+						}
+					}
+					else {
+						sender.sendMessage(_prefix + ChatColor.RED + "You already have the latest version!");
 					}
 				}
 			}
