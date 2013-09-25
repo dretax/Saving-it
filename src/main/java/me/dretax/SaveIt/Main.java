@@ -128,7 +128,13 @@ public class Main extends JavaPlugin {
 
 		if (SaveItConfig.DisableDefaultWorldSave) {
 			FileConfiguration bukkit = YamlConfiguration.loadConfiguration(new File(getServer().getWorldContainer(), "bukkit.yml"));
+			File fb = new File("bukkit.yml");
 			bukkit.set("ticks-per.autosave", 0);
+			try {
+				bukkit.save(fb);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		if (SaveItConfig.CheckForUpdates) {
