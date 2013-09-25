@@ -136,8 +136,8 @@ public class BackUp {
 			byte[] readBuffer = new byte[2156];
 			int bytesIn = 0;
 			//loop through dirList, and zip the files
-			for (int i = 0; i < dirList.length; i++) {
-				File f = new File(zipDir, dirList[i]);
+			for (String aDirList : dirList) {
+				File f = new File(zipDir, aDirList);
 				if (f.isDirectory()) {
 					//if the File object is a directory, call this
 					//function again to add its content recursively
@@ -177,8 +177,6 @@ public class BackUp {
 		long lastModifiedTime = 0;
 		// Yeah has to be null, because of the size...
 		File lastModifiedFile = null;
-		// We don't want to cache nullpoints so lets assert it
-		assert lastModifiedFile != null;
 		// Find the files
 		for (File listFile : fileList) {
 			long last = listFile.lastModified();
@@ -195,8 +193,8 @@ public class BackUp {
 			if (SaveItConfig.MaxBackups) {
 				// If the size is bigger than X
 				if (fileList.length > SaveItConfig.maxbackups) {
-					// Get the lastmodified file's size
-					double bytes = lastModifiedFile.length();
+					// Get the lastmodified file's size , without getting null pointer exceptions
+					double bytes = lastModifiedFile != null ? lastModifiedFile.length() : 0;
 					// Check if It's not 0
 					if (bytes > 0) {
 						// Delete it

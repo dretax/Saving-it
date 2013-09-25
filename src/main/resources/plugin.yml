@@ -16,7 +16,7 @@ permissions:
         description: For the /saveit selfsave command
         default: op
     saveit.manage:
-        description: For the /saveit [add/remove/list] command
+        description: For the /saveit [add/remove/list/update] command
         default: op
     saveit.backup:
         description: For the /saveit backup command

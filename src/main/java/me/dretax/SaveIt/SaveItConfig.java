@@ -39,7 +39,7 @@ public class SaveItConfig {
 		p.config.addDefault("SaveMSG2", "&aWorld save completed!");
 		p.config.addDefault("SavePlayersEverywhere", false);
 		p.config.addDefault("CheckForUpdates", true);
-		p.config.addDefault("DisableDefaultWorldSave", true);
+		p.config.addDefault("DisableDefaultWorldSave", false);
 		p.config.addDefault("ExtraOptions.SaveOnLogin", false);
 		p.config.addDefault("ExtraOptions.SaveOnLoginCount", 50);
 		p.config.addDefault("ExtraOptions.SaveOnQuit", false);
@@ -86,7 +86,7 @@ public class SaveItConfig {
 			e.printStackTrace();
 		}
 		/*
-         * Regural Variables
+		 * Regural Variables
          */
 		EnableMsg = p.config.getBoolean("EnableSaveMSG");
 		CheckForUpdates = p.config.getBoolean("CheckForUpdates");
@@ -127,6 +127,7 @@ public class SaveItConfig {
 		chtime = p.config.getInt("ChTime");
 		p.config.getString("BackUp.WarningMSG");
 		p.config.getString("BackUp.WarningMSG2");
+		p.reloadConfig();
 		String startTime = p.config.getString("BackUp.time");
 		if (startTime != null) {
 			try {
