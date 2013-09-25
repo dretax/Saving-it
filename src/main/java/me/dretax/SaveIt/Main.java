@@ -1,5 +1,6 @@
 package me.dretax.SaveIt;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
@@ -12,6 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -125,9 +127,8 @@ public class Main extends JavaPlugin {
 		 */
 
 		if (SaveItConfig.DisableDefaultWorldSave) {
-			for (World world : Bukkit.getWorlds()) {
-				world.setAutoSave(false);
-			}
+			FileConfiguration bukkit = YamlConfiguration.loadConfiguration(new File(getServer().getWorldContainer(), "bukkit.yml"));
+			bukkit.set("ticks-per.autosave", 0);
 		}
 
 		if (SaveItConfig.CheckForUpdates) {
