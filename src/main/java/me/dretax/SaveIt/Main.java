@@ -3,9 +3,7 @@ package me.dretax.SaveIt;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-
 import me.dretax.SaveIt.metrics.Metrics;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -58,11 +56,11 @@ public class Main extends JavaPlugin {
 					long t = (long) (72000 * SaveItConfig.intv);
 					if (t > 0) {
 						long delay = SaveItConfig.StartOnAGivenHour != null ? s(SaveItConfig.StartOnAGivenHour) : t;
-						Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+						getServer().getScheduler().runTaskTimer(this, new Runnable() {
 							@Override
 							public void run() {
 								if (SaveItConfig.PowerSave) {
-									int players = Bukkit.getServer().getOnlinePlayers().length;
+									int players = getServer().getOnlinePlayers().length;
 									if (players != 0) {
 										backup.backupdir();
 									}
@@ -75,7 +73,7 @@ public class Main extends JavaPlugin {
 					}
 				}
 				if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
-					Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+					getServer().getScheduler().runTaskTimer(this, new Runnable() {
 						public void run() {
 							backup.kcheck();
 						}
@@ -84,7 +82,7 @@ public class Main extends JavaPlugin {
 				}
 			}
 			if (SaveItConfig.PurgeBackups) {
-				Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+				getServer().getScheduler().runTaskTimer(this, new Runnable() {
 					public void run() {
 						backup.delZip();
 					}
@@ -116,12 +114,12 @@ public class Main extends JavaPlugin {
 
 		Delay = config.getInt("DelayInMinutes");
 
-		Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+		getServer().getScheduler().runTaskTimer(this, new Runnable() {
 			public void run() {
 				WorldSaveDelayed();
 			}
 		}
-		, 1200L * Delay, 1200L * Delay);
+		, 120L * Delay, 120L * Delay);
 		/*
 		 * Others
 		 */
@@ -152,9 +150,9 @@ public class Main extends JavaPlugin {
 		}
 
 		if (SaveItConfig.Ch) {
-			Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+			getServer().getScheduler().runTaskTimer(this, new Runnable() {
 				public void run() {
-					for (World w : Bukkit.getWorlds()) {
+					for (World w : getServer().getWorlds()) {
 						for (Chunk c : w.getLoadedChunks()) {
 							c.unload();
 						}
@@ -250,7 +248,13 @@ public class Main extends JavaPlugin {
 			if (args[0].equalsIgnoreCase("backup")) {
 				if (sender.hasPermission("saveit.backup")) {
 					if (SaveItConfig.EnableBackup) {
-						sender.sendMessage(_prefix + ChatColor.GREEN + "StandBy...");
+						backup.delZip();
+						sender.sendMessage(_prefix + ChatColor.GREEN + "StandBy, backup starts in 5 seconds...");
+						try {
+							Thread.sleep(6000);
+						} catch(InterruptedException ex) {
+							Thread.currentThread().interrupt();
+						}
 						backup.backupdir();
 					} else sender.sendMessage(_prefix + ChatColor.RED + "Backup Mode isn't Enabled!");
 
@@ -291,33 +295,25 @@ public class Main extends JavaPlugin {
 	}
 
 	protected void WorldSaveDelayed() {
-		// Getting Variables
-		config = getConfig();
-		SaveItConfig.EnableMsg = config.getBoolean("EnableSaveMSG");
-		SaveItConfig.SavePlayersFully = config.getBoolean("SavePlayersEverywhere");
-		SaveItConfig.PowerSave = config.getBoolean("EnablePowerSave");
-		SaveItConfig.SaveAllWorlds = config.getBoolean("SaveAllWorlds");
-		SaveItConfig.BroadCastErrorIg = config.getBoolean("BroadCastWorldErrorIg");
-
 		if (SaveItConfig.PowerSave) {
-			int players = this.getServer().getOnlinePlayers().length;
+			int players = getServer().getOnlinePlayers().length;
 			if (players == 0) {
 				return;
 			}
 		}
 		Delay2 = 1;
 		// Checking on "EnableSaveMSG".
-		if (SaveItConfig.EnableMsg) Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG")));
+		if (SaveItConfig.EnableMsg) getServer().broadcastMessage(colorize(config.getString("SaveMSG")));
 
 		/* Full Save On Players, if Enabled
 		 * If not, It will only Save Players in
 		 * The Configured Worlds
 		 */
 		if (SaveItConfig.SavePlayersFully) {
-			Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+			getServer().getScheduler().runTaskLater(this, new Runnable() {
 				public void run() {
 					Delay2 += 1;
-					Bukkit.savePlayers();
+					getServer().savePlayers();
 				}
 			}
 			, 20L * Delay2);
@@ -325,14 +321,14 @@ public class Main extends JavaPlugin {
 		if (!SaveItConfig.SaveAllWorlds) {
 			// Checking if an Existing World is written in the Config
 			for (final String worldname : SaveItConfig.ExWorlds) {
-				if (Bukkit.getWorld(worldname) != null) {
-					Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+				if (getServer().getWorld(worldname) != null) {
+					getServer().getScheduler().runTaskLater(this, new Runnable() {
 						public void run() {
 							Delay2 += 1;
-							Bukkit.getWorld(worldname).save();
+							getServer().getWorld(worldname).save();
 							// Getting All The Players, and Saving Them, only in the Configured Worlds.
 							if (!SaveItConfig.SavePlayersFully) {
-								for (Player player : Bukkit.getWorld(worldname).getPlayers()) {
+								for (Player player : getServer().getWorld(worldname).getPlayers()) {
 									player.saveData();
 								}
 							}
@@ -343,8 +339,8 @@ public class Main extends JavaPlugin {
 					sendConsoleMessage(ChatColor.RED + "[ERROR] Not Existing World in Config!");
 					sendConsoleMessage(ChatColor.RED + "[ERROR] " + ChatColor.BLUE + worldname + ChatColor.RED + " does not exist! Remove it from the config!");
 					if (SaveItConfig.BroadCastErrorIg) {
-						Bukkit.getServer().broadcastMessage(_prefix + ChatColor.RED + "[ERROR] Not Existing World In Config!");
-						Bukkit.getServer().broadcastMessage(_prefix + ChatColor.RED + "[ERROR] " + ChatColor.BLUE + worldname + ChatColor.RED + " does not exist! Remove it from the config!");
+						getServer().broadcastMessage(_prefix + ChatColor.RED + "[ERROR] Not Existing World In Config!");
+						getServer().broadcastMessage(_prefix + ChatColor.RED + "[ERROR] " + ChatColor.BLUE + worldname + ChatColor.RED + " does not exist! Remove it from the config!");
 					}
 				}
 			}
@@ -355,8 +351,8 @@ public class Main extends JavaPlugin {
 		*/
 		else {
 			// Getting Worlds, and Saving Them.
-			for (final World world : Bukkit.getWorlds()) {
-				Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+			for (final World world : getServer().getWorlds()) {
+				getServer().getScheduler().runTaskLater(this, new Runnable() {
 					public void run() {
 						Delay2 += 1;
 						world.save();
@@ -372,17 +368,17 @@ public class Main extends JavaPlugin {
 			}
 		}
 
-		if (SaveItConfig.EnableMsg) Bukkit.getServer().broadcastMessage(colorize(config.getString("SaveMSG2")));
+		if (SaveItConfig.EnableMsg) getServer().broadcastMessage(colorize(config.getString("SaveMSG2")));
 	}
 
 	private void WorldSaveOnStop() {
 		SaveItConfig.load();
 
 		if (SaveItConfig.SavePlayersFully) {
-			Bukkit.savePlayers();
+			getServer().savePlayers();
 		}
 
-		for (World world : Bukkit.getWorlds()) {
+		for (World world : getServer().getWorlds()) {
 			if (!SaveItConfig.SaveAllWorlds) {
 				if ((SaveItConfig.ExWorlds).contains(world.getName())) {
 					world.save();

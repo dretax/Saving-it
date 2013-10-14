@@ -25,13 +25,12 @@ public class BackUp {
 	protected BackUp(Main i, SaveItConfig i2) {
 		this.p = i;
 		this.SaveItConfig = i2;
-		p._cs = Bukkit.getServer().getConsoleSender();
+		gP()._cs = Bukkit.getServer().getConsoleSender();
 	}
 
 	protected void check() {
 		// Check if SaveItBackups folder doesn't exist, and create it.
-		File ff;
-		ff = new File(rootdir, "SaveItBackups");
+		File ff = new File(rootdir, "SaveItBackups");
 		if (!ff.exists()) {
 			ff.mkdirs();
 		}
@@ -47,9 +46,9 @@ public class BackUp {
 				if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
 					// If we didn't put the time to the Date yet.
 					if (SaveItConfig.Date == 0) {
-						p.config.set(String.valueOf("BackUp.Date"), date);
+						gP().config.set(String.valueOf("BackUp.Date"), date);
 						try {
-							p.config.save(SaveItConfig.configFile);
+							gP().config.save(SaveItConfig.configFile);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -59,9 +58,9 @@ public class BackUp {
 						// If the Date is in the YML older than the current Date
 						if (SaveItConfig.Date <= timeStamp) {
 							// Set the newest Date
-							p.config.set(String.valueOf("BackUp.Date"), date);
+							gP().config.set(String.valueOf("BackUp.Date"), date);
 							try {
-								p.config.save(SaveItConfig.configFile);
+								gP().config.save(SaveItConfig.configFile);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -76,13 +75,12 @@ public class BackUp {
 
 	protected void backupdir() {
 		SaveItConfig.load();
-		delZip();
 		if (SaveItConfig.Debug) {
 			sendConsoleMessage(ChatColor.GREEN + "Starting Backup.....");
 		}
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "saveit save");
 		if (SaveItConfig.EnableBackupMSG) {
-			String n = p.config.getString("BackUp.WarningMSG");
+			String n = gP().config.getString("BackUp.WarningMSG");
 			Bukkit.getServer().broadcastMessage(colorize(n));
 		}
 		if (!SaveItConfig.DisableDefaultWorldSave) {
@@ -112,7 +110,7 @@ public class BackUp {
 			//remember close it
 			zos.close();
 			if (SaveItConfig.EnableBackupMSG) {
-				String n = p.config.getString("BackUp.WarningMSG2");
+				String n = gP().config.getString("BackUp.WarningMSG2");
 				Bukkit.getServer().broadcastMessage(colorize(n));
 			}
 		} catch (IOException ex) {
@@ -144,7 +142,7 @@ public class BackUp {
 					String filePath = f.getPath();
 					zipDir(filePath, zos);
 					//loop again
-					continue;
+					//continue;
 				}
 				//if we reached here, the File object f was not
 				//a directory
@@ -176,21 +174,12 @@ public class BackUp {
 		long purgeTime = System.currentTimeMillis() - (SaveItConfig.daysBack * 24 * 60 * 60 * 1000);
 		long lastModifiedTime = 0;
 		// Yeah has to be null, because of the size...
-		File lastModifiedFile = null;
 		// Find the files
+		File lastModifiedFile = null;
 		for (File listFile : fileList) {
-			long last = listFile.lastModified();
-			// Catch the lastmodified file
-			if (last > lastModifiedTime) {
-				lastModifiedTime = last;
-				lastModifiedFile = listFile;
-			}
-			// If It's older, delete it.
-			if (listFile.lastModified() < purgeTime) {
-				listFile.delete();
-			}
 			// If maxbackup is enabled
 			if (SaveItConfig.MaxBackups) {
+				long last = listFile.lastModified();
 				// If the size is bigger than X
 				if (fileList.length > SaveItConfig.maxbackups) {
 					// Get the lastmodified file's size , without getting null pointer exceptions
@@ -200,6 +189,15 @@ public class BackUp {
 						// Delete it
 						lastModifiedFile.delete();
 					}
+				}
+				// Catch the lastmodified file
+				if (last > lastModifiedTime) {
+					lastModifiedTime = last;
+					lastModifiedFile = listFile;
+				}
+				// If It's older, delete it.
+				if (listFile.lastModified() < purgeTime) {
+					listFile.delete();
 				}
 			}
 		}
@@ -221,7 +219,10 @@ public class BackUp {
 
 	private void sendConsoleMessage(String msg) {
 		// My Nice Colored Console Message Prefix.
-		p._cs = p.getServer().getConsoleSender();
-		p._cs.sendMessage(p._prefix + ChatColor.AQUA + msg);
+		Bukkit.getConsoleSender().sendMessage(gP()._prefix + ChatColor.AQUA + msg);
+	}
+
+	private Main gP() {
+		return this.p;
 	}
 }

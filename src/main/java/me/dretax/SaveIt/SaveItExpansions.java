@@ -1,5 +1,6 @@
 package me.dretax.SaveIt;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,12 +19,12 @@ public class SaveItExpansions implements Listener {
 	private int breaks = 0;
 	private int logins = 0;
 	private int quits = 0;
-	Main plugin;
+	Main p;
 	SaveItConfig SaveItConfig;
 
 
 	protected SaveItExpansions(Main i, SaveItConfig i2) {
-		this.plugin = i;
+		this.p = i;
 		this.SaveItConfig = i2;
 	}
 
@@ -32,7 +33,7 @@ public class SaveItExpansions implements Listener {
 		if (SaveItConfig.SaveOnLogin) {
 			this.logins += 1;
 			if (this.logins == (SaveItConfig.SaveOnLoginCount)) {
-				plugin.WorldSaveDelayed();
+				gP().WorldSaveDelayed();
 				this.logins -= (SaveItConfig.SaveOnLoginCount);
 				if (SaveItConfig.Debug) {
 					sendConsoleMessage(ChatColor.GREEN + "Login limit reached, reseted!");
@@ -46,7 +47,7 @@ public class SaveItExpansions implements Listener {
 		if (SaveItConfig.SaveOnQuit) {
 			this.quits += 1;
 			if (this.quits == (SaveItConfig.SaveOnQuitCount)) {
-				plugin.WorldSaveDelayed();
+				gP().WorldSaveDelayed();
 				this.quits -= (SaveItConfig.SaveOnQuitCount);
 				if (SaveItConfig.Debug) {
 					sendConsoleMessage(ChatColor.GREEN + "Quit limit reached, reseted!");
@@ -60,7 +61,7 @@ public class SaveItExpansions implements Listener {
 		if (SaveItConfig.SaveOnBlockPlace) {
 			this.places += 1;
 			if (this.places == (SaveItConfig.SaveOnBlockPlacecount)) {
-				plugin.WorldSaveDelayed();
+				gP().WorldSaveDelayed();
 				this.places -= (SaveItConfig.SaveOnBlockPlacecount);
 				if (SaveItConfig.Debug) {
 					sendConsoleMessage(ChatColor.GREEN + "Place limit reached, reseted!");
@@ -74,7 +75,7 @@ public class SaveItExpansions implements Listener {
 		if (SaveItConfig.SaveOnBlockBreak) {
 			this.breaks += 1;
 			if (this.breaks == (SaveItConfig.SaveOnBlockBreakcount)) {
-				plugin.WorldSaveDelayed();
+				gP().WorldSaveDelayed();
 				this.breaks -= (SaveItConfig.SaveOnBlockBreakcount);
 				if (SaveItConfig.Debug) {
 					sendConsoleMessage(ChatColor.GREEN + "Break limit reached, reseted!");
@@ -85,6 +86,10 @@ public class SaveItExpansions implements Listener {
 
 	private void sendConsoleMessage(String msg) {
 		// My Nice Colored Console Message Prefix.
-		plugin._cs.sendMessage(plugin._prefix + ChatColor.AQUA + msg);
+		Bukkit.getConsoleSender().sendMessage(gP()._prefix + ChatColor.AQUA + msg);
+	}
+
+	private Main gP() {
+		return this.p;
 	}
 }
