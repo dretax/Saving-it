@@ -15,8 +15,8 @@ import java.util.List;
  * Time: 19:41
  */
 public class SaveItConfig {
-	protected boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, SaveOnDisable, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup, PurgeBackups, MaxBackups, Ch;
-	protected int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv, maxbackups, daysBack, chtime;
+	protected boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup, PurgeBackups, MaxBackups;
+	protected int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv, maxbackups, daysBack;
 	protected long Date;
 	protected String Decide;
 	protected File configFile;
@@ -47,14 +47,11 @@ public class SaveItConfig {
 		p.config.addDefault("ExtraOptions.SaveOnBlockPlace", false);
 		p.config.addDefault("ExtraOptions.SaveOnBlockBreakcount", 500);
 		p.config.addDefault("ExtraOptions.SaveOnBlockPlacecount", 500);
-		p.config.addDefault("ExtraOptions.SaveOnDisable", true);
 		p.config.addDefault("ExtraOptions.EnableSelfInventorySave", false);
 		p.config.addDefault("ExtraOptions.EnableDebugMSGs", false);
 		p.config.addDefault("EnablePowerSave", false);
 		p.config.addDefault("SaveAllWorlds", false);
 		p.config.addDefault("BroadCastWorldErrorIg", false);
-		p.config.addDefault("EnableChunkUnloading", false);
-		p.config.addDefault("ChTime", 30);
 		p.config.addDefault("BackUp.EnableBackup", false);
 		p.config.addDefault("BackUp.EnableBackupMSG", true);
 		p.config.addDefault("BackUp.EnableAutoBackup", false);
@@ -107,7 +104,6 @@ public class SaveItConfig {
 		SaveOnBlockPlace = p.config.getBoolean("ExtraOptions.SaveOnBlockPlace");
 		SaveOnBlockBreakcount = p.config.getInt("ExtraOptions.SaveOnBlockBreakcount");
 		SaveOnBlockPlacecount = p.config.getInt("ExtraOptions.SaveOnBlockPlacecount");
-		SaveOnDisable = p.config.getBoolean("ExtraOptions.SaveOnDisable");
 		SelfInventorySave = p.config.getBoolean("ExtraOptions.EnableSelfInventorySave");
 		Debug = p.config.getBoolean("ExtraOptions.EnableDebugMSGs");
 		EnableBackup = p.config.getBoolean("BackUp.EnableBackup");
@@ -122,8 +118,6 @@ public class SaveItConfig {
 		daysBack = p.config.getInt("BackUp.RemoveBackupXAfterDay");
 		maxbackups = p.config.getInt("BackUp.MaxBackups");
 		MaxBackups = p.config.getBoolean("BackUp.EnableMaxBackups");
-		Ch = p.config.getBoolean("EnableChunkUnloading");
-		chtime = p.config.getInt("ChTime");
 		p.config.getString("BackUp.WarningMSG");
 		p.config.getString("BackUp.WarningMSG2");
 		p.reloadConfig();
@@ -136,6 +130,4 @@ public class SaveItConfig {
 			}
 		}
 	}
-
-
 }

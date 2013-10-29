@@ -142,7 +142,7 @@ public class BackUp {
 					String filePath = f.getPath();
 					zipDir(filePath, zos);
 					//loop again
-					//continue;
+					continue;
 				}
 				//if we reached here, the File object f was not
 				//a directory

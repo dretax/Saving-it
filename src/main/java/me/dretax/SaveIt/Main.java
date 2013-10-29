@@ -25,7 +25,7 @@ public class Main extends JavaPlugin {
 	private int Delay, Delay2;
 	protected PluginManager _pm;
 	protected ConsoleCommandSender _cs;
-	protected final String _prefix = ChatColor.AQUA + "[SaveIt] ";
+	protected String _prefix = ChatColor.AQUA + "[SaveIt] ";
 	private SaveItConfig SaveItConfig = new SaveItConfig(this);
 	private SaveItExpansions expansions = new SaveItExpansions(this, SaveItConfig);
 	private BackUp backup = new BackUp(this, SaveItConfig);
@@ -33,12 +33,6 @@ public class Main extends JavaPlugin {
 	private boolean update = false;
 
 	public void onDisable() {
-		if (SaveItConfig.SaveOnDisable) {
-			WorldSaveOnStop();
-			if (SaveItConfig.Debug) {
-				sendConsoleMessage(ChatColor.YELLOW + "Saved on Disable!");
-			}
-		}
 		super.onDisable();
 	}
 
@@ -74,6 +68,7 @@ public class Main extends JavaPlugin {
 				}
 				if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
 					getServer().getScheduler().runTaskTimer(this, new Runnable() {
+						@Override
 						public void run() {
 							backup.kcheck();
 						}
@@ -83,6 +78,7 @@ public class Main extends JavaPlugin {
 			}
 			if (SaveItConfig.PurgeBackups) {
 				getServer().getScheduler().runTaskTimer(this, new Runnable() {
+					@Override
 					public void run() {
 						backup.delZip();
 					}
@@ -96,15 +92,11 @@ public class Main extends JavaPlugin {
 		try {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
-			if (SaveItConfig.Debug) {
-				sendConsoleMessage(ChatColor.GREEN + "SaveIt Metrics Successfully Enabled!");
-			}
+			if (SaveItConfig.Debug) sendConsoleMessage(ChatColor.GREEN + "SaveIt Metrics Successfully Enabled!");
 		}
 		// Couldn't Connect.
 		catch (IOException localIOException) {
-			if (SaveItConfig.Debug) {
-				sendConsoleMessage(ChatColor.RED + "SaveIt Metrics Failed to boot! Notify DreTaX!");
-			}
+			if (SaveItConfig.Debug) sendConsoleMessage(ChatColor.RED + "SaveIt Metrics Failed to boot! Notify DreTaX!");
 		}
 		getCommand("saveit").setExecutor(this);
 
@@ -119,7 +111,7 @@ public class Main extends JavaPlugin {
 				WorldSaveDelayed();
 			}
 		}
-		, 120L * Delay, 120L * Delay);
+		, 1200L * Delay, 1200L * Delay);
 		/*
 		 * Others
 		 */
@@ -149,20 +141,9 @@ public class Main extends JavaPlugin {
 			}
 		}
 
-		if (SaveItConfig.Ch) {
-			getServer().getScheduler().runTaskTimer(this, new Runnable() {
-				public void run() {
-					for (World w : getServer().getWorlds()) {
-						for (Chunk c : w.getLoadedChunks()) {
-							c.unload();
-						}
-					}
-				}
-			}
-			, 1200L * SaveItConfig.chtime, 1200L * SaveItConfig.chtime);
+		if (SaveItConfig.SaveOnLogin || SaveItConfig.SaveOnQuit || SaveItConfig.SaveOnBlockBreak || SaveItConfig.SaveOnBlockPlace) {
+			_pm.registerEvents(this.expansions, this);
 		}
-
-		_pm.registerEvents(this.expansions, this);
 		sendConsoleMessage(ChatColor.GREEN + "Successfully Enabled!");
 	}
 
@@ -194,6 +175,11 @@ public class Main extends JavaPlugin {
 			if (args[0].equalsIgnoreCase("add")) {
 				if (sender.hasPermission("saveit.manage")) {
 					if (args.length == 2) {
+						if (SaveItConfig.SaveAllWorlds) {
+							sender.sendMessage(_prefix + ChatColor.GREEN + "You are Saving all Existing Worlds.");
+							sender.sendMessage(_prefix + ChatColor.GREEN + "You don't need this.");
+							return false;
+						}
 						config = getConfig();
 						SaveItConfig.load();
 						if (!SaveItConfig.ExWorlds.contains(args[1])) {
@@ -215,6 +201,11 @@ public class Main extends JavaPlugin {
 			if (args[0].equalsIgnoreCase("remove")) {
 				if (sender.hasPermission("saveit.manage")) {
 					if (args.length == 2) {
+						if (SaveItConfig.SaveAllWorlds) {
+							sender.sendMessage(_prefix + ChatColor.GREEN + "You are Saving all Existing Worlds.");
+							sender.sendMessage(_prefix + ChatColor.GREEN + "You don't need this.");
+							return false;
+						}
 						config = getConfig();
 						SaveItConfig.load();
 						if (SaveItConfig.ExWorlds.contains(args[1])) {
@@ -250,12 +241,12 @@ public class Main extends JavaPlugin {
 					if (SaveItConfig.EnableBackup) {
 						backup.delZip();
 						sender.sendMessage(_prefix + ChatColor.GREEN + "StandBy, backup starts in 5 seconds...");
-						try {
-							Thread.sleep(6000);
-						} catch(InterruptedException ex) {
-							Thread.currentThread().interrupt();
+						getServer().getScheduler().runTaskLater(this, new Runnable() {
+							public void run() {
+								backup.backupdir();
+							}
 						}
-						backup.backupdir();
+						, 20L * 5);
 					} else sender.sendMessage(_prefix + ChatColor.RED + "Backup Mode isn't Enabled!");
 
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
@@ -280,7 +271,7 @@ public class Main extends JavaPlugin {
 				}
 			}
 		} else {
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.1.2 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.1.3 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW + "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
@@ -305,12 +296,13 @@ public class Main extends JavaPlugin {
 		// Checking on "EnableSaveMSG".
 		if (SaveItConfig.EnableMsg) getServer().broadcastMessage(colorize(config.getString("SaveMSG")));
 
-		/* Full Save On Players, if Enabled
+		/** Full Save On Players, if Enabled
 		 * If not, It will only Save Players in
 		 * The Configured Worlds
 		 */
 		if (SaveItConfig.SavePlayersFully) {
 			getServer().getScheduler().runTaskLater(this, new Runnable() {
+				@Override
 				public void run() {
 					Delay2 += 1;
 					getServer().savePlayers();
@@ -323,6 +315,7 @@ public class Main extends JavaPlugin {
 			for (final String worldname : SaveItConfig.ExWorlds) {
 				if (getServer().getWorld(worldname) != null) {
 					getServer().getScheduler().runTaskLater(this, new Runnable() {
+						@Override
 						public void run() {
 							Delay2 += 1;
 							getServer().getWorld(worldname).save();
@@ -345,7 +338,7 @@ public class Main extends JavaPlugin {
 				}
 			}
 		}
-	   /* If SaveAllWorlds is true
+	   /** If SaveAllWorlds is true
 		* We will Save all the worlds instead of the configured one
 		* Also Calling Performance Method here
 		*/
@@ -353,6 +346,7 @@ public class Main extends JavaPlugin {
 			// Getting Worlds, and Saving Them.
 			for (final World world : getServer().getWorlds()) {
 				getServer().getScheduler().runTaskLater(this, new Runnable() {
+					@Override
 					public void run() {
 						Delay2 += 1;
 						world.save();
@@ -369,34 +363,6 @@ public class Main extends JavaPlugin {
 		}
 
 		if (SaveItConfig.EnableMsg) getServer().broadcastMessage(colorize(config.getString("SaveMSG2")));
-	}
-
-	private void WorldSaveOnStop() {
-		SaveItConfig.load();
-
-		if (SaveItConfig.SavePlayersFully) {
-			getServer().savePlayers();
-		}
-
-		for (World world : getServer().getWorlds()) {
-			if (!SaveItConfig.SaveAllWorlds) {
-				if ((SaveItConfig.ExWorlds).contains(world.getName())) {
-					world.save();
-					if (!SaveItConfig.SavePlayersFully) {
-						for (Player player : world.getPlayers()) {
-							player.saveData();
-						}
-					}
-				}
-			} else {
-				world.save();
-				if (!SaveItConfig.SavePlayersFully) {
-					for (Player player : world.getPlayers()) {
-						player.saveData();
-					}
-				}
-			}
-		}
 	}
 
 	private void sendConsoleMessage(String msg) {
@@ -422,9 +388,7 @@ public class Main extends JavaPlugin {
 		config = getConfig();
 		SaveItConfig.load();
 		Delay = config.getInt("DelayInMinutes");
-		if (SaveItConfig.Debug) {
-			sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
-		}
+		if (SaveItConfig.Debug) sendConsoleMessage(ChatColor.GREEN + "Config Reloaded!");
 	}
 
 	@SuppressWarnings("unused")
