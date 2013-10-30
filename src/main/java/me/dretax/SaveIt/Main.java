@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Date;
 import me.dretax.SaveIt.metrics.Metrics;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -129,10 +128,10 @@ public class Main extends JavaPlugin {
 
 		if (SaveItConfig.CheckForUpdates) {
 			sendConsoleMessage(ChatColor.GREEN + "Checking for updates.....");
-			SaveItUpdate saveItUpdate = new SaveItUpdate(this, "automatically-world-saving", this.getFile(), SaveItUpdate.UpdateType.NO_DOWNLOAD, false);
+			SaveItUpdate saveItUpdate = new SaveItUpdate(this, 33841, this.getFile(), SaveItUpdate.UpdateType.NO_DOWNLOAD, false);
 			update = saveItUpdate.getResult() == SaveItUpdate.UpdateResult.UPDATE_AVAILABLE;
 			if (update) {
-				sendConsoleMessage(ChatColor.GREEN + "New Update Available! Version: " + ChatColor.RED + saveItUpdate.getLatestVersionString());
+				sendConsoleMessage(ChatColor.GREEN + "New Update Available! Version: " + ChatColor.RED + saveItUpdate.getLatestName());
 				sendConsoleMessage(ChatColor.GREEN + "Your Version: " + _pm.getPlugin("SaveIt").getDescription().getVersion());
 				sendConsoleMessage(ChatColor.GREEN + "Download at: http://dev.bukkit.org/bukkit-plugins/automatically-world-saving/");
 				sendConsoleMessage(ChatColor.GREEN + "Or simply type /saveit update to update it automatically");
@@ -254,10 +253,10 @@ public class Main extends JavaPlugin {
 			if (args[0].equalsIgnoreCase("update")) {
 				if (sender.hasPermission("saveit.manage")) {
 					sender.sendMessage(_prefix + ChatColor.GREEN + "Updating...");
-					SaveItUpdate saveItUpdate = new SaveItUpdate(this, "automatically-world-saving", this.getFile(), SaveItUpdate.UpdateType.NO_DOWNLOAD, false);
+					SaveItUpdate saveItUpdate = new SaveItUpdate(this, 33841, this.getFile(), SaveItUpdate.UpdateType.NO_DOWNLOAD, false);
 					update = saveItUpdate.getResult() == SaveItUpdate.UpdateResult.UPDATE_AVAILABLE;
 					if (update) {
-						SaveItUpdate saveItUpdate2 = new SaveItUpdate(this, "automatically-world-saving", this.getFile(), SaveItUpdate.UpdateType.NO_VERSION_CHECK, true);
+						SaveItUpdate saveItUpdate2 = new SaveItUpdate(this, 33841, this.getFile(), SaveItUpdate.UpdateType.NO_VERSION_CHECK, true);
 						update = saveItUpdate2.getResult() == SaveItUpdate.UpdateResult.SUCCESS;
 						if (update) {
 							sender.sendMessage(_prefix + ChatColor.GREEN + "Success! Restart or Reload to make changes!");
