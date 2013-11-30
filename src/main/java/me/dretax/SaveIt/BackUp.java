@@ -91,7 +91,6 @@ public class BackUp {
 				p.kickPlayer("");
 			}
 		}
-		//ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(rootdir + "/SaveItBackups/SaveItBackup" + timeStamp + ".zip"));
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
 		String zipFile = rootdir + "/SaveItBackups/SaveItBackup" + timeStamp + ".zip";
 		File f = new File(rootdir);
