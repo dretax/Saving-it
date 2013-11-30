@@ -3,7 +3,6 @@ package me.dretax.SaveIt;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -18,9 +17,10 @@ import java.util.zip.ZipOutputStream;
  * Backup System
  */
 public class BackUp {
-	private String rootdir = Bukkit.getServer().getWorldContainer().getPath();
+	private String rootdir = Bukkit.getServer().getWorldContainer().getAbsolutePath();
 	Main p;
 	private SaveItConfig SaveItConfig = new SaveItConfig(p);
+	private final int BUFFER_SIZE = 4096;
 
 	protected BackUp(Main i, SaveItConfig i2) {
 		this.p = i;
@@ -91,30 +91,20 @@ public class BackUp {
 				p.kickPlayer("");
 			}
 		}
+		//ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(rootdir + "/SaveItBackups/SaveItBackup" + timeStamp + ".zip"));
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+		String zipFile = rootdir + "/SaveItBackups/SaveItBackup" + timeStamp + ".zip";
+		File f = new File(rootdir);
+		File[] flist = f.listFiles();
+		assert flist != null;
 		try {
-			ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(rootdir + "/SaveItBackups/SaveItBackup" + timeStamp + ".zip"));
-			File folder = new File(rootdir);
-			File[] fileList = folder.listFiles();
-			assert fileList != null;
-			for (File file : fileList) {
-				if (file.isDirectory()) {
-					if ((!file.getName().equalsIgnoreCase("SaveItBackups")) && (!SaveItConfig.Directory.contains(file.getName()))) {
-						zipDir(file.getAbsolutePath(), zos);
-					}
-				} else {
-					zipDir(file.getAbsolutePath(), zos);
-				}
-			}
-			zos.closeEntry();
-			//remember close it
-			zos.close();
-			if (SaveItConfig.EnableBackupMSG) {
-				String n = gP().config.getString("BackUp.WarningMSG2");
-				Bukkit.getServer().broadcastMessage(colorize(n));
-			}
-		} catch (IOException ex) {
-			ex.printStackTrace();
+			backup(flist, zipFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (SaveItConfig.EnableBackupMSG) {
+			String n = gP().config.getString("BackUp.WarningMSG2");
+			Bukkit.getServer().broadcastMessage(colorize(n));
 		}
 		if (!SaveItConfig.DisableDefaultWorldSave) {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-on");
@@ -124,44 +114,67 @@ public class BackUp {
 		}
 	}
 
-	private void zipDir(String dir2zip, ZipOutputStream zos) {
-		try {
-			//create a new File object based on the directory we
-			//have to zip File
-			File zipDir = new File(dir2zip);
-			//get a listing of the directory content
-			String[] dirList = zipDir.list();
-			byte[] readBuffer = new byte[2156];
-			int bytesIn = 0;
-			//loop through dirList, and zip the files
-			for (String aDirList : dirList) {
-				File f = new File(zipDir, aDirList);
-				if (f.isDirectory()) {
-					//if the File object is a directory, call this
-					//function again to add its content recursively
-					String filePath = f.getPath();
-					zipDir(filePath, zos);
-					//loop again
-					continue;
+	private void backup(File[] listFiles, String destZipFile) throws IOException {
+		ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(destZipFile));
+		for (File file : listFiles) {
+			if (!SaveItConfig.Directory.contains(file.getName()) && !file.getName().equalsIgnoreCase("SaveItBackup") && !file.getName().equalsIgnoreCase("SaveItBackups")) {
+				if (file.isDirectory()) {
+					addFolderToZip(file, file.getName(), zos);
+				} else {
+					addFileToZip(file, zos);
 				}
-				//if we reached here, the File object f was not
-				//a directory
-				//create a FileInputStream on top of f
-				FileInputStream fis = new FileInputStream(f);
-				//create a new zip entry
-				ZipEntry anEntry = new ZipEntry(f.getPath());
-				//place the zip entry in the ZipOutputStream object
-				zos.putNextEntry(anEntry);
-				//now write the content of the file to the ZipOutputStream
-				while ((bytesIn = fis.read(readBuffer)) != -1) {
-					zos.write(readBuffer, 0, bytesIn);
-				}
-				//close the Stream
-				fis.close();
+				if (SaveItConfig.Debug) sendConsoleMessage("Adding file: " + file.getName());
 			}
-		} catch (Exception e) {
-			//handle exception
 		}
+
+		zos.flush();
+		zos.close();
+	}
+
+	private void addFolderToZip(File folder, String parentFolder, ZipOutputStream zos) throws IOException {
+		File[] listFilesOfFolder = folder.listFiles();
+		assert listFilesOfFolder != null;
+		for (File file : listFilesOfFolder) {
+			if (file.isDirectory()) {
+				addFolderToZip(file, parentFolder + "/" + file.getName(), zos);
+				continue;
+			}
+
+			zos.putNextEntry(new ZipEntry(parentFolder + "/" + file.getName()));
+
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+
+			long bytesRead = 0;
+			byte[] bytesIn = new byte[BUFFER_SIZE];
+			int read = 0;
+
+			while ((read = bis.read(bytesIn)) != -1) {
+				zos.write(bytesIn, 0, read);
+				bytesRead += read;
+			}
+
+			zos.closeEntry();
+
+		}
+	}
+
+	private void addFileToZip(File file, ZipOutputStream zos) throws IOException {
+		String name = file.getName();
+		if (!name.endsWith(".lck")) {
+			zos.putNextEntry(new ZipEntry(file.getName()));
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+
+			long bytesRead = 0;
+			byte[] bytesIn = new byte[BUFFER_SIZE];
+			int read = 0;
+
+			while ((read = bis.read(bytesIn)) != -1) {
+				zos.write(bytesIn, 0, read);
+				bytesRead += read;
+			}
+		}
+
+		zos.closeEntry();
 	}
 
 	protected void delZip() {
@@ -203,23 +216,17 @@ public class BackUp {
 		}
 	}
 
+
 	private String colorize(String s) {
 		// This little code supports coloring.
 		// If String is null it will return null
 		if (s == null) return null;
-		// Extra Stuff, taken from My SimpleNames Plugin
-		s = s.replaceAll("&r", ChatColor.RESET + "");
-		s = s.replaceAll("&l", ChatColor.BOLD + "");
-		s = s.replaceAll("&m", ChatColor.STRIKETHROUGH + "");
-		s = s.replaceAll("&o", ChatColor.ITALIC + "");
-		s = s.replaceAll("&n", ChatColor.UNDERLINE + "");
-		//This one Supports all the Default Colors
-		return s.replaceAll("&([0-9a-f])", "\u00A7$1");
+		return ChatColor.translateAlternateColorCodes('&', s);
 	}
 
 	private void sendConsoleMessage(String msg) {
 		// My Nice Colored Console Message Prefix.
-		Bukkit.getConsoleSender().sendMessage(gP()._prefix + ChatColor.AQUA + msg);
+		Bukkit.getConsoleSender().sendMessage(gP()._prefix + ChatColor.GREEN + msg);
 	}
 
 	private Main gP() {

@@ -65,7 +65,7 @@ public class Main extends JavaPlugin {
 						, delay, t);
 					}
 				}
-				if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
+				else if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
 					getServer().getScheduler().runTaskTimer(this, new Runnable() {
 						@Override
 						public void run() {
@@ -153,13 +153,13 @@ public class Main extends JavaPlugin {
 					WorldSaveDelayed();
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 			}
-			if (args[0].equalsIgnoreCase("reload")) {
+			else if (args[0].equalsIgnoreCase("reload")) {
 				if (sender.hasPermission("saveit.reload")) {
 					ConfigReload();
 					sender.sendMessage(_prefix + ChatColor.GREEN + "Config Reloaded! Check Console for Errors, If Config doesn't Work");
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 			}
-			if (args[0].equalsIgnoreCase("selfsave")) {
+			else if (args[0].equalsIgnoreCase("selfsave")) {
 				if (SaveItConfig.SelfInventorySave) {
 					if (sender.hasPermission("saveit.selfsave")) {
 						if (!(sender instanceof Player)) {
@@ -171,7 +171,7 @@ public class Main extends JavaPlugin {
 					} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 				} else sender.sendMessage(_prefix + ChatColor.RED + "This Option isn't Enabled!");
 			}
-			if (args[0].equalsIgnoreCase("add")) {
+			else if (args[0].equalsIgnoreCase("add")) {
 				if (sender.hasPermission("saveit.manage")) {
 					if (args.length == 2) {
 						if (SaveItConfig.SaveAllWorlds) {
@@ -197,7 +197,7 @@ public class Main extends JavaPlugin {
 					} else sender.sendMessage(_prefix + ChatColor.RED + "Specify a World Name!");
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 			}
-			if (args[0].equalsIgnoreCase("remove")) {
+			else if (args[0].equalsIgnoreCase("remove")) {
 				if (sender.hasPermission("saveit.manage")) {
 					if (args.length == 2) {
 						if (SaveItConfig.SaveAllWorlds) {
@@ -223,7 +223,7 @@ public class Main extends JavaPlugin {
 					} else sender.sendMessage(_prefix + ChatColor.RED + "Specify a World Name!");
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 			}
-			if (args[0].equalsIgnoreCase("list")) {
+			else if (args[0].equalsIgnoreCase("list")) {
 				if (sender.hasPermission("saveit.manage")) {
 					if (!SaveItConfig.SaveAllWorlds) {
 						config = getConfig();
@@ -235,7 +235,7 @@ public class Main extends JavaPlugin {
 					}
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 			}
-			if (args[0].equalsIgnoreCase("backup")) {
+			else if (args[0].equalsIgnoreCase("backup")) {
 				if (sender.hasPermission("saveit.backup")) {
 					if (SaveItConfig.EnableBackup) {
 						backup.delZip();
@@ -250,7 +250,7 @@ public class Main extends JavaPlugin {
 
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 			}
-			if (args[0].equalsIgnoreCase("update")) {
+			else if (args[0].equalsIgnoreCase("update")) {
 				if (sender.hasPermission("saveit.manage")) {
 					sender.sendMessage(_prefix + ChatColor.GREEN + "Updating...");
 					SaveItUpdate saveItUpdate = new SaveItUpdate(this, 33841, this.getFile(), SaveItUpdate.UpdateType.NO_DOWNLOAD, false);
@@ -270,7 +270,7 @@ public class Main extends JavaPlugin {
 				}
 			}
 		} else {
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.1.3 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.1.4 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW + "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
@@ -312,29 +312,29 @@ public class Main extends JavaPlugin {
 		if (!SaveItConfig.SaveAllWorlds) {
 			// Checking if an Existing World is written in the Config
 			for (final String worldname : SaveItConfig.ExWorlds) {
-				if (getServer().getWorld(worldname) != null) {
-					getServer().getScheduler().runTaskLater(this, new Runnable() {
-						@Override
-						public void run() {
-							Delay2 += 1;
-							getServer().getWorld(worldname).save();
-							// Getting All The Players, and Saving Them, only in the Configured Worlds.
-							if (!SaveItConfig.SavePlayersFully) {
-								for (Player player : getServer().getWorld(worldname).getPlayers()) {
-									player.saveData();
-								}
-							}
-						}
-					}
-					, 20L * Delay2);
-				} else {
+				if (getServer().getWorld(worldname) == null) {
 					sendConsoleMessage(ChatColor.RED + "[ERROR] Not Existing World in Config!");
 					sendConsoleMessage(ChatColor.RED + "[ERROR] " + ChatColor.BLUE + worldname + ChatColor.RED + " does not exist! Remove it from the config!");
 					if (SaveItConfig.BroadCastErrorIg) {
 						getServer().broadcastMessage(_prefix + ChatColor.RED + "[ERROR] Not Existing World In Config!");
 						getServer().broadcastMessage(_prefix + ChatColor.RED + "[ERROR] " + ChatColor.BLUE + worldname + ChatColor.RED + " does not exist! Remove it from the config!");
 					}
+					return;
 				}
+				getServer().getScheduler().runTaskLater(this, new Runnable() {
+					@Override
+					public void run() {
+						Delay2 += 1;
+						getServer().getWorld(worldname).save();
+						// Getting All The Players, and Saving Them, only in the Configured Worlds.
+						if (!SaveItConfig.SavePlayersFully) {
+							for (Player player : getServer().getWorld(worldname).getPlayers()) {
+								player.saveData();
+							}
+						}
+					}
+				}
+				, 20L * Delay2);
 			}
 		}
 	   /** If SaveAllWorlds is true
@@ -366,21 +366,14 @@ public class Main extends JavaPlugin {
 
 	private void sendConsoleMessage(String msg) {
 		// My Nice Colored Console Message Prefix.
-		_cs.sendMessage(_prefix + ChatColor.AQUA + msg);
+		_cs.sendMessage(_prefix + ChatColor.GREEN + msg);
 	}
 
 	private String colorize(String s) {
 		// This little code supports coloring.
 		// If String is null it will return null
 		if (s == null) return null;
-		// Extra Stuff, taken from My SimpleNames Plugin
-		s = s.replaceAll("&r", ChatColor.RESET + "");
-		s = s.replaceAll("&l", ChatColor.BOLD + "");
-		s = s.replaceAll("&m", ChatColor.STRIKETHROUGH + "");
-		s = s.replaceAll("&o", ChatColor.ITALIC + "");
-		s = s.replaceAll("&n", ChatColor.UNDERLINE + "");
-		//This one Supports all the Default Colors
-		return s.replaceAll("&([0-9a-f])", "\u00A7$1");
+		return ChatColor.translateAlternateColorCodes('&', s);
 	}
 
 	private void ConfigReload() {
