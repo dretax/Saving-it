@@ -83,31 +83,6 @@ public class SaveItExpansions implements Listener {
 		Bukkit.getConsoleSender().sendMessage(gP()._prefix + ChatColor.AQUA + msg);
 	}
 
-	List<String> thosewhohadntsayhello = new ArrayList<String>();
-
-	@EventHandler
-	public void onPlayerChat(AsyncPlayerChatEvent e)
-	{
-		Player p = e.getPlayer();
-
-		if (thosewhohadntsayhello.contains(p.getName())) {
-			if(!e.getMessage().contains("Hello"))
-			{
-				p.sendMessage("First you must type: " + ChatColor.RED + "Hello" + ChatColor.WHITE + " then you can send messages.");
-				e.setCancelled(true);
-			}
-			else {
-				thosewhohadntsayhello.remove(p.getName());
-			}
-		}
-	}
-
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent e) {
-		Player p = e.getPlayer();
-		thosewhohadntsayhello.add(p.getName());
-	}
-
 	private Main gP() {
 		return this.p;
 	}
