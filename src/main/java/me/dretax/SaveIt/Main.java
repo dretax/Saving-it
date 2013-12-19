@@ -211,12 +211,7 @@ public class Main extends JavaPlugin {
 					if (getSaveItConfig().EnableBackup) {
 						backup.delZip();
 						sender.sendMessage(_prefix + ChatColor.GREEN + "StandBy, backup starts in 5 seconds...");
-						getServer().getScheduler().runTaskLater(this, new Runnable() {
-							public void run() {
-								backup.backupdir();
-							}
-						}
-						, 20L * 5);
+						getSaveItManager().StartManualBackup();
 					} else sender.sendMessage(_prefix + ChatColor.RED + "Backup Mode isn't Enabled!");
 
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");

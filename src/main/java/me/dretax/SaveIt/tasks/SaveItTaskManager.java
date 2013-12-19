@@ -54,6 +54,9 @@ public class SaveItTaskManager {
 		_bukkitScheduler.runTaskLater(p, new SaveAllPlayers(), 20L * Delay2);
 	}
 
+	public void StartManualBackup() {
+		_bukkitScheduler.runTaskLater(p, new StartManualBackup(), 20L * 5);
+	}
 	@SuppressWarnings("unused")
 	private long s(double s) {
 		double n = h(new Date());
