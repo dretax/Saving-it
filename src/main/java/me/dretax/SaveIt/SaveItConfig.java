@@ -1,6 +1,9 @@
 package me.dretax.SaveIt;
 
+import me.dretax.SaveIt.tasks.SaveItTaskManager;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,119 +18,121 @@ import java.util.List;
  * Time: 19:41
  */
 public class SaveItConfig {
-	protected boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup, PurgeBackups, MaxBackups;
-	protected int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv, maxbackups, daysBack;
-	protected long Date;
-	protected String Decide;
-	protected File configFile;
-	protected double intv;
-	protected Double StartOnAGivenHour;
-	protected List<String> ExWorlds = Arrays.asList(new String[]{"world"}), Directory = Arrays.asList(new String[]{"thisisntgoingtobebackuped"});
-	Main p;
-
-	protected SaveItConfig(Main i) {
-		this.p = i;
-	}
+	public boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup, PurgeBackups, MaxBackups;
+	public int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv, maxbackups, daysBack;
+	public long Date;
+	public String Decide;
+	public File configFile;
+	public double intv;
+	public Double StartOnAGivenHour;
+	public List<String> ExWorlds = Arrays.asList(new String[]{"world"}), Directory = Arrays.asList(new String[]{"thisisntgoingtobebackuped"});
+	private Main p = Main.getInstance();
+	private FileConfiguration config;
 
 	protected void create() {
-		p.config = p.getConfig();
-		p.config.addDefault("DelayInMinutes", 10);
-		p.config.addDefault("Worlds", ExWorlds);
-		p.config.addDefault("EnableSaveMSG", true);
-		p.config.addDefault("SaveMSG", "&aStarting world save...");
-		p.config.addDefault("SaveMSG2", "&aWorld save completed!");
-		p.config.addDefault("SavePlayersEverywhere", false);
-		p.config.addDefault("CheckForUpdates", true);
-		p.config.addDefault("DisableDefaultWorldSave", false);
-		p.config.addDefault("ExtraOptions.SaveOnLogin", false);
-		p.config.addDefault("ExtraOptions.SaveOnLoginCount", 50);
-		p.config.addDefault("ExtraOptions.SaveOnQuit", false);
-		p.config.addDefault("ExtraOptions.SaveOnQuitCount", 50);
-		p.config.addDefault("ExtraOptions.SaveOnBlockBreak", false);
-		p.config.addDefault("ExtraOptions.SaveOnBlockPlace", false);
-		p.config.addDefault("ExtraOptions.SaveOnBlockBreakcount", 500);
-		p.config.addDefault("ExtraOptions.SaveOnBlockPlacecount", 500);
-		p.config.addDefault("ExtraOptions.EnableSelfInventorySave", false);
-		p.config.addDefault("ExtraOptions.EnableDebugMSGs", false);
-		p.config.addDefault("EnablePowerSave", false);
-		p.config.addDefault("SaveAllWorlds", false);
-		p.config.addDefault("BroadCastWorldErrorIg", false);
-		p.config.addDefault("BackUp.EnableBackup", false);
-		p.config.addDefault("BackUp.EnableBackupMSG", true);
-		p.config.addDefault("BackUp.EnableAutoBackup", false);
-		p.config.addDefault("BackUp.EnablePlayerKickWhileBackup", false);
-		p.config.addDefault("BackUp.IntervalOrDay", "INTERVAL");
-		p.config.addDefault("BackUp.BackupHoursInterval", 4.0);
-		p.config.addDefault("BackUp.Date", 0);
-		p.config.addDefault("BackUp.DateDayDelay", 7);
-		p.config.addDefault("BackUp.EnableBackupPurge", false);
-		p.config.addDefault("BackUp.AutoPurge", false);
-		p.config.addDefault("BackUp.RemoveBackupXAfterDay", 4);
-		p.config.addDefault("BackUp.EnableMaxBackups", true);
-		p.config.addDefault("BackUp.MaxBackups", 10);
-		p.config.addDefault("BackUp.WarningMSG", "&aWarning! Backup has been executed!");
-		p.config.addDefault("BackUp.WarningMSG2", "&aBackup Finished!");
-		p.config.addDefault("BackUp.DirectoryNotToBackup", Directory);
-		p.config.options().copyDefaults(true);
+		this.config = p.getConfig();
+		getPluginConfig().addDefault("DelayInMinutes", 10);
+		getPluginConfig().addDefault("Worlds", ExWorlds);
+		getPluginConfig().addDefault("EnableSaveMSG", true);
+		getPluginConfig().addDefault("SaveMSG", "&aStarting world save...");
+		getPluginConfig().addDefault("SaveMSG2", "&aWorld save completed!");
+		getPluginConfig().addDefault("SavePlayersEverywhere", false);
+		getPluginConfig().addDefault("CheckForUpdates", true);
+		getPluginConfig().addDefault("DisableDefaultWorldSave", false);
+		getPluginConfig().addDefault("ExtraOptions.SaveOnLogin", false);
+		getPluginConfig().addDefault("ExtraOptions.SaveOnLoginCount", 50);
+		getPluginConfig().addDefault("ExtraOptions.SaveOnQuit", false);
+		getPluginConfig().addDefault("ExtraOptions.SaveOnQuitCount", 50);
+		getPluginConfig().addDefault("ExtraOptions.SaveOnBlockBreak", false);
+		getPluginConfig().addDefault("ExtraOptions.SaveOnBlockPlace", false);
+		getPluginConfig().addDefault("ExtraOptions.SaveOnBlockBreakcount", 500);
+		getPluginConfig().addDefault("ExtraOptions.SaveOnBlockPlacecount", 500);
+		getPluginConfig().addDefault("ExtraOptions.EnableSelfInventorySave", false);
+		getPluginConfig().addDefault("ExtraOptions.EnableDebugMSGs", false);
+		getPluginConfig().addDefault("EnablePowerSave", false);
+		getPluginConfig().addDefault("SaveAllWorlds", false);
+		getPluginConfig().addDefault("BroadCastWorldErrorIg", false);
+		getPluginConfig().addDefault("BackUp.EnableBackup", false);
+		getPluginConfig().addDefault("BackUp.EnableBackupMSG", true);
+		getPluginConfig().addDefault("BackUp.EnableAutoBackup", false);
+		getPluginConfig().addDefault("BackUp.EnablePlayerKickWhileBackup", false);
+		getPluginConfig().addDefault("BackUp.IntervalOrDay", "INTERVAL");
+		getPluginConfig().addDefault("BackUp.BackupHoursInterval", 4.0);
+		getPluginConfig().addDefault("BackUp.Date", 0);
+		getPluginConfig().addDefault("BackUp.DateDayDelay", 7);
+		getPluginConfig().addDefault("BackUp.EnableBackupPurge", false);
+		getPluginConfig().addDefault("BackUp.AutoPurge", false);
+		getPluginConfig().addDefault("BackUp.RemoveBackupXAfterDay", 4);
+		getPluginConfig().addDefault("BackUp.EnableMaxBackups", true);
+		getPluginConfig().addDefault("BackUp.MaxBackups", 10);
+		getPluginConfig().addDefault("BackUp.WarningMSG", "&aWarning! Backup has been executed!");
+		getPluginConfig().addDefault("BackUp.WarningMSG2", "&aBackup Finished!");
+		getPluginConfig().addDefault("BackUp.DirectoryNotToBackup", Directory);
+		getPluginConfig().options().copyDefaults(true);
 		p.saveConfig();
 		load();
 	}
 
 	protected void load() {
-		p.config = p.getConfig();
 		configFile = new File(Bukkit.getPluginManager().getPlugin("SaveIt").getDataFolder(), "config.yml");
 		try {
-			p.config.load(configFile);
+			getPluginConfig().load(configFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		/*
 		 * Regural Variables
          */
-		EnableMsg = p.config.getBoolean("EnableSaveMSG");
-		CheckForUpdates = p.config.getBoolean("CheckForUpdates");
-		SavePlayersFully = p.config.getBoolean("SavePlayersEverywhere");
-		DisableDefaultWorldSave = p.config.getBoolean("DisableDefaultWorldSave");
-		PowerSave = p.config.getBoolean("EnablePowerSave");
-		SaveAllWorlds = p.config.getBoolean("SaveAllWorlds");
-		BroadCastErrorIg = p.config.getBoolean("BroadCastWorldErrorIg");
-		ExWorlds = p.config.getStringList("Worlds");
-		Directory = p.config.getStringList("BackUp.DirectoryNotToBackup");
+		EnableMsg = getPluginConfig().getBoolean("EnableSaveMSG");
+		CheckForUpdates = getPluginConfig().getBoolean("CheckForUpdates");
+		SavePlayersFully = getPluginConfig().getBoolean("SavePlayersEverywhere");
+		DisableDefaultWorldSave = getPluginConfig().getBoolean("DisableDefaultWorldSave");
+		PowerSave = getPluginConfig().getBoolean("EnablePowerSave");
+		SaveAllWorlds = getPluginConfig().getBoolean("SaveAllWorlds");
+		BroadCastErrorIg = getPluginConfig().getBoolean("BroadCastWorldErrorIg");
+		ExWorlds = getPluginConfig().getStringList("Worlds");
+		Directory = getPluginConfig().getStringList("BackUp.DirectoryNotToBackup");
         /*
         * Special Savings
          */
-		SaveOnLogin = p.config.getBoolean("ExtraOptions.SaveOnLogin");
-		SaveOnLoginCount = p.config.getInt("ExtraOptions.SaveOnLoginCount");
-		SaveOnQuit = p.config.getBoolean("ExtraOptions.SaveOnQuit");
-		SaveOnQuitCount = p.config.getInt("ExtraOptions.SaveOnQuitCount");
-		SaveOnBlockBreak = p.config.getBoolean("ExtraOptions.SaveOnBlockBreak");
-		SaveOnBlockPlace = p.config.getBoolean("ExtraOptions.SaveOnBlockPlace");
-		SaveOnBlockBreakcount = p.config.getInt("ExtraOptions.SaveOnBlockBreakcount");
-		SaveOnBlockPlacecount = p.config.getInt("ExtraOptions.SaveOnBlockPlacecount");
-		SelfInventorySave = p.config.getBoolean("ExtraOptions.EnableSelfInventorySave");
-		Debug = p.config.getBoolean("ExtraOptions.EnableDebugMSGs");
-		EnableBackup = p.config.getBoolean("BackUp.EnableBackup");
-		EnableBackupMSG = p.config.getBoolean("BackUp.EnableBackupMSG");
-		intv = p.config.getDouble("BackUp.BackupHoursInterval");
-		AutoBackup = p.config.getBoolean("BackUp.EnableAutoBackup");
-		KickBackup = p.config.getBoolean("BackUp.EnablePlayerKickWhileBackup");
-		Date = p.config.getInt("BackUp.Date");
-		DateIntv = p.config.getInt("BackUp.DateDayDelay");
-		Decide = p.config.getString("BackUp.IntervalOrDay");
-		PurgeBackups = p.config.getBoolean("BackUp.EnableBackupPurge");
-		daysBack = p.config.getInt("BackUp.RemoveBackupXAfterDay");
-		maxbackups = p.config.getInt("BackUp.MaxBackups");
-		MaxBackups = p.config.getBoolean("BackUp.EnableMaxBackups");
-		p.config.getString("BackUp.WarningMSG");
-		p.config.getString("BackUp.WarningMSG2");
+		SaveOnLogin = getPluginConfig().getBoolean("ExtraOptions.SaveOnLogin");
+		SaveOnLoginCount = getPluginConfig().getInt("ExtraOptions.SaveOnLoginCount");
+		SaveOnQuit = getPluginConfig().getBoolean("ExtraOptions.SaveOnQuit");
+		SaveOnQuitCount = getPluginConfig().getInt("ExtraOptions.SaveOnQuitCount");
+		SaveOnBlockBreak = getPluginConfig().getBoolean("ExtraOptions.SaveOnBlockBreak");
+		SaveOnBlockPlace = getPluginConfig().getBoolean("ExtraOptions.SaveOnBlockPlace");
+		SaveOnBlockBreakcount = getPluginConfig().getInt("ExtraOptions.SaveOnBlockBreakcount");
+		SaveOnBlockPlacecount = getPluginConfig().getInt("ExtraOptions.SaveOnBlockPlacecount");
+		SelfInventorySave = getPluginConfig().getBoolean("ExtraOptions.EnableSelfInventorySave");
+		Debug = getPluginConfig().getBoolean("ExtraOptions.EnableDebugMSGs");
+		EnableBackup = getPluginConfig().getBoolean("BackUp.EnableBackup");
+		EnableBackupMSG = getPluginConfig().getBoolean("BackUp.EnableBackupMSG");
+		intv = getPluginConfig().getDouble("BackUp.BackupHoursInterval");
+		AutoBackup = getPluginConfig().getBoolean("BackUp.EnableAutoBackup");
+		KickBackup = getPluginConfig().getBoolean("BackUp.EnablePlayerKickWhileBackup");
+		Date = getPluginConfig().getInt("BackUp.Date");
+		DateIntv = getPluginConfig().getInt("BackUp.DateDayDelay");
+		Decide = getPluginConfig().getString("BackUp.IntervalOrDay");
+		PurgeBackups = getPluginConfig().getBoolean("BackUp.EnableBackupPurge");
+		daysBack = getPluginConfig().getInt("BackUp.RemoveBackupXAfterDay");
+		maxbackups = getPluginConfig().getInt("BackUp.MaxBackups");
+		MaxBackups = getPluginConfig().getBoolean("BackUp.EnableMaxBackups");
+		getPluginConfig().getString("BackUp.WarningMSG");
+		getPluginConfig().getString("BackUp.WarningMSG2");
 		p.reloadConfig();
-		String startTime = p.config.getString("BackUp.time");
+		String startTime = getPluginConfig().getString("BackUp.time");
 		if (startTime != null) {
+			System.out.println("asasasasasasasLOADED");
 			try {
 				Date parsedTime = new SimpleDateFormat("HH:mm").parse(startTime);
-				StartOnAGivenHour = p.h(parsedTime);
+				StartOnAGivenHour = SaveItTaskManager.h(parsedTime);
 			} catch (ParseException ignored) {
 			}
 		}
+	}
+
+	public FileConfiguration getPluginConfig() {
+		this.config = p.getConfig();
+		return this.config;
 	}
 }

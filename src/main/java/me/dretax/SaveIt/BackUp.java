@@ -3,9 +3,10 @@ package me.dretax.SaveIt;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -18,15 +19,9 @@ import java.util.zip.ZipOutputStream;
  */
 public class BackUp {
 	private String rootdir = Bukkit.getServer().getWorldContainer().getAbsolutePath();
-	Main p;
-	private SaveItConfig SaveItConfig = new SaveItConfig(p);
+	private Main p = Main.getInstance();
+	private SaveItConfig SaveItConfig = p.getSaveItConfig();
 	private final int BUFFER_SIZE = 4096;
-
-	protected BackUp(Main i, SaveItConfig i2) {
-		this.p = i;
-		this.SaveItConfig = i2;
-		gP()._cs = Bukkit.getServer().getConsoleSender();
-	}
 
 	protected void check() {
 		// Check if SaveItBackups folder doesn't exist, and create it.
@@ -36,7 +31,7 @@ public class BackUp {
 		}
 	}
 
-	protected void kcheck() {
+	public void kcheck() {
 		SaveItConfig.load();
 		if (SaveItConfig.EnableBackup) {
 			long timeStamp = System.currentTimeMillis() / 1000L;
@@ -46,9 +41,9 @@ public class BackUp {
 				if ((SaveItConfig.Decide).equalsIgnoreCase("DAY")) {
 					// If we didn't put the time to the Date yet.
 					if (SaveItConfig.Date == 0) {
-						gP().config.set(String.valueOf("BackUp.Date"), date);
+						SaveItConfig.getPluginConfig().set(String.valueOf("BackUp.Date"), date);
 						try {
-							gP().config.save(SaveItConfig.configFile);
+							SaveItConfig.getPluginConfig().save(SaveItConfig.configFile);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -58,9 +53,9 @@ public class BackUp {
 						// If the Date is in the YML older than the current Date
 						if (SaveItConfig.Date <= timeStamp) {
 							// Set the newest Date
-							gP().config.set(String.valueOf("BackUp.Date"), date);
+							SaveItConfig.getPluginConfig().set(String.valueOf("BackUp.Date"), date);
 							try {
-								gP().config.save(SaveItConfig.configFile);
+								SaveItConfig.getPluginConfig().save(SaveItConfig.configFile);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -73,14 +68,14 @@ public class BackUp {
 		}
 	}
 
-	protected void backupdir() {
+	public void backupdir() {
 		SaveItConfig.load();
 		if (SaveItConfig.Debug) {
-			sendConsoleMessage(ChatColor.GREEN + "Starting Backup.....");
+			p.sendConsoleMessage(ChatColor.GREEN + "Starting Backup.....");
 		}
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "saveit save");
 		if (SaveItConfig.EnableBackupMSG) {
-			String n = gP().config.getString("BackUp.WarningMSG");
+			String n = SaveItConfig.getPluginConfig().getString("BackUp.WarningMSG");
 			Bukkit.getServer().broadcastMessage(colorize(n));
 		}
 		if (!SaveItConfig.DisableDefaultWorldSave) {
@@ -102,14 +97,14 @@ public class BackUp {
 			e.printStackTrace();
 		}
 		if (SaveItConfig.EnableBackupMSG) {
-			String n = gP().config.getString("BackUp.WarningMSG2");
+			String n = SaveItConfig.getPluginConfig().getString("BackUp.WarningMSG2");
 			Bukkit.getServer().broadcastMessage(colorize(n));
 		}
 		if (!SaveItConfig.DisableDefaultWorldSave) {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-on");
 		}
 		if (SaveItConfig.Debug) {
-			sendConsoleMessage(ChatColor.GREEN + "Done!");
+			p.sendConsoleMessage(ChatColor.GREEN + "Done!");
 		}
 	}
 
@@ -122,7 +117,7 @@ public class BackUp {
 				} else {
 					addFileToZip(file, zos);
 				}
-				if (SaveItConfig.Debug) sendConsoleMessage("Adding file: " + file.getName());
+				if (SaveItConfig.Debug) p.sendConsoleMessage("Adding file: " + file.getName());
 			}
 		}
 
@@ -176,7 +171,7 @@ public class BackUp {
 		zos.closeEntry();
 	}
 
-	protected void delZip() {
+	public void delZip() {
 		File folder = new File(rootdir + "/SaveItBackups/");
 		// List files
 		File[] fileList = folder.listFiles();
@@ -221,14 +216,5 @@ public class BackUp {
 		// If String is null it will return null
 		if (s == null) return null;
 		return ChatColor.translateAlternateColorCodes('&', s);
-	}
-
-	private void sendConsoleMessage(String msg) {
-		// My Nice Colored Console Message Prefix.
-		Bukkit.getConsoleSender().sendMessage(gP()._prefix + ChatColor.GREEN + msg);
-	}
-
-	private Main gP() {
-		return this.p;
 	}
 }
