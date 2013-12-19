@@ -55,8 +55,7 @@ public class Main extends JavaPlugin {
 					if (t > 0) {
 						getSaveItManager().StartIntervalBackup();
 					}
-				}
-				else if ((getSaveItConfig().Decide).equalsIgnoreCase("DAY")) {
+				} else if ((getSaveItConfig().Decide).equalsIgnoreCase("DAY")) {
 					getSaveItManager().StartDailyBackup();
 				}
 			}
@@ -74,7 +73,8 @@ public class Main extends JavaPlugin {
 		}
 		// Couldn't Connect.
 		catch (IOException localIOException) {
-			if (getSaveItConfig().Debug) sendConsoleMessage(ChatColor.RED + "SaveIt Metrics Failed to boot! Notify DreTaX!");
+			if (getSaveItConfig().Debug)
+				sendConsoleMessage(ChatColor.RED + "SaveIt Metrics Failed to boot! Notify DreTaX!");
 		}
 		getCommand("saveit").setExecutor(this);
 
@@ -126,14 +126,12 @@ public class Main extends JavaPlugin {
 				if (sender.hasPermission("saveit.save")) {
 					WorldSaveDelayed();
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
-			}
-			else if (args[0].equalsIgnoreCase("reload")) {
+			} else if (args[0].equalsIgnoreCase("reload")) {
 				if (sender.hasPermission("saveit.reload")) {
 					ConfigReload();
 					sender.sendMessage(_prefix + ChatColor.GREEN + "Config Reloaded! Check Console for Errors, If Config doesn't Work");
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
-			}
-			else if (args[0].equalsIgnoreCase("selfsave")) {
+			} else if (args[0].equalsIgnoreCase("selfsave")) {
 				if (getSaveItConfig().SelfInventorySave) {
 					if (sender.hasPermission("saveit.selfsave")) {
 						if (!(sender instanceof Player)) {
@@ -144,8 +142,7 @@ public class Main extends JavaPlugin {
 						}
 					} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
 				} else sender.sendMessage(_prefix + ChatColor.RED + "This Option isn't Enabled!");
-			}
-			else if (args[0].equalsIgnoreCase("add")) {
+			} else if (args[0].equalsIgnoreCase("add")) {
 				if (sender.hasPermission("saveit.manage")) {
 					if (args.length == 2) {
 						if (getSaveItConfig().SaveAllWorlds) {
@@ -169,8 +166,7 @@ public class Main extends JavaPlugin {
 						}
 					} else sender.sendMessage(_prefix + ChatColor.RED + "Specify a World Name!");
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
-			}
-			else if (args[0].equalsIgnoreCase("remove")) {
+			} else if (args[0].equalsIgnoreCase("remove")) {
 				if (sender.hasPermission("saveit.manage")) {
 					if (args.length == 2) {
 						if (getSaveItConfig().SaveAllWorlds) {
@@ -194,8 +190,7 @@ public class Main extends JavaPlugin {
 						}
 					} else sender.sendMessage(_prefix + ChatColor.RED + "Specify a World Name!");
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
-			}
-			else if (args[0].equalsIgnoreCase("list")) {
+			} else if (args[0].equalsIgnoreCase("list")) {
 				if (sender.hasPermission("saveit.manage")) {
 					if (!getSaveItConfig().SaveAllWorlds) {
 						getSaveItConfig().load();
@@ -205,8 +200,7 @@ public class Main extends JavaPlugin {
 						sender.sendMessage(_prefix + ChatColor.GREEN + "You don't need the list.");
 					}
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
-			}
-			else if (args[0].equalsIgnoreCase("backup")) {
+			} else if (args[0].equalsIgnoreCase("backup")) {
 				if (sender.hasPermission("saveit.backup")) {
 					if (getSaveItConfig().EnableBackup) {
 						backup.delZip();
@@ -215,8 +209,7 @@ public class Main extends JavaPlugin {
 					} else sender.sendMessage(_prefix + ChatColor.RED + "Backup Mode isn't Enabled!");
 
 				} else sender.sendMessage(_prefix + ChatColor.RED + "You Don't Have Permission to do this!");
-			}
-			else if (args[0].equalsIgnoreCase("update")) {
+			} else if (args[0].equalsIgnoreCase("update")) {
 				if (sender.hasPermission("saveit.manage")) {
 					sender.sendMessage(_prefix + ChatColor.GREEN + "Updating...");
 					SaveItUpdate saveItUpdate = new SaveItUpdate(this, 33841, this.getFile(), SaveItUpdate.UpdateType.NO_DOWNLOAD, false);
@@ -229,8 +222,7 @@ public class Main extends JavaPlugin {
 						} else {
 							sender.sendMessage(_prefix + ChatColor.RED + "Update failed, check console!");
 						}
-					}
-					else {
+					} else {
 						sender.sendMessage(_prefix + ChatColor.RED + "You already have the latest version!");
 					}
 				}
@@ -273,10 +265,10 @@ public class Main extends JavaPlugin {
 		if (!getSaveItConfig().SaveAllWorlds) {
 			getSaveItManager().StartSmoothingonCustomWorlds();
 		}
-	   /** If SaveAllWorlds is true
-		* We will Save all the worlds instead of the configured one
-		* Also Calling Performance Method here
-		*/
+		/** If SaveAllWorlds is true
+		 * We will Save all the worlds instead of the configured one
+		 * Also Calling Performance Method here
+		 */
 		if (getSaveItConfig().SaveAllWorlds) {
 			getSaveItManager().StartSmoothingOnAllWorlds();
 		}
@@ -304,7 +296,6 @@ public class Main extends JavaPlugin {
 
 	/**
 	 * Methods
-	 *
 	 */
 
 	public static Main getInstance() {
