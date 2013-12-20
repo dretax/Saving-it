@@ -47,15 +47,13 @@ public class Main extends JavaPlugin {
 		_cs = getServer().getConsoleSender();
 		if (getSaveItConfig().EnableBackup) {
 			getSaveItBackup().check();
-			getSaveItBackup().kcheck();
+			//getSaveItBackup().kcheck();
 			getSaveItBackup().delZip();
 			if (getSaveItConfig().AutoBackup) {
 				if ((getSaveItConfig().Decide).equalsIgnoreCase("INTERVAL")) {
-					long t = (long) (72000 * getSaveItConfig().intv);
-					if (t > 0) {
-						getSaveItManager().StartIntervalBackup();
-					}
-				} else if ((getSaveItConfig().Decide).equalsIgnoreCase("DAY")) {
+					getSaveItManager().StartIntervalBackup();
+				}
+				else if ((getSaveItConfig().Decide).equalsIgnoreCase("DAY")) {
 					getSaveItManager().StartDailyBackup();
 				}
 			}

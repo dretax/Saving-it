@@ -13,6 +13,7 @@ public class StartIntervalBackup implements Runnable {
 				main.getSaveItBackup().backupdir();
 			}
 		} else {
+			System.out.println("sasss");
 			main.getSaveItBackup().backupdir();
 		}
 	}

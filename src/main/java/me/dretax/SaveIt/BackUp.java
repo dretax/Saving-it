@@ -113,11 +113,12 @@ public class BackUp {
 		for (File file : listFiles) {
 			if (!SaveItConfig.Directory.contains(file.getName()) && !file.getName().equalsIgnoreCase("SaveItBackup") && !file.getName().equalsIgnoreCase("SaveItBackups")) {
 				if (file.isDirectory()) {
+					if (SaveItConfig.Debug) p.sendConsoleMessage("Adding Folder: " + file.getName());
 					addFolderToZip(file, file.getName(), zos);
 				} else {
+					if (SaveItConfig.Debug) p.sendConsoleMessage("Adding File: " + file.getName());
 					addFileToZip(file, zos);
 				}
-				if (SaveItConfig.Debug) p.sendConsoleMessage("Adding file: " + file.getName());
 			}
 		}
 
@@ -129,26 +130,29 @@ public class BackUp {
 		File[] listFilesOfFolder = folder.listFiles();
 		assert listFilesOfFolder != null;
 		for (File file : listFilesOfFolder) {
+			String name = file.getName();
+			if (SaveItConfig.Debug) p.sendConsoleMessage(ChatColor.DARK_PURPLE + "Adding file: " + name + " in folder: " + folder.getName());
 			if (file.isDirectory()) {
 				addFolderToZip(file, parentFolder + "/" + file.getName(), zos);
 				continue;
 			}
+			if (!name.endsWith(".lck")) {
 
-			zos.putNextEntry(new ZipEntry(parentFolder + "/" + file.getName()));
+				zos.putNextEntry(new ZipEntry(parentFolder + "/" + file.getName()));
 
-			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+				BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
 
-			long bytesRead = 0;
-			byte[] bytesIn = new byte[BUFFER_SIZE];
-			int read = 0;
+				long bytesRead = 0;
+				byte[] bytesIn = new byte[BUFFER_SIZE];
+				int read = 0;
 
-			while ((read = bis.read(bytesIn)) != -1) {
-				zos.write(bytesIn, 0, read);
-				bytesRead += read;
+				while ((read = bis.read(bytesIn)) != -1) {
+					zos.write(bytesIn, 0, read);
+					bytesRead += read;
+				}
+
+				zos.closeEntry();
 			}
-
-			zos.closeEntry();
-
 		}
 	}
 

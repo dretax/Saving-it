@@ -23,7 +23,7 @@ public class SaveItConfig {
 	public long Date;
 	public String Decide, BackUpKickMSG;
 	public File configFile;
-	public double intv;
+	public int intv;
 	public Double StartOnAGivenHour;
 	public List<String> ExWorlds = Arrays.asList(new String[]{"world"}), Directory = Arrays.asList(new String[]{"thisisntgoingtobebackuped"});
 	private Main p = Main.getInstance();
@@ -58,7 +58,7 @@ public class SaveItConfig {
 		getPluginConfig().addDefault("BackUp.EnablePlayerKickWhileBackup", false);
 		getPluginConfig().addDefault("BackUp.KickMSG", "Server is making a backup...");
 		getPluginConfig().addDefault("BackUp.IntervalOrDay", "INTERVAL");
-		getPluginConfig().addDefault("BackUp.BackupHoursInterval", 4.0);
+		getPluginConfig().addDefault("BackUp.BackupHoursInterval", 4);
 		getPluginConfig().addDefault("BackUp.Date", 0);
 		getPluginConfig().addDefault("BackUp.DateDayDelay", 7);
 		getPluginConfig().addDefault("BackUp.EnableBackupPurge", false);
@@ -108,7 +108,7 @@ public class SaveItConfig {
 		Debug = getPluginConfig().getBoolean("ExtraOptions.EnableDebugMSGs");
 		EnableBackup = getPluginConfig().getBoolean("BackUp.EnableBackup");
 		EnableBackupMSG = getPluginConfig().getBoolean("BackUp.EnableBackupMSG");
-		intv = getPluginConfig().getDouble("BackUp.BackupHoursInterval");
+		intv = getPluginConfig().getInt("BackUp.BackupHoursInterval");
 		AutoBackup = getPluginConfig().getBoolean("BackUp.EnableAutoBackup");
 		KickBackup = getPluginConfig().getBoolean("BackUp.EnablePlayerKickWhileBackup");
 		Date = getPluginConfig().getInt("BackUp.Date");
