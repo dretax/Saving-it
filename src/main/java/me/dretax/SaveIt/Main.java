@@ -244,7 +244,6 @@ public class Main extends JavaPlugin {
 
 	public void WorldSaveDelayed() {
 		if (getSaveItConfig().PowerSave) {
-			sendConsoleMessage("PowerSave is enabled");
 			int players = getServer().getOnlinePlayers().length;
 			if (players == 0) {
 				return;
@@ -313,5 +312,4 @@ public class Main extends JavaPlugin {
 	public SaveItTaskManager getSaveItManager() {
 		return manager;
 	}
-
 }

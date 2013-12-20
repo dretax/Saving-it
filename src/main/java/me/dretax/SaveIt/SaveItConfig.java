@@ -21,7 +21,7 @@ public class SaveItConfig {
 	public boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup, PurgeBackups, MaxBackups;
 	public int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv, maxbackups, daysBack;
 	public long Date;
-	public String Decide;
+	public String Decide, BackUpKickMSG;
 	public File configFile;
 	public double intv;
 	public Double StartOnAGivenHour;
@@ -56,6 +56,7 @@ public class SaveItConfig {
 		getPluginConfig().addDefault("BackUp.EnableBackupMSG", true);
 		getPluginConfig().addDefault("BackUp.EnableAutoBackup", false);
 		getPluginConfig().addDefault("BackUp.EnablePlayerKickWhileBackup", false);
+		getPluginConfig().addDefault("BackUp.KickMSG", "Server is making a backup...");
 		getPluginConfig().addDefault("BackUp.IntervalOrDay", "INTERVAL");
 		getPluginConfig().addDefault("BackUp.BackupHoursInterval", 4.0);
 		getPluginConfig().addDefault("BackUp.Date", 0);
@@ -117,12 +118,10 @@ public class SaveItConfig {
 		daysBack = getPluginConfig().getInt("BackUp.RemoveBackupXAfterDay");
 		maxbackups = getPluginConfig().getInt("BackUp.MaxBackups");
 		MaxBackups = getPluginConfig().getBoolean("BackUp.EnableMaxBackups");
-		getPluginConfig().getString("BackUp.WarningMSG");
-		getPluginConfig().getString("BackUp.WarningMSG2");
+		BackUpKickMSG = getPluginConfig().getString("BackUp.KickMSG");
 		p.reloadConfig();
 		String startTime = getPluginConfig().getString("BackUp.time");
 		if (startTime != null) {
-			System.out.println("asasasasasasasLOADED");
 			try {
 				Date parsedTime = new SimpleDateFormat("HH:mm").parse(startTime);
 				StartOnAGivenHour = SaveItTaskManager.h(parsedTime);

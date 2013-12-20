@@ -18,8 +18,8 @@ public class SaveItExpansions implements Listener {
 	private int breaks = 0;
 	private int logins = 0;
 	private int quits = 0;
-	public Main p = Main.getInstance();
-	public SaveItConfig SaveItConfig = p.getSaveItConfig();
+	private Main p = Main.getInstance();
+	private SaveItConfig SaveItConfig = p.getSaveItConfig();
 
 	@EventHandler
 	private void onPlayerLoginEvent(PlayerLoginEvent e) {
@@ -28,7 +28,7 @@ public class SaveItExpansions implements Listener {
 			if (this.logins == (SaveItConfig.SaveOnLoginCount)) {
 				p.WorldSaveDelayed();
 				this.logins -= (SaveItConfig.SaveOnLoginCount);
-				if (SaveItConfig.Debug) sendConsoleMessage(ChatColor.GREEN + "Login limit reached, reset!");
+				if (SaveItConfig.Debug) p.sendConsoleMessage(ChatColor.GREEN + "Login limit reached, reset!");
 			}
 		}
 	}
@@ -40,7 +40,7 @@ public class SaveItExpansions implements Listener {
 			if (this.quits == (SaveItConfig.SaveOnQuitCount)) {
 				p.WorldSaveDelayed();
 				this.quits -= (SaveItConfig.SaveOnQuitCount);
-				if (SaveItConfig.Debug) sendConsoleMessage(ChatColor.GREEN + "Quit limit reached, reset!");
+				if (SaveItConfig.Debug) p.sendConsoleMessage(ChatColor.GREEN + "Quit limit reached, reset!");
 			}
 		}
 	}
@@ -52,7 +52,7 @@ public class SaveItExpansions implements Listener {
 			if (this.places == (SaveItConfig.SaveOnBlockPlacecount)) {
 				p.WorldSaveDelayed();
 				this.places -= (SaveItConfig.SaveOnBlockPlacecount);
-				if (SaveItConfig.Debug) sendConsoleMessage(ChatColor.GREEN + "Place limit reached, reset!");
+				if (SaveItConfig.Debug) p.sendConsoleMessage(ChatColor.GREEN + "Place limit reached, reset!");
 			}
 		}
 	}
@@ -64,13 +64,8 @@ public class SaveItExpansions implements Listener {
 			if (this.breaks == (SaveItConfig.SaveOnBlockBreakcount)) {
 				p.WorldSaveDelayed();
 				this.breaks -= (SaveItConfig.SaveOnBlockBreakcount);
-				if (SaveItConfig.Debug) sendConsoleMessage(ChatColor.GREEN + "Break limit reached, reset!");
+				if (SaveItConfig.Debug) p.sendConsoleMessage(ChatColor.GREEN + "Break limit reached, reset!");
 			}
 		}
-	}
-
-	private void sendConsoleMessage(String msg) {
-		// My Nice Colored Console Message Prefix.
-		Bukkit.getConsoleSender().sendMessage(p._prefix + ChatColor.AQUA + msg);
 	}
 }

@@ -83,7 +83,7 @@ public class BackUp {
 		}
 		if (SaveItConfig.KickBackup) {
 			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-				p.kickPlayer("");
+				p.kickPlayer(colorize(SaveItConfig.BackUpKickMSG));
 			}
 		}
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
