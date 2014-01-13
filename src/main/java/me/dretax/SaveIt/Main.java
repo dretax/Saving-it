@@ -47,7 +47,7 @@ public class Main extends JavaPlugin {
 		_cs = getServer().getConsoleSender();
 		if (getSaveItConfig().EnableBackup) {
 			getSaveItBackup().check();
-			//getSaveItBackup().kcheck();
+			getSaveItBackup().kcheck();
 			getSaveItBackup().delZip();
 			if (getSaveItConfig().AutoBackup) {
 				if ((getSaveItConfig().Decide).equalsIgnoreCase("INTERVAL")) {
@@ -105,7 +105,7 @@ public class Main extends JavaPlugin {
 			if (update) {
 				sendConsoleMessage(ChatColor.GREEN + "New Update Available! Version: " + ChatColor.RED + saveItUpdate.getLatestName());
 				sendConsoleMessage(ChatColor.GREEN + "Your Version: " + _pm.getPlugin("SaveIt").getDescription().getVersion());
-				sendConsoleMessage(ChatColor.GREEN + "Download at: http://dev.bukkit.org/bukkit-plugins/automatically-world-saving/");
+				sendConsoleMessage(ChatColor.GREEN + "Download at: http://dev.bukkit.org/bukkit-plugins/saving-it/");
 				sendConsoleMessage(ChatColor.GREEN + "Or simply type /saveit update to update it automatically");
 			} else {
 				sendConsoleMessage(ChatColor.GREEN + "No updates available! You are cool :D!");
@@ -226,7 +226,7 @@ public class Main extends JavaPlugin {
 				}
 			}
 		} else {
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.1.6 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.1.7 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW + "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");

@@ -19,8 +19,6 @@ public class SaveItTaskManager {
 	}
 
 	// Backup Times
-	//private long t = (long) (72000 * config.intv);
-	//private long delay = config.StartOnAGivenHour != null ? s(config.StartOnAGivenHour) : t;
 	private long hour = (long) 1200L * 60;
 
 	public void StartAutoSave() {
@@ -32,7 +30,6 @@ public class SaveItTaskManager {
 	}
 
 	public void StartIntervalBackup() {
-		System.out.println("NIFERIA " + p.getSaveItConfig().intv);
 		_bukkitScheduler.runTaskTimer(p, new StartIntervalBackup(), 72000L * p.getSaveItConfig().intv, 72000L * p.getSaveItConfig().intv);
 	}
 
