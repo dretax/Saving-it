@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 public class SaveCustomWorlds implements Runnable {
 
 	Main p = Main.getInstance();
+	private boolean b = false;
 
 	@Override
 	public void run() {
@@ -25,10 +26,15 @@ public class SaveCustomWorlds implements Runnable {
 			p.getServer().getWorld(worldname).save();
 			// Getting All The Players, and Saving Them, only in the Configured Worlds.
 			if (!p.getSaveItConfig().SavePlayersFully) {
+				b = true;
 				for (Player player : p.getServer().getWorld(worldname).getPlayers()) {
 					player.saveData();
 				}
 			}
+		}
+		if (p.getSaveItConfig().SavingStats) {
+			p.sendConsoleMessage("Took: " + String.valueOf((System.currentTimeMillis() - p.savingcheck) / 1000) + " seconds to Save World(s)");
+			if (b) p.sendConsoleMessage("Including Players"); else p.sendConsoleMessage("Without Players");
 		}
 	}
 }

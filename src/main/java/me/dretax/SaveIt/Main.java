@@ -24,6 +24,8 @@ public class Main extends JavaPlugin {
 	public int Delay;
 	public ConsoleCommandSender _cs;
 	public String _prefix = ChatColor.AQUA + "[SaveIt] ";
+	public long savingcheck;
+	public long playercheck;
 	PluginManager _pm;
 	private SaveItConfig SaveItConfig;
 	private SaveItExpansions expansions;

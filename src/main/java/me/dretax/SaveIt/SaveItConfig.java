@@ -18,7 +18,7 @@ import java.util.List;
  * Time: 19:41
  */
 public class SaveItConfig {
-	public boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup, PurgeBackups, MaxBackups;
+	public boolean CheckForUpdates, EnableMsg, DisableDefaultWorldSave, SaveOnLogin, SaveOnQuit, SaveOnBlockBreak, SaveOnBlockPlace, SelfInventorySave, SavePlayersFully, Debug, PowerSave, SaveAllWorlds, BroadCastErrorIg, EnableBackup, EnableBackupMSG, AutoBackup, KickBackup, PurgeBackups, MaxBackups, SavingStats;
 	public int SaveOnBlockBreakcount, SaveOnBlockPlacecount, SaveOnLoginCount, SaveOnQuitCount, DateIntv, maxbackups, daysBack;
 	public long Date;
 	public String Decide, BackUpKickMSG;
@@ -32,6 +32,7 @@ public class SaveItConfig {
 	protected void create() {
 		this.config = p.getConfig();
 		getPluginConfig().addDefault("DelayInMinutes", 10);
+		getPluginConfig().addDefault("SaveAllWorlds", false);
 		getPluginConfig().addDefault("Worlds", ExWorlds);
 		getPluginConfig().addDefault("EnableSaveMSG", true);
 		getPluginConfig().addDefault("SaveMSG", "&aStarting world save...");
@@ -49,6 +50,7 @@ public class SaveItConfig {
 		getPluginConfig().addDefault("ExtraOptions.SaveOnBlockPlacecount", 500);
 		getPluginConfig().addDefault("ExtraOptions.EnableSelfInventorySave", false);
 		getPluginConfig().addDefault("ExtraOptions.EnableDebugMSGs", false);
+		getPluginConfig().addDefault("ExtraOptions.CheckSavingStats", false);
 		getPluginConfig().addDefault("EnablePowerSave", false);
 		getPluginConfig().addDefault("SaveAllWorlds", false);
 		getPluginConfig().addDefault("BroadCastWorldErrorIg", false);
@@ -106,6 +108,7 @@ public class SaveItConfig {
 		SaveOnBlockPlacecount = getPluginConfig().getInt("ExtraOptions.SaveOnBlockPlacecount");
 		SelfInventorySave = getPluginConfig().getBoolean("ExtraOptions.EnableSelfInventorySave");
 		Debug = getPluginConfig().getBoolean("ExtraOptions.EnableDebugMSGs");
+		SavingStats = getPluginConfig().getBoolean("ExtraOptions.CheckSavingStats");
 		EnableBackup = getPluginConfig().getBoolean("BackUp.EnableBackup");
 		EnableBackupMSG = getPluginConfig().getBoolean("BackUp.EnableBackupMSG");
 		intv = getPluginConfig().getInt("BackUp.BackupHoursInterval");

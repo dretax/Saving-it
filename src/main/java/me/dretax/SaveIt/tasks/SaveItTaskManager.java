@@ -19,41 +19,44 @@ public class SaveItTaskManager {
 	}
 
 	// Backup Times
-	private long hour = (long) 1200L * 60;
+	private long hour = 1200L * 60;
 
 	public void StartAutoSave() {
-		_bukkitScheduler.runTaskTimer(p, new StartAutoSave(), 1200L * p.Delay, 1200L * p.Delay);
+		_bukkitScheduler.runTaskTimer(getPlugin(), new StartAutoSave(), 1200L * p.Delay, 1200L * p.Delay);
 	}
 
 	public void StartPurge() {
-		_bukkitScheduler.runTaskTimer(p, new PurgeBackups(), hour, hour);
+		_bukkitScheduler.runTaskTimer(getPlugin(), new PurgeBackups(), hour, hour);
 	}
 
 	public void StartIntervalBackup() {
-		_bukkitScheduler.runTaskTimer(p, new StartIntervalBackup(), 72000L * p.getSaveItConfig().intv, 72000L * p.getSaveItConfig().intv);
+		_bukkitScheduler.runTaskTimer(getPlugin(), new StartIntervalBackup(), 72000L * p.getSaveItConfig().intv, 72000L * p.getSaveItConfig().intv);
 	}
 
 	public void StartDailyBackup() {
-		_bukkitScheduler.runTaskTimer(p, new StartDailyBackup(), hour, hour);
+		_bukkitScheduler.runTaskTimer(getPlugin(), new StartDailyBackup(), hour, hour);
 	}
 
 	public void StartSmoothingOnAllWorlds() {
+		if (getPlugin().getSaveItConfig().SavingStats) getPlugin().savingcheck = System.currentTimeMillis();
 		Delay2 = 1;
-		_bukkitScheduler.runTaskLater(p, new SaveAllWorlds(), 20L * Delay2);
+		_bukkitScheduler.runTaskLater(getPlugin(), new SaveAllWorlds(), 20L * Delay2);
 	}
 
 	public void StartSmoothingonCustomWorlds() {
+		if (getPlugin().getSaveItConfig().SavingStats) getPlugin().savingcheck = System.currentTimeMillis();
 		Delay2 = 1;
-		_bukkitScheduler.runTaskLater(p, new SaveCustomWorlds(), 20L * Delay2);
+		_bukkitScheduler.runTaskLater(getPlugin(), new SaveCustomWorlds(), 20L * Delay2);
 	}
 
 	public void StartSavingAllPlayers() {
+		if (getPlugin().getSaveItConfig().SavingStats) getPlugin().playercheck = System.currentTimeMillis();
 		Delay2 = 1;
-		_bukkitScheduler.runTaskLater(p, new SaveAllPlayers(), 20L * Delay2);
+		_bukkitScheduler.runTaskLater(getPlugin(), new SaveAllPlayers(), 20L * Delay2);
 	}
 
 	public void StartManualBackup() {
-		_bukkitScheduler.runTaskLater(p, new StartManualBackup(), 20L * 5);
+		_bukkitScheduler.runTaskLater(getPlugin(), new StartManualBackup(), 20L * 5);
 	}
 
 	@SuppressWarnings("unused")
@@ -73,7 +76,12 @@ public class SaveItTaskManager {
 		return t.getHours() + t.getMinutes() / 60. + t.getSeconds() / 3600.;
 	}
 
+	public Main getPlugin() {
+		return p;
+	}
+
 	/*public BukkitScheduler getBukkitCheduler() {
 		return _bukkitScheduler;
 	}*/
+
 }
