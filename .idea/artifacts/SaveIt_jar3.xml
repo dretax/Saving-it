@@ -1,8 +1,8 @@
 <component name="ArtifactManager">
   <artifact type="jar" build-on-make="true" name="SaveIt:jar3">
     <output-path>$PROJECT_DIR$/out/artifacts/SaveIt_jar3</output-path>
-    <root id="archive" name="SaveItP.jar">
-      <element id="module-test-output" name="SaveIt" />
+    <root id="archive" name="SaveIt.jar">
+      <element id="module-output" name="SaveIt" />
     </root>
   </artifact>
 </component>
