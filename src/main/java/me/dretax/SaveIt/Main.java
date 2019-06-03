@@ -66,7 +66,7 @@ public class Main extends JavaPlugin {
 		/*
 		 * Metrics
 		 */
-		try {
+		/*try {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
 			if (getSaveItConfig().Debug) sendConsoleMessage(ChatColor.GREEN + "SaveIt Metrics Successfully Enabled!");
@@ -75,7 +75,7 @@ public class Main extends JavaPlugin {
 		catch (IOException localIOException) {
 			if (getSaveItConfig().Debug)
 				sendConsoleMessage(ChatColor.RED + "SaveIt Metrics Failed to boot! Notify DreTaX!");
-		}
+		}*/
 		getCommand("saveit").setExecutor(this);
 
 		/*
@@ -228,7 +228,7 @@ public class Main extends JavaPlugin {
 				}
 			}
 		} else {
-			sender.sendMessage(_prefix + ChatColor.GREEN + "1.1.7 " + ChatColor.AQUA + "===Commands:===");
+			sender.sendMessage(_prefix + ChatColor.GREEN + "1.1.8 " + ChatColor.AQUA + "===Commands:===");
 			sender.sendMessage(ChatColor.BLUE + "/saveit save" + ChatColor.GREEN + " - Saves All the Configured Worlds, and Inventories" + ChatColor.YELLOW + "(FULLSAVE)");
 			sender.sendMessage(ChatColor.BLUE + "/saveit reload" + ChatColor.GREEN + " - Reloads Config");
 			sender.sendMessage(ChatColor.BLUE + "/saveit selfsave" + ChatColor.GREEN + " - Saves Your Data Only");
@@ -244,7 +244,7 @@ public class Main extends JavaPlugin {
 
 	public void WorldSaveDelayed() {
 		if (getSaveItConfig().PowerSave) {
-			int players = getServer().getOnlinePlayers().length;
+			int players = getServer().getOnlinePlayers().size();
 			if (players == 0) {
 				return;
 			}
