@@ -38,7 +38,7 @@ public class SaveItConfig {
 		getPluginConfig().addDefault("SaveMSG", "&aStarting world save...");
 		getPluginConfig().addDefault("SaveMSG2", "&aWorld save completed!");
 		getPluginConfig().addDefault("SavePlayersEverywhere", false);
-		getPluginConfig().addDefault("CheckForUpdates", true);
+		getPluginConfig().addDefault("CheckForUpdates", false);
 		getPluginConfig().addDefault("DisableDefaultWorldSave", false);
 		getPluginConfig().addDefault("ExtraOptions.SaveOnLogin", false);
 		getPluginConfig().addDefault("ExtraOptions.SaveOnLoginCount", 50);
